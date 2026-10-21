@@ -16,15 +16,14 @@ class Sprites {
 
   static ui.Image? unit(String id) => _img['u_$id'];
   static ui.Image? enemy(String id) =>
-      _img['e_${id == 'wibble' ? 'wobbler' : id}'];
+      _img['e_$id'] ?? (id == 'wibble' ? _img['e_wobbler'] : null);
   static ui.Image? boss(String id) => _img['b_$id'];
   static ui.Image? named(String name) => _img[name];
 
   static Future<void> load() async {
     final names = <String>[
       for (final u in kUnits) 'u_${u.id}',
-      for (final e in kEnemies)
-        if (e.id != 'wibble') 'e_${e.id}',
+      for (final e in kEnemies) 'e_${e.id}',
       for (final b in kBosses) 'b_${b.id}',
     ];
     await Future.wait(
