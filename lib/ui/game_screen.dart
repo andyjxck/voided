@@ -81,6 +81,8 @@ class GameScreen extends StatefulWidget {
   State<GameScreen> createState() => _GameScreenState();
 }
 
+enum _Tray { none, gamble, upgrade }
+
 class _GameScreenState extends State<GameScreen>
     with SingleTickerProviderStateMixin {
   late Game g;
@@ -92,6 +94,8 @@ class _GameScreenState extends State<GameScreen>
   int speed = 1;
   bool paused = false;
   int? selected;
+  _Tray _tray = _Tray.none;
+  String? _peek; // the Mythic whose parts are showing
   int? dragFrom;
   Offset? dragPos;
   final List<VisFx> vfx = [];
@@ -527,16 +531,9 @@ class _GameScreenState extends State<GameScreen>
                         child: Column(
                           children: [
                             _hud(),
-                            SynergyStrip(
-                              g: g,
-                              onTap: () => _sheet(
-                                'Synergies',
-                                Tone.yellow,
-                                () => SynergySheet(g: g),
-                              ),
-                            ),
                             if (g.boss != null) _bossBar(),
                             Expanded(child: _fieldArea()),
+                            _medallions(),
                             _controls(),
                           ],
                         ),
@@ -590,7 +587,7 @@ class _GameScreenState extends State<GameScreen>
           end: Alignment.bottomCenter,
           colors: [Vx.panelTop, Vx.panelBottom],
         ),
-        border: Border(bottom: BorderSide(color: Vx.ink, width: 3)),
+        border: Border(bottom: BorderSide(color: Vx.ink, width: 1.5)),
         borderRadius: BorderRadius.vertical(bottom: Radius.circular(18)),
       ),
       child: Row(
@@ -622,7 +619,7 @@ class _GameScreenState extends State<GameScreen>
                           decoration: BoxDecoration(
                             color: hot ? Tone.red.bottom : Vx.wellDeep,
                             borderRadius: BorderRadius.circular(10),
-                            border: Border.all(color: Vx.ink, width: 2),
+                            border: Border.all(color: Vx.ink, width: 1.5),
                           ),
                           child: Text(
                             '${timer.ceil()}s',
@@ -708,7 +705,7 @@ class _GameScreenState extends State<GameScreen>
       decoration: BoxDecoration(
         color: Colors.black54,
         borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: Vx.ink, width: 2),
+        border: Border.all(color: Vx.ink, width: 1.5),
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(4),
@@ -753,7 +750,7 @@ class _GameScreenState extends State<GameScreen>
             colors: [Color(0xFF5A1630), Color(0xFF2A0F22)],
           ),
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: Vx.ink, width: 2.5),
+          border: Border.all(color: Vx.ink, width: 1.5),
           boxShadow: const [
             BoxShadow(color: Color(0xFF16060F), offset: Offset(0, 3)),
           ],
@@ -894,8 +891,16 @@ class _GameScreenState extends State<GameScreen>
                     child: const SizedBox.expand(),
                   ),
                 ),
+            _unionBadges(geo, size),
             if (selected != null && !g.you.cells[selected!].isEmpty)
               _selectionPopup(geo, size),
+            if (_peek != null)
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 6,
+                child: Center(child: _mythicPeek()),
+              ),
             if (chat != null)
               Positioned(
                 left: 8,
@@ -970,10 +975,9 @@ class _GameScreenState extends State<GameScreen>
         if (e.value.contains(d.id)) kUnitById[e.key]!.name,
     ];
     final r = _cellRect(geo, i);
-    final bonds = bondLines(g, g.you, i).take(2).toList();
     final stacked = cell.units.length >= kStackMax;
     const w = 248.0;
-    final h = 112.0 + 14.0 * (bonds.length + (stacked ? 1 : 0));
+    final h = 86.0 + (ingredientOf.isNotEmpty ? 13.0 : 0);
     final below = r.bottom + h + 4 <= size.height;
     final left = (r.center.dx - w / 2).clamp(
       4.0,
@@ -982,189 +986,165 @@ class _GameScreenState extends State<GameScreen>
     final top = below ? r.bottom + 2 : math.max(0.0, r.top - h - 2);
     final tone = toneForTier(d.tier.index);
     final merge = g.canMerge(g.you, i);
+    // No panel: a slim name tag, then the tokens straight on the board.
     return Positioned(
       left: left.toDouble(),
       top: top,
       width: w,
-      child: Container(
-        padding: const EdgeInsets.fromLTRB(8, 6, 8, 8),
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Vx.panelTop, Vx.panelBottom],
-          ),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Vx.ink, width: 2.5),
-          boxShadow: const [
-            BoxShadow(
-              color: Color(0x88000000),
-              blurRadius: 10,
-              offset: Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 6,
-                    vertical: 1,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Tooltip(
+            message:
+                '${d.desc}${ingredientOf.isEmpty ? '' : '\nIngredient for ${ingredientOf.join(', ')}'}',
+            child: Container(
+              padding: const EdgeInsets.fromLTRB(4, 3, 10, 3),
+              decoration: BoxDecoration(
+                color: const Color(0xE61D2144),
+                borderRadius: BorderRadius.circular(13),
+                boxShadow: const [
+                  BoxShadow(color: Color(0x6608061A), blurRadius: 6),
+                ],
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 1,
+                        ),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [tone.top, tone.bottom],
+                          ),
+                          borderRadius: BorderRadius.circular(9),
+                        ),
+                        child: Text(
+                          d.tier.label.toUpperCase(),
+                          style: display(10, stroke: tone.lip, w: 1),
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Flexible(
+                        child: Text(
+                          '${d.name} ×${cell.units.length}${stacked ? ' · FULL' : ''}',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: display(14, w: 1.2),
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        '${(d.dps * g.dmgMult(g.you, d)).toStringAsFixed(0)} dps',
+                        style: body(10.5, color: Vx.textDim),
+                      ),
+                    ],
                   ),
-                  decoration: BoxDecoration(
-                    color: tone.bottom,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Vx.ink, width: 1.5),
-                  ),
-                  child: Text(
-                    d.tier.label.toUpperCase(),
-                    style: display(10, stroke: tone.lip, w: 1),
-                  ),
-                ),
-                const SizedBox(width: 6),
-                Expanded(
-                  child: Tooltip(
-                    message:
-                        '${d.desc}${ingredientOf.isEmpty ? '' : '\nIngredient for ${ingredientOf.join(', ')}'}',
-                    child: Text(
-                      '${d.name} ×${cell.units.length}',
+                  if (ingredientOf.isNotEmpty)
+                    Text(
+                      'Part of ${ingredientOf.join(', ')}',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: display(15, w: 1.5),
+                      style: body(9.5, color: const Color(0xFFFFD86B)),
                     ),
-                  ),
-                ),
-                Text(
-                  '${(d.dps * g.dmgMult(g.you, d)).toStringAsFixed(0)} dps',
-                  style: body(11, color: Vx.textDim, weight: FontWeight.w900),
-                ),
-              ],
+                ],
+              ),
             ),
-            if (ingredientOf.isNotEmpty)
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'Mythic ingredient: ${ingredientOf.join(', ')}',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: body(10, color: const Color(0xFFFFB3C1)),
+          ),
+          const SizedBox(height: 4),
+          Row(
+            children: [
+              Expanded(
+                flex: 3,
+                child: Chunky.label(
+                  'MERGE',
+                  sub: d.tier.index < 3
+                      ? (merge
+                            ? '3 → ${Tier.values[d.tier.index + 1].label}'
+                            : '${cell.units.length}/3')
+                      : 'top tier',
+                  tone: Tone.green,
+                  height: 52,
+                  size: 18,
+                  enabled: merge,
+                  semantics: 'Merge${merge ? '' : ', not available'}',
+                  onTap: merge ? () => _merge(i) : null,
                 ),
               ),
-            if (stacked)
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'Full stack: attacks ${(kFullStackSpeed * 100).round()}% faster until merged',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: body(10, color: Vx.textDim),
+              const SizedBox(width: 5),
+              Expanded(
+                flex: 2,
+                child: Chunky.label(
+                  'SELL',
+                  sub: d.tier == Tier.mythic
+                      ? 'never'
+                      : (sellLeaves(d.tier) > 0
+                            ? '+${sellLeaves(d.tier)} leaf'
+                            : '+${sellPennies(d.tier)}p'),
+                  tone: Tone.blue,
+                  height: 52,
+                  size: 16,
+                  enabled: d.tier != Tier.mythic,
+                  semantics:
+                      'Sell one${d.tier == Tier.mythic ? ', not available' : ''}',
+                  onTap: d.tier == Tier.mythic
+                      ? null
+                      : () {
+                          final r = g.sell(g.you, i);
+                          if (!r.ok) return _toast(r.msg);
+                          Sfx.sell();
+                          _narr.note('Sold one ${d.name}.');
+                          if (g.you.cells[i].isEmpty) {
+                            setState(() => selected = null);
+                          }
+                        },
                 ),
               ),
-            for (final (line, on) in bonds)
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Tooltip(
-                  message: line,
-                  child: Text(
-                    line,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: body(10, color: on ? kBondGold : Vx.textDim),
-                  ),
-                ),
+              const SizedBox(width: 5),
+              _miniBtn(
+                icon: Icons.casino_rounded,
+                tone: Tone.purple,
+                label: d.tier == Tier.mythic
+                    ? 'Shake, not available'
+                    : 'Shake into another ${d.tier.label}, ${rl > 0 ? '$rl leaf' : '$rp pennies'}',
+                enabled: d.tier != Tier.mythic,
+                onTap: () {
+                  final r = g.reroll(g.you, i);
+                  if (!r.ok) return _toast(r.msg);
+                  if (r.unit != null) {
+                    _narr.note(
+                      'Shaken into ${r.unit!.name}, ${r.unit!.tier.label}.',
+                    );
+                  }
+                  if (g.you.cells[i].isEmpty) setState(() => selected = null);
+                },
               ),
-            const SizedBox(height: 5),
-            Row(
-              children: [
-                Expanded(
-                  flex: 3,
-                  child: Chunky.label(
-                    'MERGE',
-                    sub: d.tier.index < 3
-                        ? (merge
-                              ? '3 → ${Tier.values[d.tier.index + 1].label}'
-                              : '${cell.units.length}/3')
-                        : 'top tier',
-                    tone: Tone.green,
-                    height: 52,
-                    size: 18,
-                    enabled: merge,
-                    semantics: 'Merge${merge ? '' : ', not available'}',
-                    onTap: merge ? () => _merge(i) : null,
-                  ),
-                ),
-                const SizedBox(width: 5),
-                Expanded(
-                  flex: 2,
-                  child: Chunky.label(
-                    'SELL',
-                    sub: d.tier == Tier.mythic
-                        ? 'never'
-                        : (sellLeaves(d.tier) > 0
-                              ? '+${sellLeaves(d.tier)} leaf'
-                              : '+${sellPennies(d.tier)}p'),
-                    tone: Tone.blue,
-                    height: 52,
-                    size: 16,
-                    enabled: d.tier != Tier.mythic,
-                    semantics:
-                        'Sell one${d.tier == Tier.mythic ? ', not available' : ''}',
-                    onTap: d.tier == Tier.mythic
-                        ? null
-                        : () {
-                            final r = g.sell(g.you, i);
-                            if (!r.ok) return _toast(r.msg);
-                            Sfx.sell();
-                            _narr.note('Sold one ${d.name}.');
-                            if (g.you.cells[i].isEmpty) {
-                              setState(() => selected = null);
-                            }
-                          },
-                  ),
-                ),
+              if (g.partner != null) ...[
                 const SizedBox(width: 5),
                 _miniBtn(
-                  icon: Icons.casino_rounded,
-                  tone: Tone.purple,
-                  label: d.tier == Tier.mythic
-                      ? 'Shake, not available'
-                      : 'Shake into another ${d.tier.label}, ${rl > 0 ? '$rl leaf' : '$rp pennies'}',
-                  enabled: d.tier != Tier.mythic,
+                  icon: Icons.volunteer_activism_rounded,
+                  tone: Tone.teal,
+                  label: 'Give one to $kPartnerName',
                   onTap: () {
-                    final r = g.reroll(g.you, i);
+                    final r = g.gift(i);
                     if (!r.ok) return _toast(r.msg);
-                    if (r.unit != null) {
-                      _narr.note(
-                        'Shaken into ${r.unit!.name}, ${r.unit!.tier.label}.',
-                      );
+                    Sfx.click();
+                    _narr.note('Gave one ${d.name} to $kPartnerName.');
+                    if (g.you.cells[i].isEmpty) {
+                      setState(() => selected = null);
                     }
-                    if (g.you.cells[i].isEmpty) setState(() => selected = null);
                   },
                 ),
-                if (g.partner != null) ...[
-                  const SizedBox(width: 5),
-                  _miniBtn(
-                    icon: Icons.volunteer_activism_rounded,
-                    tone: Tone.teal,
-                    label: 'Give one to $kPartnerName',
-                    onTap: () {
-                      final r = g.gift(i);
-                      if (!r.ok) return _toast(r.msg);
-                      Sfx.click();
-                      _narr.note('Gave one ${d.name} to $kPartnerName.');
-                      if (g.you.cells[i].isEmpty) {
-                        setState(() => selected = null);
-                      }
-                    },
-                  ),
-                ],
               ],
-            ),
-          ],
-        ),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -1196,28 +1176,29 @@ class _GameScreenState extends State<GameScreen>
   );
 
   /// The bottom bar: Gamble, Summon (the big one), Upgrade and Mythics.
+  // ---------------- bottom bar, its trays, the medallions ----------------
+
+  /// Gamble and Upgrade no longer open a sheet: the bottom bar flips over
+  /// into a tray in the same place, so the board never gets covered.
+  void _openTray(_Tray t) {
+    Sfx.click();
+    setState(() => _tray = _tray == t ? _Tray.none : t);
+  }
+
   Widget _controls() {
     final cost = g.summonCost(g.you);
     final canAfford = g.you.pennies >= cost && g.you.hasEmptyCell;
-    final craftable = kRecipes.keys.where((m) => g.canCraft(g.you, m)).length;
     final canUpgrade = [
       for (var gi = 0; gi < 3; gi++)
         g.you.upg[gi] < kMaxUpgrade &&
             g.you.pennies >= upgradeCost(gi, g.you.upg[gi]),
     ].contains(true);
     Widget tile(Widget w) => Expanded(flex: 3, child: Center(child: w));
-    return Container(
-      padding: const EdgeInsets.fromLTRB(8, 10, 8, 10),
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [Vx.panelBottom, Vx.wellDeep],
-        ),
-        border: Border(top: BorderSide(color: Vx.ink, width: 3)),
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      child: Row(
+    final Widget row = switch (_tray) {
+      _Tray.gamble => _gambleTray(),
+      _Tray.upgrade => _upgradeTray(),
+      _Tray.none => Row(
+        key: const ValueKey('bar'),
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           tile(
@@ -1228,7 +1209,7 @@ class _GameScreenState extends State<GameScreen>
               color: Pal.leaf,
               tone: Tone.green,
               badge: g.you.leaves > 0 ? '${g.you.leaves}' : null,
-              onTap: () => _sheet('Read the Leaves', Tone.green, _gambleSheet),
+              onTap: () => _openTray(_Tray.gamble),
             ),
           ),
           const SizedBox(width: 6),
@@ -1250,21 +1231,352 @@ class _GameScreenState extends State<GameScreen>
               color: const Color(0xFFFFA62B),
               tone: Tone.yellow,
               badge: canUpgrade ? '↑' : null,
-              onTap: () => _sheet('Elbow Grease', Tone.yellow, _upgradeSheet),
+              onTap: () => _openTray(_Tray.upgrade),
             ),
           ),
-          const SizedBox(width: 6),
-          tile(
-            SmallCtl(
-              icon: Icons.auto_awesome,
-              sprite: 'i_book',
-              label: 'MYTHICS',
-              color: Pal.danger,
-              tone: Tone.purple,
-              badge: craftable > 0 ? '!' : null,
-              onTap: () => _sheet('Mythic Recipes', Tone.purple, _mythicSheet),
+        ],
+      ),
+    };
+    return Container(
+      padding: const EdgeInsets.fromLTRB(8, 8, 8, 10),
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Vx.panelBottom, Vx.wellDeep],
+        ),
+        border: Border(top: BorderSide(color: Color(0x44FFFFFF), width: 1.5)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
+        boxShadow: [
+          BoxShadow(
+            color: Color(0x6608061A),
+            offset: Offset(0, -4),
+            blurRadius: 12,
+          ),
+        ],
+      ),
+      child: SizedBox(
+        height: 78,
+        child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 200),
+          transitionBuilder: (child, a) => AnimatedBuilder(
+            animation: a,
+            child: child,
+            builder: (_, ch) => Transform(
+              alignment: Alignment.center,
+              transform: Matrix4.diagonal3Values(1, a.value, 1),
+              child: ch,
             ),
           ),
+          child: row,
+        ),
+      ),
+    );
+  }
+
+  /// The button on the left of an open tray: tap it to flip the bar back.
+  Widget _trayBack(String sprite, Tone tone, String label) => SizedBox(
+    width: 60,
+    child: IconTile(
+      sprite: sprite,
+      label: 'BACK',
+      tone: tone,
+      size: 60,
+      semantics: 'Close $label',
+      onTap: () => _openTray(_Tray.none),
+    ),
+  );
+
+  /// One choice in a tray: a chunky token with a title, a big number and the
+  /// cost underneath.
+  Widget _trayToken({
+    required Key key,
+    required Tone tone,
+    required String title,
+    required String big,
+    required String costSprite,
+    required String cost,
+    required bool enabled,
+    required String semantics,
+    required VoidCallback onTap,
+  }) => Chunky(
+    key: key,
+    tone: enabled ? tone : Tone.grey,
+    height: 70,
+    radius: 14,
+    enabled: enabled,
+    semantics: semantics,
+    padding: const EdgeInsets.fromLTRB(3, 2, 3, 0),
+    onTap: onTap,
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(title, style: display(11.5, stroke: tone.lip, w: 1.2)),
+        ),
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(big, style: display(20, stroke: tone.lip, w: 1.6)),
+        ),
+        if (cost.isNotEmpty)
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SpriteImg(costSprite, size: 14),
+                const SizedBox(width: 2),
+                Text(cost, style: display(12.5, stroke: tone.lip, w: 1.2)),
+              ],
+            ),
+          ),
+      ],
+    ),
+  );
+
+  Widget _gambleTray() {
+    final p = g.you;
+    return Row(
+      key: const ValueKey('gambleTray'),
+      children: [
+        _trayBack('i_cup', Tone.green, 'Gamble'),
+        const SizedBox(width: 6),
+        for (final o in kGambles) ...[
+          Expanded(
+            child: _trayToken(
+              key: ValueKey('gamble-${o.tier.name}'),
+              tone: toneForTier(o.tier.index),
+              title: o.tier.label.toUpperCase(),
+              big: '${(o.chance * 100).round()}%',
+              costSprite: 'i_leaf',
+              cost: '${o.cost}',
+              enabled: p.leaves >= o.cost,
+              semantics:
+                  '${o.tier.label} figurine, ${(o.chance * 100).round()}% chance, ${o.cost} leaf${o.cost > 1 ? 'es' : ''}. You have ${p.leaves}.',
+              onTap: () {
+                final r = g.gamble(p, o);
+                Sfx.gamble(r.ok);
+                if (r.ok) {
+                  _showBanner('THE LEAVES SAY YES', r.unit!.name);
+                  _narr.note(
+                    'The leaves say yes: ${r.unit!.name}, ${r.unit!.tier.label}.',
+                  );
+                } else {
+                  toast = r.msg;
+                  toastT = 1.6;
+                  _narr.note(r.msg);
+                }
+              },
+            ),
+          ),
+          if (o != kGambles.last) const SizedBox(width: 5),
+        ],
+      ],
+    );
+  }
+
+  Widget _upgradeTray() {
+    final p = g.you;
+    const short = ['C + R', 'EPIC', 'LEG + M'];
+    final odds = summonOdds(p.luck);
+    return Row(
+      key: const ValueKey('upgradeTray'),
+      children: [
+        _trayBack('i_upgrade', Tone.yellow, 'Upgrade'),
+        const SizedBox(width: 6),
+        for (var gi = 0; gi < 3; gi++) ...[
+          Expanded(
+            child: _trayToken(
+              key: ValueKey('upgrade-$gi'),
+              tone: toneForTier(gi + 1),
+              title: short[gi],
+              big: 'Lv ${p.upg[gi]}',
+              costSprite: 'i_penny',
+              cost: p.upg[gi] >= kMaxUpgrade
+                  ? ''
+                  : '${upgradeCost(gi, p.upg[gi])}',
+              enabled:
+                  p.upg[gi] < kMaxUpgrade &&
+                  p.pennies >= upgradeCost(gi, p.upg[gi]),
+              semantics: p.upg[gi] >= kMaxUpgrade
+                  ? '${kUpgradeGroupNames[gi]} level ${p.upg[gi]}, maxed'
+                  : '${kUpgradeGroupNames[gi]} level ${p.upg[gi]}: +${(kUpgradeStep * 100).round()}% damage for ${upgradeCost(gi, p.upg[gi])} pennies',
+              onTap: () {
+                final r = g.upgrade(p, gi);
+                r.ok ? Sfx.upgrade() : _toast(r.msg);
+                if (r.ok) {
+                  _narr.note(
+                    '${kUpgradeGroupNames[gi]} now level ${p.upg[gi]}.',
+                  );
+                }
+              },
+            ),
+          ),
+          const SizedBox(width: 5),
+        ],
+        Expanded(
+          child: _trayToken(
+            key: const ValueKey('upgrade-luck'),
+            tone: Tone.teal,
+            title: 'LUCK',
+            big: 'Lv ${p.luck}',
+            costSprite: 'i_penny',
+            cost: p.luck >= kMaxLuck ? '' : '${luckUpgradeCost(p.luck)}',
+            enabled: p.luck < kMaxLuck && p.pennies >= luckUpgradeCost(p.luck),
+            semantics: p.luck >= kMaxLuck
+                ? 'Lucky Penny level ${p.luck}, maxed'
+                : 'Lucky Penny level ${p.luck}: better summon odds for ${luckUpgradeCost(p.luck)} pennies. Now ${odds.map((o) => o.toStringAsFixed(1)).join(', ')} percent.',
+            onTap: () {
+              final r = g.upgradeLuck(p);
+              r.ok ? Sfx.upgrade() : _toast(r.msg);
+              if (r.ok) _narr.note('Lucky Penny now level ${p.luck}.');
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// The Mythics: a row of medallions just above the bar. Each one's rim has
+  /// three segments that fill as you collect the parts; a full one glows gold
+  /// and a tap builds it. Tapping one that isn't ready shows what it needs.
+  Widget _medallions() {
+    final p = g.you;
+    final items = <(int, String, List<String>, int, bool)>[];
+    var i = 0;
+    for (final e in kRecipes.entries) {
+      final have = e.value.where((id) => p.countOf(id) > 0).length;
+      items.add((i++, e.key, e.value, have, g.canCraft(p, e.key)));
+    }
+    items.sort((a, b) {
+      final r = (b.$5 ? 1 : 0).compareTo(a.$5 ? 1 : 0);
+      if (r != 0) return r;
+      final h = b.$4.compareTo(a.$4);
+      return h != 0 ? h : a.$1.compareTo(b.$1);
+    });
+    return SizedBox(
+      height: 54,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        children: [
+          for (final it in items)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 3),
+              child: _Medallion(
+                def: kUnitById[it.$2]!,
+                have: it.$4,
+                need: it.$3.length,
+                ready: it.$5,
+                peeking: _peek == it.$2,
+                onTap: () {
+                  if (it.$5) {
+                    final r = g.craft(p, it.$2);
+                    if (!r.ok) _toast(r.msg);
+                    setState(() => _peek = null);
+                  } else {
+                    Sfx.click();
+                    setState(() => _peek = _peek == it.$2 ? null : it.$2);
+                  }
+                },
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  /// What a Mythic needs, as three portraits with ticks: shown over the
+  /// bottom of the board while you look at one medallion.
+  Widget _mythicPeek() {
+    final id = _peek!;
+    final parts = kRecipes[id]!;
+    final p = g.you;
+    return GestureDetector(
+      onTap: () => setState(() => _peek = null),
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(12, 6, 12, 6),
+        decoration: BoxDecoration(
+          color: const Color(0xEE1D2144),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: const Color(0xFFE2A93A), width: 1.5),
+          boxShadow: const [
+            BoxShadow(color: Color(0x8808061A), blurRadius: 10),
+          ],
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: Text(
+                kUnitById[id]!.name,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: display(14),
+              ),
+            ),
+            const SizedBox(width: 10),
+            for (final part in parts)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 3),
+                child: Opacity(
+                  opacity: p.countOf(part) > 0 ? 1 : 0.45,
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      UnitIcon(kUnitById[part]!, size: 30),
+                      if (p.countOf(part) > 0)
+                        const Positioned(
+                          right: -3,
+                          bottom: -2,
+                          child: Icon(
+                            Icons.check_circle,
+                            size: 15,
+                            color: Color(0xFF6BE07A),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Union badges hang off the bottom edge of the board: one per family you
+  /// have on the board, lit up gold at three different figurines.
+  Widget _unionBadges(FieldGeom geo, Size size) {
+    final members = unionMembers(g.you);
+    final on = g.you.activeUnions();
+    final tags =
+        kUnionRules.keys.where((t) => (members[t]?.length ?? 0) > 0).toList()
+          ..sort((a, b) => members[b]!.length.compareTo(members[a]!.length));
+    if (tags.isEmpty) return const SizedBox.shrink();
+    final slabBottom = geo.px(0, g.field.h).dy + geo.scale * 0.17;
+    final left = geo.px(0, 0).dx + geo.scale * 0.25;
+    final top = size.height - slabBottom >= 30
+        ? slabBottom + 4
+        : slabBottom - 26;
+    return Positioned(
+      left: left,
+      right: left,
+      top: top,
+      child: Wrap(
+        spacing: 5,
+        runSpacing: 4,
+        children: [
+          for (final t in tags)
+            _UnionBadge(
+              tag: t,
+              n: math.min(3, members[t]!.length),
+              active: on.contains(t),
+              onTap: () => _toast(
+                '$t ${math.min(3, members[t]!.length)}/3: ${kUnionRules[t]}',
+              ),
+            ),
         ],
       ),
     );
@@ -1282,7 +1594,7 @@ class _GameScreenState extends State<GameScreen>
             decoration: BoxDecoration(
               color: const Color(0xFFFFB3E1),
               shape: BoxShape.circle,
-              border: Border.all(color: Vx.ink, width: 2),
+              border: Border.all(color: Vx.ink, width: 1.5),
             ),
             child: Text(
               'B',
@@ -1298,223 +1610,6 @@ class _GameScreenState extends State<GameScreen>
           ),
         ],
       ),
-    );
-  }
-
-  void _sheet(String title, Tone tone, Widget Function() content) {
-    Sfx.click();
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      barrierColor: Colors.black38,
-      elevation: 0,
-      constraints: const BoxConstraints(maxWidth: 520),
-      isScrollControlled: true,
-      builder: (ctx) => Padding(
-        padding: const EdgeInsets.fromLTRB(10, 0, 10, 12),
-        child: GameDialogFrame(
-          title: title,
-          tone: tone,
-          onClose: () => Navigator.of(ctx).pop(),
-          child: ValueListenableBuilder<int>(
-            valueListenable: frame,
-            builder: (_, _, _) => ConstrainedBox(
-              constraints: BoxConstraints(
-                maxHeight: MediaQuery.of(context).size.height * 0.58,
-              ),
-              child: SingleChildScrollView(child: content()),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _gambleSheet() {
-    final p = g.you;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Text(
-          'You have ${p.leaves} tea leaves. Madame Fissure\'s cup decides.',
-          textAlign: TextAlign.center,
-          style: body(12.5, color: Vx.textDim),
-        ),
-        const SizedBox(height: 6),
-        for (final o in kGambles)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 6),
-            child: WideBtn(
-              title: '${o.tier.label} figurine',
-              sub:
-                  '${(o.chance * 100).round()}% chance · ${o.cost} leaf${o.cost > 1 ? 'es' : ''}',
-              color: Color(o.tier.color),
-              enabled: p.leaves >= o.cost,
-              onTap: () {
-                final r = g.gamble(p, o);
-                Sfx.gamble(r.ok);
-                if (r.ok) {
-                  _showBanner('THE LEAVES SAY YES', r.unit!.name);
-                  _narr.note(
-                    'The leaves say yes: ${r.unit!.name}, ${r.unit!.tier.label}.',
-                  );
-                } else {
-                  toast = r.msg;
-                  toastT = 1.6;
-                  _narr.note(r.msg);
-                }
-              },
-            ),
-          ),
-      ],
-    );
-  }
-
-  Widget _upgradeSheet() {
-    final p = g.you;
-    final odds = summonOdds(p.luck);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        for (var gi = 0; gi < 3; gi++)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 6),
-            child: WideBtn(
-              title: '${kUpgradeGroupNames[gi]}  Lv ${p.upg[gi]}',
-              sub: p.upg[gi] >= kMaxUpgrade
-                  ? 'Maxed'
-                  : '+${(kUpgradeStep * 100).round()}% damage · ${upgradeCost(gi, p.upg[gi])}p',
-              color: Color(
-                Tier
-                    .values[gi == 0
-                        ? 1
-                        : gi == 1
-                        ? 2
-                        : 3]
-                    .color,
-              ),
-              enabled:
-                  p.upg[gi] < kMaxUpgrade &&
-                  p.pennies >= upgradeCost(gi, p.upg[gi]),
-              onTap: () {
-                final r = g.upgrade(p, gi);
-                r.ok ? Sfx.upgrade() : _toast(r.msg);
-                if (r.ok) {
-                  _narr.note(
-                    '${kUpgradeGroupNames[gi]} now level ${p.upg[gi]}.',
-                  );
-                }
-              },
-            ),
-          ),
-        WideBtn(
-          title: 'Lucky Penny  Lv ${p.luck}',
-          sub: p.luck >= kMaxLuck
-              ? 'Maxed · odds ${odds.map((o) => o.toStringAsFixed(0)).join('/')}%'
-              : 'Better summon odds · ${luckUpgradeCost(p.luck)}p · now ${odds.map((o) => o.toStringAsFixed(1)).join('/')}%',
-          color: Pal.neon,
-          enabled: p.luck < kMaxLuck && p.pennies >= luckUpgradeCost(p.luck),
-          onTap: () {
-            final r = g.upgradeLuck(p);
-            r.ok ? Sfx.upgrade() : _toast(r.msg);
-            if (r.ok) _narr.note('Lucky Penny now level ${p.luck}.');
-          },
-        ),
-        const SizedBox(height: 6),
-        _unions(),
-      ],
-    );
-  }
-
-  Widget _unions() {
-    final on = g.you.activeUnions();
-    return Wrap(
-      spacing: 6,
-      runSpacing: 6,
-      children: [
-        for (final e in kUnionRules.entries)
-          Tooltip(
-            message: '3 different ${e.key} figurines: ${e.value}',
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
-              decoration: BoxDecoration(
-                color: on.contains(e.key) ? Tone.green.bottom : Vx.wellDeep,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Vx.ink, width: 2),
-              ),
-              child: Text(
-                on.contains(e.key) ? '${e.key}: ${e.value}' : e.key,
-                style: body(
-                  11,
-                  color: on.contains(e.key) ? Colors.white : Vx.textDim,
-                ),
-              ),
-            ),
-          ),
-      ],
-    );
-  }
-
-  Widget _mythicSheet() {
-    final p = g.you;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        for (final e in kRecipes.entries)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 6),
-            child: Well(
-              padding: const EdgeInsets.all(8),
-              child: Row(
-                children: [
-                  UnitIcon(kUnitById[e.key]!, size: 44),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          kUnitById[e.key]!.name,
-                          style: display(15, w: 1.4),
-                        ),
-                        const SizedBox(height: 2),
-                        Wrap(
-                          spacing: 4,
-                          runSpacing: 2,
-                          children: [
-                            for (final id in e.value)
-                              Text(
-                                '${p.countOf(id) > 0 ? '✓' : '•'} ${kUnitById[id]!.name}',
-                                style: body(
-                                  11,
-                                  color: p.countOf(id) > 0
-                                      ? Pal.leaf
-                                      : Color(kUnitById[id]!.tier.color)
-                                            .withValues(alpha: 0.8),
-                                ),
-                              ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  ActionBtn(
-                    label: 'BUILD',
-                    sub: '',
-                    color: Pal.danger,
-                    tone: Tone.purple,
-                    width: 76,
-                    enabled: g.canCraft(p, e.key),
-                    onTap: () {
-                      final r = g.craft(p, e.key);
-                      if (!r.ok) _toast(r.msg);
-                    },
-                  ),
-                ],
-              ),
-            ),
-          ),
-      ],
     );
   }
 
@@ -1545,7 +1640,7 @@ class _GameScreenState extends State<GameScreen>
                         decoration: BoxDecoration(
                           color: Tone.yellow.bottom,
                           borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: Vx.ink, width: 2),
+                          border: Border.all(color: Vx.ink, width: 1.5),
                         ),
                         child: Text(
                           '${tut + 1}/${kTutorial.length}',
@@ -1893,7 +1988,7 @@ class _GameScreenState extends State<GameScreen>
     decoration: BoxDecoration(
       color: hot ? const Color(0x553DB43A) : Vx.wellDeep,
       borderRadius: BorderRadius.circular(12),
-      border: Border.all(color: Vx.ink, width: 2),
+      border: Border.all(color: Vx.ink, width: 1.5),
     ),
     child: Row(
       children: [
@@ -1919,49 +2014,229 @@ class _CabinetSides extends CustomPainter {
   const _CabinetSides();
   @override
   void paint(Canvas canvas, Size size) {
+    // On a wide screen the game column sits in the middle; the night either
+    // side is dimmed a touch so the column reads as the game.
     final colW = math.min(size.width, 620.0);
     final side = (size.width - colW) / 2;
-    for (final x0 in [0.0, size.width - side]) {
-      final rect = Rect.fromLTWH(x0, 0, side, size.height);
-      canvas.drawRect(rect, Paint()..color = const Color(0x66000000));
-      // Oak post against the column, lit from the upper left.
-      final left = x0 == 0;
-      final post = Rect.fromLTWH(left ? side - 14 : x0, 0, 14, size.height);
+    for (final left in [true, false]) {
+      final rect = left
+          ? Rect.fromLTWH(0, 0, side, size.height)
+          : Rect.fromLTWH(size.width - side, 0, side, size.height);
       canvas.drawRect(
-        post,
+        rect,
         Paint()
-          ..shader = const LinearGradient(
-            colors: [Color(0xFF7A5B3E), Color(0xFF4A3421), Color(0xFF2E2014)],
-          ).createShader(post),
-      );
-      final grain = Paint()
-        ..color = const Color(0x332E2014)
-        ..strokeWidth = 1;
-      for (var y = 0.0; y < size.height; y += 23) {
-        canvas.drawLine(
-          Offset(post.left + 3, y),
-          Offset(post.left + 10, y + 9),
-          grain,
-        );
-      }
-      final brass = left ? post.right - 2 : post.left;
-      canvas.drawLine(
-        Offset(brass + 1, 0),
-        Offset(brass + 1, size.height),
-        Paint()
-          ..color = const Color(0xAAE3B451)
-          ..strokeWidth = 2,
-      );
-      canvas.drawLine(
-        Offset(left ? post.left : post.right, 0),
-        Offset(left ? post.left : post.right, size.height),
-        Paint()
-          ..color = Vx.ink
-          ..strokeWidth = 3,
+          ..shader = LinearGradient(
+            begin: left ? Alignment.centerLeft : Alignment.centerRight,
+            end: left ? Alignment.centerRight : Alignment.centerLeft,
+            colors: const [Color(0x00000000), Color(0x5508061A)],
+          ).createShader(rect),
       );
     }
   }
 
   @override
   bool shouldRepaint(_CabinetSides old) => false;
+}
+
+/// One Mythic medallion: a brass ring whose three rim segments fill as you
+/// collect the parts, with the Mythic's portrait inside. Full and ready, the
+/// ring turns bright gold; nothing flashes.
+class _Medallion extends StatelessWidget {
+  final UnitDef def;
+  final int have;
+  final int need;
+  final bool ready;
+  final bool peeking;
+  final VoidCallback onTap;
+  const _Medallion({
+    required this.def,
+    required this.have,
+    required this.need,
+    required this.ready,
+    required this.peeking,
+    required this.onTap,
+  });
+  @override
+  Widget build(BuildContext context) => Semantics(
+    button: true,
+    label: ready
+        ? 'Build ${def.name}'
+        : '${def.name}: $have of $need parts. Tap to see what it needs.',
+    excludeSemantics: true,
+    child: GestureDetector(
+      onTap: onTap,
+      child: SizedBox(
+        width: 46,
+        height: 46,
+        child: CustomPaint(
+          painter: _MedallionPainter(have, need, ready, peeking),
+          child: Center(
+            child: Opacity(
+              opacity: ready ? 1 : (have > 0 ? 0.8 : 0.5),
+              child: UnitIcon(def, size: 30),
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+class _MedallionPainter extends CustomPainter {
+  final int have, need;
+  final bool ready, peeking;
+  const _MedallionPainter(this.have, this.need, this.ready, this.peeking);
+  @override
+  void paint(Canvas c, Size size) {
+    final ctr = size.center(Offset.zero);
+    final r = size.shortestSide / 2;
+    c.drawCircle(
+      ctr + const Offset(0, 2),
+      r,
+      Paint()..color = const Color(0x8808061A),
+    );
+    c.drawCircle(
+      ctr,
+      r,
+      Paint()
+        ..shader = LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: ready
+              ? const [Color(0xFFFFE89A), Color(0xFFD08F24)]
+              : const [Color(0xFF8A7A5E), Color(0xFF4E4232)],
+        ).createShader(Rect.fromCircle(center: ctr, radius: r)),
+    );
+    c.drawCircle(
+      ctr,
+      r * 0.74,
+      Paint()
+        ..shader = RadialGradient(
+          colors: ready
+              ? const [Color(0xFF6A4FD0), Color(0xFF2A1D66)]
+              : const [Color(0xFF2E3360), Color(0xFF181B38)],
+        ).createShader(Rect.fromCircle(center: ctr, radius: r * 0.74)),
+    );
+    // the parts, as rim segments
+    final n = math.max(1, need);
+    const gap = 0.32;
+    final seg = math.pi * 2 / n;
+    for (var i = 0; i < n; i++) {
+      final start = -math.pi / 2 + i * seg + gap / 2;
+      c.drawArc(
+        Rect.fromCircle(center: ctr, radius: r * 0.87),
+        start,
+        seg - gap,
+        false,
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeCap = StrokeCap.round
+          ..strokeWidth = r * 0.16
+          ..color = i < have
+              ? (ready ? const Color(0xFFFFFBEA) : const Color(0xFFFFC94A))
+              : const Color(0x55000000),
+      );
+    }
+    if (peeking) {
+      c.drawCircle(
+        ctr,
+        r + 1,
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 2
+          ..color = Colors.white,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _MedallionPainter o) =>
+      o.have != have ||
+      o.need != need ||
+      o.ready != ready ||
+      o.peeking != peeking;
+}
+
+/// A union badge on the edge of the board: the family, how many different
+/// ones you have of the three it needs, gold when it's on.
+class _UnionBadge extends StatelessWidget {
+  final String tag;
+  final int n;
+  final bool active;
+  final VoidCallback onTap;
+  const _UnionBadge({
+    required this.tag,
+    required this.n,
+    required this.active,
+    required this.onTap,
+  });
+  static const _tone = {
+    'Birds': Tone.blue,
+    'Staff': Tone.red,
+    'Sweets': Tone.purple,
+    'Arcade': Tone.purple,
+    'Sea': Tone.teal,
+    'Lamp': Tone.yellow,
+  };
+  @override
+  Widget build(BuildContext context) {
+    final t = _tone[tag] ?? Tone.grey;
+    return Semantics(
+      button: true,
+      label: '$tag union, $n of 3${active ? ', on' : ''}',
+      excludeSemantics: true,
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          height: 24,
+          padding: const EdgeInsets.fromLTRB(3, 0, 9, 0),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: active
+                  ? [t.top, t.bottom]
+                  : const [Color(0xFF3A4170), Color(0xFF272C52)],
+            ),
+            border: Border.all(
+              color: active ? const Color(0xFFFFD86B) : const Color(0xFF0D0C22),
+              width: 1.5,
+            ),
+            boxShadow: const [
+              BoxShadow(
+                color: Color(0x6608061A),
+                offset: Offset(0, 2),
+                blurRadius: 3,
+              ),
+            ],
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 18,
+                height: 18,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: active
+                      ? Colors.white.withValues(alpha: 0.3)
+                      : t.bottom,
+                ),
+                child: Text('$n', style: display(11.5, stroke: t.lip, w: 1)),
+              ),
+              const SizedBox(width: 5),
+              Text(
+                active ? tag.toUpperCase() : '$tag $n/3',
+                style: active
+                    ? display(11.5, stroke: t.lip, w: 1.2)
+                    : body(10.5, color: Vx.textDim),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }

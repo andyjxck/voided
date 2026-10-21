@@ -39,11 +39,15 @@ MetaSave vet() {
 
 void main() {
   setUpAll(() async {
-    await _font('Lilita', ['assets/fonts/LilitaOne-Regular.ttf']);
-    await _font('Nunito', [
-      'assets/fonts/Nunito-700.ttf',
-      'assets/fonts/Nunito-800.ttf',
-      'assets/fonts/Nunito-900.ttf',
+    await _font('Fredoka', [
+      'assets/fonts/Fredoka-500.ttf',
+      'assets/fonts/Fredoka-600.ttf',
+      'assets/fonts/Fredoka-700.ttf',
+    ]);
+    await _font('Rubik', [
+      'assets/fonts/Rubik-500.ttf',
+      'assets/fonts/Rubik-700.ttf',
+      'assets/fonts/Rubik-800.ttf',
     ]);
   });
 
@@ -136,6 +140,48 @@ void main() {
           expect(spot, findsWidgets);
           await t.tap(spot.first);
           await t.pump(const Duration(milliseconds: 300));
+        },
+      ),
+    );
+  }
+  // The bar's trays, a Mythic's parts and a solo board, on a phone.
+  Future<void> fill(WidgetTester t) async {
+    for (var i = 0; i < 8; i++) {
+      await t.tap(find.text('SUMMON'));
+      await t.pump(const Duration(milliseconds: 50));
+    }
+    await t.pump(const Duration(seconds: 8));
+  }
+
+  for (final (n, mode, level, act) in [
+    ('game_gamble', GameMode.coop, 1, 'GAMBLE'),
+    ('game_upgrade', GameMode.coop, 2, 'UPGRADE'),
+    ('game_peek', GameMode.coop, 3, 'peek'),
+    ('game_solo', GameMode.solo, 6, ''),
+  ]) {
+    testWidgets(
+      n,
+      (t) => shot(
+        t,
+        n,
+        phone,
+        GameScreen(
+          meta: vet()..upgrades.addAll({'clover': 9, 'float': 9}),
+          mode: mode,
+          difficulty: Difficulty.calm,
+          level: level,
+          onSave: () {},
+        ),
+        then: (t) async {
+          await fill(t);
+          if (act == 'peek') {
+            await t.tap(find.bySemanticsLabel(RegExp(r'parts\. Tap')).first);
+          } else if (act.isNotEmpty) {
+            await t.tap(find.text(act));
+          }
+          for (var i = 0; i < 8; i++) {
+            await t.pump(const Duration(milliseconds: 60));
+          }
         },
       ),
     );

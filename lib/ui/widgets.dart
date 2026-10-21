@@ -1,6 +1,11 @@
-// Voided — the shared UI kit: chunky buttons, framed panels, outlined game
-// text, currency chips and pop-up dialogs. Every screen builds from these so
-// the menus, the HUD and the pop-ups all look like one game.
+// Voided — the shared UI kit: chunky buttons, slate panels, game text,
+// currency chips and the pause plate. Every screen builds from these so the
+// menus, the HUD and the trays all look like one game.
+//
+// Look: bright, chunky mobile-game UI on a deep Rift-indigo night. Text is
+// Fredoka (headings, numbers) and Rubik (labels) with one soft drop shadow,
+// never a hard sticker outline. Panels are slate-indigo with a light top
+// edge and a soft shadow; buttons are glossy candy faces on a darker lip.
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -11,21 +16,17 @@ import 'art.dart';
 // Type
 // ---------------------------------------------------------------------------
 
-const kDisplayFont = 'Lilita';
-const kBodyFont = 'Nunito';
+const kDisplayFont = 'Fredoka';
+const kBodyFont = 'Rubik';
 
-/// Hard outline made of eight offset shadows, so outlined game text is still
-/// one Text widget (one node for screen readers and for tests).
+/// One soft drop shadow under game text. (The name is kept for the old call
+/// sites; it no longer draws a hard eight-way outline.)
 List<Shadow> outline(Color c, [double w = 2]) => [
-  for (var i = 0; i < 8; i++)
-    Shadow(
-      color: c,
-      offset: Offset(
-        math.cos(i * math.pi / 4) * w,
-        math.sin(i * math.pi / 4) * w,
-      ),
-    ),
-  Shadow(color: c, offset: Offset(0, w + 1.2)),
+  Shadow(
+    color: c.withValues(alpha: 0.75),
+    offset: Offset(0, 0.6 + w * 0.55),
+    blurRadius: 0.5 + w * 0.6,
+  ),
 ];
 
 TextStyle display(
@@ -37,9 +38,10 @@ TextStyle display(
 }) => TextStyle(
   fontFamily: kDisplayFont,
   fontSize: size,
+  fontWeight: FontWeight.w600,
   color: color,
   height: 1.05,
-  letterSpacing: spacing,
+  letterSpacing: spacing * 0.6,
   shadows: w > 0 ? outline(stroke, w) : null,
 );
 
@@ -52,7 +54,10 @@ TextStyle body(
   fontFamily: kBodyFont,
   fontSize: size,
   color: color,
-  fontWeight: weight,
+  // Rubik ships at 500, 700 and 800: the old heavy weights read as 700.
+  fontWeight: weight.value >= 800
+      ? FontWeight.w700
+      : (weight.value >= 600 ? FontWeight.w500 : weight),
   height: height,
 );
 
@@ -61,33 +66,37 @@ TextStyle body(
 // ---------------------------------------------------------------------------
 
 class Vx {
-  static const ink = Color(0xFF1B130D); // every outline: tarred wood
-  static const text = Color(0xFFF4EAD3); // bone
-  static const textDim = Color(0xFFC9B795);
-  static const panelTop = Color(0xFF6B5139); // oiled oak
-  static const panelBottom = Color(0xFF47331F);
-  static const well = Color(0xFF2F2418);
-  static const wellDeep = Color(0xFF221A11);
-  static const bgTop = Color(0xFF26302B);
-  static const bgBottom = Color(0xFF12100C);
-  static const gold = Color(0xFFE3B451); // aged brass
-  static const glass = Color(0xFF93CDB9); // rift glass
+  static const ink = Color(0xFF15132E); // thin edges and text shadows
+  static const text = Color(0xFFF4F1FF);
+  static const textDim = Color(0xFFB7B1D6);
+  static const panelTop = Color(0xFF3A4170); // slate-indigo
+  static const panelBottom = Color(0xFF272C52);
+  static const well = Color(0xFF1D2144);
+  static const wellDeep = Color(0xFF151834);
+  static const bgTop = Color(0xFF2B2560);
+  static const bgBottom = Color(0xFF0E0C24);
+  static const gold = Color(0xFFFFC94A);
+  static const glass = Color(0xFF7FE3F2); // rift cyan
+  static const rift = Color(0xFF9B7BFF); // rift violet
 }
 
-/// Button colours: face top, face bottom, lip (the 3D edge) and text stroke.
+/// Button colours: face top, face bottom, lip (the 3D edge) and text shadow.
 enum Tone {
-  yellow(Color(0xFFEBC66C), Color(0xFFC48F3A), Color(0xFF7A5221)),
-  green(Color(0xFFA6C27C), Color(0xFF668E4C), Color(0xFF39552B)),
-  blue(Color(0xFF86AEC0), Color(0xFF4F7890), Color(0xFF2C4657)),
-  red(Color(0xFFDC8A70), Color(0xFFA9503B), Color(0xFF66291E)),
-  purple(Color(0xFFB79DC6), Color(0xFF7C5E92), Color(0xFF4A3459)),
-  teal(Color(0xFF93C9B6), Color(0xFF4F9082), Color(0xFF2B564D)),
-  grey(Color(0xFFC2BAAA), Color(0xFF878072), Color(0xFF524B41));
+  yellow(Color(0xFFFFDD6B), Color(0xFFF5A623), Color(0xFFB0640E)),
+  green(Color(0xFF8BEA7B), Color(0xFF3CB44E), Color(0xFF1F7A32)),
+  blue(Color(0xFF74CFFF), Color(0xFF2E8FEA), Color(0xFF1B57A6)),
+  red(Color(0xFFFF9480), Color(0xFFE6464F), Color(0xFF9C2232)),
+  purple(Color(0xFFC9A6FF), Color(0xFF8A5CF0), Color(0xFF5634A8)),
+  teal(Color(0xFF7DEBDD), Color(0xFF1FB5A6), Color(0xFF117A70)),
+  grey(Color(0xFFC6CADB), Color(0xFF8C92A8), Color(0xFF585D74));
 
   final Color top;
   final Color bottom;
   final Color lip;
   const Tone(this.top, this.bottom, this.lip);
+
+  /// The thin edge round the face: the lip, a shade darker.
+  Color get edge => Color.lerp(lip, const Color(0xFF0B0A1C), 0.35)!;
 }
 
 Tone toneForTier(int tier) => const [
@@ -102,36 +111,60 @@ Tone toneForTier(int tier) => const [
 // Backdrops and frames
 // ---------------------------------------------------------------------------
 
-/// The painted Rift backdrop behind every screen: the cracked, rain-wet
-/// seafront split by the Rift, darkened at the edges so panels and figurines read.
+/// The night behind every screen: deep indigo with a soft violet glow where
+/// the Rift is, and a cooler glow low down. Painted, not a photo, so the
+/// board and the buttons are the brightest things on screen.
 class SeaBackdrop extends StatelessWidget {
   final Widget child;
   const SeaBackdrop({super.key, required this.child});
   @override
-  Widget build(BuildContext context) => DecoratedBox(
-    decoration: const BoxDecoration(
-      color: Vx.bgBottom,
-      image: DecorationImage(
-        image: AssetImage('assets/backdrop.jpg'),
-        fit: BoxFit.cover,
-        // Centred: the Rift runs down the middle, behind the board.
-        alignment: Alignment.center,
-      ),
-    ),
-    child: DecoratedBox(
-      decoration: const BoxDecoration(
-        gradient: RadialGradient(
-          radius: 1.05,
-          colors: [Color(0x330B0907), Color(0xB30B0907)],
-          stops: [0.45, 1.0],
-        ),
-      ),
-      child: child,
-    ),
-  );
+  Widget build(BuildContext context) =>
+      CustomPaint(painter: const _NightPainter(), child: child);
 }
 
-/// The framed blue panel used for every card and pop-up.
+class _NightPainter extends CustomPainter {
+  const _NightPainter();
+  @override
+  void paint(Canvas c, Size size) {
+    final r = Offset.zero & size;
+    c.drawRect(
+      r,
+      Paint()
+        ..shader = const LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Vx.bgTop, Color(0xFF1B1842), Vx.bgBottom],
+          stops: [0, 0.55, 1],
+        ).createShader(r),
+    );
+    final m = math.max(size.width, size.height);
+    void glow(Offset at, double rad, Color col) {
+      final g = Rect.fromCircle(center: at, radius: rad);
+      c.drawRect(
+        r,
+        Paint()
+          ..shader = RadialGradient(colors: [col, col.withValues(alpha: 0)])
+              .createShader(g),
+      );
+    }
+
+    glow(
+      Offset(size.width / 2, size.height * 0.48),
+      m * 0.55,
+      const Color(0x386E4BE0),
+    );
+    glow(
+      Offset(size.width * 0.5, size.height * 1.05),
+      m * 0.5,
+      const Color(0x2242C8E0),
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant _NightPainter oldDelegate) => false;
+}
+
+/// The slate panel used for cards and the pause plate.
 class GamePanel extends StatelessWidget {
   final Widget child;
   final EdgeInsets padding;
@@ -148,7 +181,7 @@ class GamePanel extends StatelessWidget {
   Widget build(BuildContext context) => Container(
     decoration: BoxDecoration(
       borderRadius: BorderRadius.circular(radius),
-      border: Border.all(color: Vx.ink, width: 3),
+      border: Border.all(color: const Color(0xFF0D0C22), width: 1.5),
       gradient: LinearGradient(
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
@@ -156,19 +189,19 @@ class GamePanel extends StatelessWidget {
       ),
       boxShadow: const [
         BoxShadow(
-          color: Color(0x66000000),
-          offset: Offset(0, 5),
-          blurRadius: 0,
+          color: Color(0x8008061A),
+          offset: Offset(0, 6),
+          blurRadius: 14,
         ),
       ],
     ),
     child: Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(radius - 3),
+        borderRadius: BorderRadius.circular(radius - 1.5),
         border: Border(
           top: BorderSide(
-            color: Colors.white.withValues(alpha: 0.28),
-            width: 2,
+            color: Colors.white.withValues(alpha: 0.18),
+            width: 1.5,
           ),
         ),
       ),
@@ -213,7 +246,7 @@ class Ribbon extends StatelessWidget {
     padding: const EdgeInsets.fromLTRB(18, 6, 18, 8),
     decoration: BoxDecoration(
       borderRadius: BorderRadius.circular(14),
-      border: Border.all(color: Vx.ink, width: 3),
+      border: Border.all(color: Vx.ink, width: 1.5),
       gradient: LinearGradient(
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
@@ -337,7 +370,7 @@ class _ChunkyState extends State<Chunky> {
       margin: EdgeInsets.only(top: 5 - lip, bottom: lip),
       decoration: BoxDecoration(
         borderRadius: r,
-        border: Border.all(color: Vx.ink, width: 2.5),
+        border: Border.all(color: t.edge, width: 1.5),
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
@@ -355,7 +388,7 @@ class _ChunkyState extends State<Chunky> {
             child: DecoratedBox(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(widget.radius),
-                color: Colors.white.withValues(alpha: 0.26),
+                color: Colors.white.withValues(alpha: 0.3),
               ),
             ),
           ),
@@ -378,7 +411,14 @@ class _ChunkyState extends State<Chunky> {
               decoration: BoxDecoration(
                 borderRadius: r,
                 color: t.lip,
-                border: Border.all(color: Vx.ink, width: 2.5),
+                border: Border.all(color: t.edge, width: 1.5),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Color(0x6608061A),
+                    offset: Offset(0, 3),
+                    blurRadius: 6,
+                  ),
+                ],
               ),
             ),
           ),
@@ -502,7 +542,7 @@ class IconTile extends StatelessWidget {
               decoration: BoxDecoration(
                 color: const Color(0xFFFF4D4D),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Vx.ink, width: 2),
+                border: Border.all(color: Vx.ink, width: 1.5),
               ),
               child: Text(
                 badge!,
@@ -568,7 +608,7 @@ class CurrencyChip extends StatelessWidget {
     decoration: BoxDecoration(
       color: const Color(0xCC0A1A3A),
       borderRadius: BorderRadius.circular(16),
-      border: Border.all(color: Vx.ink, width: 2),
+      border: Border.all(color: Vx.ink, width: 1.5),
     ),
     child: Row(
       mainAxisSize: MainAxisSize.min,
@@ -601,7 +641,7 @@ class LaneMeter extends StatelessWidget {
           decoration: BoxDecoration(
             color: const Color(0xFF0A1A3A),
             borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: Vx.ink, width: 2),
+            border: Border.all(color: Vx.ink, width: 1.5),
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(8),
@@ -648,7 +688,7 @@ class SpeechBubble extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xFFFFFBEF),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Vx.ink, width: 2.5),
+        border: Border.all(color: Vx.ink, width: 1.5),
         boxShadow: const [
           BoxShadow(color: Color(0x55000000), offset: Offset(0, 4)),
         ],
@@ -736,7 +776,7 @@ class ToastPill extends StatelessWidget {
     decoration: BoxDecoration(
       color: const Color(0xF20A1A3A),
       borderRadius: BorderRadius.circular(20),
-      border: Border.all(color: Vx.ink, width: 2),
+      border: Border.all(color: Vx.ink, width: 1.5),
     ),
     child: Text(text, style: body(13, color: Colors.white)),
   );

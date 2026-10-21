@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import '../game/data.dart';
 import '../game/sim.dart';
 import 'art.dart';
+import 'widgets.dart' show Vx;
 
 class VisFx {
   final FxType type;
@@ -131,8 +132,7 @@ class FieldPainter extends CustomPainter {
     final lc = g.laneCount;
     if (lc > kLaneLimit * 0.7) {
       final a =
-          ((lc - kLaneLimit * 0.7) / (kLaneLimit * 0.3)).clamp(0.0, 1.0) *
-          (0.5 + 0.5 * math.sin(t * 8));
+          ((lc - kLaneLimit * 0.7) / (kLaneLimit * 0.3)).clamp(0.0, 1.0) * 0.8;
       final r = Offset.zero & size;
       canvas.drawRect(
         r,
@@ -151,211 +151,314 @@ class FieldPainter extends CustomPainter {
   _Theme get _th => _Theme.of(g.cfg.level);
 
   void _paintStatic(Canvas c, Size size, FieldGeom geo) {
-    final s = geo.scale;
     final th = _th;
     final f = g.field;
-    // No painted sea: the fairground backdrop behind the screen shows
-    // through, darkened, so the deck reads as a raised wooden stage.
-    final deckRect = Rect.fromPoints(geo.px(0, 0), geo.px(f.w, f.h));
-    c.drawRect(Offset.zero & size, Paint()..color = const Color(0x59000000));
-    // Soft contact shadow under the stage for depth.
+    final s = geo.scale;
+    // ---- the plaza: one raised stone slab with a chunky front edge --------
+    final slab = Rect.fromPoints(geo.px(0, 0), geo.px(f.w, f.h));
+    final rr = RRect.fromRectAndRadius(slab, Radius.circular(s * 0.42));
     c.drawRRect(
-      RRect.fromRectAndRadius(
-        deckRect.inflate(s * 0.3).shift(Offset(s * 0.12, s * 0.22)),
-        Radius.circular(s * 0.5),
-      ),
+      rr.shift(Offset(0, s * 0.3)),
       Paint()
-        ..color = const Color(0x99000000)
-        ..maskFilter = MaskFilter.blur(BlurStyle.normal, s * 0.3),
+        ..color = const Color(0x9008061A)
+        ..maskFilter = MaskFilter.blur(BlurStyle.normal, s * 0.22),
     );
-    // Deck: outline, frame, then planks
-    final frame = RRect.fromRectAndRadius(
-      deckRect.inflate(s * 0.08),
-      Radius.circular(s * 0.22),
-    );
-    c.drawRRect(
-      frame.shift(Offset(0, s * 0.1)),
-      Paint()..color = const Color(0x55000000),
-    );
-    c.drawRRect(frame.inflate(2), Paint()..color = Pal.ink);
-    c.drawRRect(frame, Paint()..color = th.deckEdge);
-    final deck = RRect.fromRectAndRadius(
-      deckRect.deflate(s * 0.04),
-      Radius.circular(s * 0.16),
-    );
-    c.drawRRect(deck, Paint()..color = th.deck);
+    c.drawRRect(rr.shift(Offset(0, s * 0.17)), Paint()..color = th.edge);
+    c.drawRRect(rr, Paint()..color = th.grout);
     c.save();
-    c.clipRRect(deck);
-    final plankLine = Paint()
-      ..color = th.deckLine
-      ..strokeWidth = math.max(1, s * 0.025);
-    final rnd = math.Random(3);
-    for (var y = 0.0; y < f.h; y += 0.42) {
-      final py = geo.px(0, y).dy;
-      c.drawLine(
-        Offset(deckRect.left, py),
-        Offset(deckRect.right, py),
-        plankLine,
-      );
-      for (
-        var x = rnd.nextDouble() * 1.6;
-        x < f.w;
-        x += 1.4 + rnd.nextDouble()
-      ) {
-        final px = geo.px(x, 0).dx;
-        c.drawLine(Offset(px, py), Offset(px, py + s * 0.42), plankLine);
-      }
-      // Weathering: darker grain streaks and a nail at each plank end.
-      final grain = Paint()
-        ..color = th.deckLine.withValues(alpha: 0.35)
-        ..strokeWidth = math.max(1, s * 0.015);
-      for (var k = 0; k < 3; k++) {
-        final gx = deckRect.left + rnd.nextDouble() * deckRect.width;
-        final gy = py + s * (0.1 + rnd.nextDouble() * 0.24);
-        c.drawLine(
-          Offset(gx, gy),
-          Offset(gx + s * (0.5 + rnd.nextDouble()), gy + s * 0.02),
-          grain,
+    c.clipRRect(rr);
+    // flagstones in staggered rows, each a slightly different tint, lit
+    // from the top left
+    final rnd = math.Random(11 + g.cfg.level);
+    final gap = math.max(1.2, s * 0.045);
+    var y = 0.0;
+    var row = 0;
+    while (y < f.h) {
+      final rh = 0.72 + rnd.nextDouble() * 0.3;
+      var x = row.isOdd ? -0.55 : 0.0;
+      while (x < f.w) {
+        final rw = 0.9 + rnd.nextDouble() * 0.7;
+        final r = Rect.fromPoints(
+          geo.px(x, y),
+          geo.px(x + rw, y + rh),
+        ).deflate(gap / 2);
+        final k = rnd.nextDouble();
+        final col = k < 0.5
+            ? Color.lerp(th.stone, th.stoneLight, k * 1.4)!
+            : Color.lerp(th.stone, th.stoneDark, (k - 0.5) * 1.1)!;
+        final sr = RRect.fromRectAndRadius(r, Radius.circular(s * 0.07));
+        c.drawRRect(sr, Paint()..color = col);
+        c.drawRRect(
+          sr,
+          Paint()
+            ..style = PaintingStyle.stroke
+            ..strokeWidth = math.max(1, s * 0.025)
+            ..shader = LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Colors.white.withValues(alpha: 0.38),
+                Colors.white.withValues(alpha: 0),
+                Colors.black.withValues(alpha: 0.14),
+              ],
+              stops: const [0, 0.5, 1],
+            ).createShader(r),
         );
+        x += rw;
       }
-      final nail = Paint()..color = const Color(0x664A3A2C);
-      for (var x = 0.2; x < f.w; x += 1.4) {
-        c.drawCircle(geo.px(x, y + 0.21), math.max(1, s * 0.03), nail);
-      }
-      c.drawRect(
-        Rect.fromLTWH(deckRect.left, py + 1, deckRect.width, s * 0.06),
-        Paint()..color = Colors.white.withValues(alpha: 0.06),
-      );
+      y += rh;
+      row++;
     }
-    c.restore();
-    // Lane: dark edge, boardwalk, seams, rope rails
-    final path = Path();
-    for (final loop in f.walks) {
-      for (var i = 0; i <= loop.length; i++) {
-        final p = geo.pv(loop[i % loop.length]);
-        i == 0 ? path.moveTo(p.dx, p.dy) : path.lineTo(p.dx, p.dy);
-      }
-    }
-    Paint stroke(Color col, double w) => Paint()
-      ..color = col
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = w
-      ..strokeJoin = StrokeJoin.round
-      ..strokeCap = StrokeCap.round;
-    c.drawPath(
-      path.shift(Offset(0, s * 0.06)),
-      stroke(const Color(0x44000000), s * 0.92),
+    // soft light across the whole slab, brighter at the top
+    c.drawRect(
+      slab,
+      Paint()
+        ..shader = LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Colors.white.withValues(alpha: 0.12),
+            Colors.black.withValues(alpha: 0.10),
+          ],
+        ).createShader(slab),
     );
-    c.drawPath(path, stroke(Pal.ink, s * 0.9));
-    c.drawPath(path, stroke(th.laneEdge, s * 0.84));
-    c.drawPath(path, stroke(th.lane, s * 0.7));
-    final seam = Paint()
-      ..color = th.laneEdge.withValues(alpha: 0.55)
-      ..strokeWidth = math.max(1, s * 0.03);
-    for (final loop in f.walks) {
-      for (var i = 0; i < loop.length; i++) {
-        final a = loop[i], b = loop[(i + 1) % loop.length];
-        final dx = b.x - a.x, dy = b.y - a.y;
-        final len = math.sqrt(dx * dx + dy * dy);
-        if (len == 0) continue;
-        final nx = -dy / len * 0.34, ny = dx / len * 0.34;
-        for (var d = 0.15; d < len; d += 0.3) {
-          final x = a.x + dx / len * d, y = a.y + dy / len * d;
-          c.drawLine(geo.px(x + nx, y + ny), geo.px(x - nx, y - ny), seam);
+    // ---- the riftlings' track: a worn groove round each board -------------
+    for (final w in f.walks) {
+      final path = Path();
+      for (var i = 0; i < w.length; i++) {
+        final q = geo.pv(w[i]);
+        i == 0 ? path.moveTo(q.dx, q.dy) : path.lineTo(q.dx, q.dy);
+      }
+      final cap = Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeJoin = StrokeJoin.round
+        ..strokeCap = StrokeCap.round;
+      c.drawPath(
+        path,
+        Paint.from(cap)
+          ..strokeWidth = s * 0.8
+          ..color = th.grooveEdge,
+      );
+      c.drawPath(
+        path.shift(Offset(0, s * 0.05)),
+        Paint.from(cap)
+          ..strokeWidth = s * 0.66
+          ..color = th.groove,
+      );
+      // worn cobble seams across the groove
+      final pm = path.computeMetrics();
+      for (final m in pm) {
+        for (var d = s * 0.5; d < m.length; d += s * 0.5) {
+          final tan = m.getTangentForOffset(d);
+          if (tan == null) continue;
+          final n = Offset(-tan.vector.dy, tan.vector.dx) * (s * 0.26);
+          final at = tan.position + Offset(0, s * 0.05);
+          c.drawLine(
+            at - n,
+            at + n,
+            Paint()
+              ..strokeWidth = math.max(1, s * 0.022)
+              ..color = th.grooveEdge.withValues(alpha: 0.5),
+          );
         }
       }
     }
-    // The gate the riftlings climb out of, with a chevron each way: one
-    // turns left, its twin turns right.
-    final st = geo.pv(f.gate);
-    final chev = Paint()
-      ..color = Colors.white.withValues(alpha: 0.55)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = math.max(1.5, s * 0.07)
-      ..strokeCap = StrokeCap.round
-      ..strokeJoin = StrokeJoin.round;
-    for (final dir in const [-1.0, 1.0]) {
-      for (var k = 0; k < 2; k++) {
-        final tip = st + Offset(dir * s * (0.72 + k * 0.26), 0);
-        final back = Offset(-dir * s * 0.12, 0);
-        final arrow = Path()
-          ..moveTo(tip.dx + back.dx, tip.dy - s * 0.13)
-          ..lineTo(tip.dx, tip.dy)
-          ..lineTo(tip.dx + back.dx, tip.dy + s * 0.13);
-        c.drawPath(arrow, chev);
-      }
+    // ---- the Rift: a jagged violet crack through the middle ---------------
+    final hatch = geo.pv(f.hatch);
+    final coop = f.mode == GameMode.coop;
+    final x0 = coop ? 1.05 : f.hatch.x - 2.4;
+    final x1 = coop ? f.w - 1.05 : f.hatch.x + 2.4;
+    final crack = Path();
+    final cr = math.Random(5);
+    var first = true;
+    for (var x = x0; x <= x1 + 0.001; x += 0.32) {
+      final edge = math.min(x - x0, x1 - x) / (x1 - x0) * 2;
+      final jit = (cr.nextDouble() - 0.5) * 0.16 * (0.4 + edge);
+      final q = geo.px(x, f.hatch.y + jit);
+      first ? crack.moveTo(q.dx, q.dy) : crack.lineTo(q.dx, q.dy);
+      first = false;
     }
-    c.drawCircle(st, s * 0.46, Paint()..color = Pal.ink);
-    c.drawCircle(st, s * 0.42, Paint()..color = const Color(0xFF2A2119));
-    c.drawCircle(st, s * 0.3, Paint()..color = const Color(0xFF0E0B08));
-    // Boards: raised platform with tiles
-    for (var side = 0; side < g.sides.length; side++) {
+    final line = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeJoin = StrokeJoin.miter
+      ..strokeCap = StrokeCap.round;
+    c.drawPath(
+      crack,
+      Paint.from(line)
+        ..strokeWidth = s * 0.34
+        ..color = Vx.rift.withValues(alpha: 0.45)
+        ..maskFilter = MaskFilter.blur(BlurStyle.normal, s * 0.12),
+    );
+    c.drawPath(
+      crack,
+      Paint.from(line)
+        ..strokeWidth = s * 0.13
+        ..color = const Color(0xFF1C0F45),
+    );
+    c.drawPath(
+      crack,
+      Paint.from(line)
+        ..strokeWidth = math.max(1.2, s * 0.04)
+        ..color = const Color(0xFFD9CCFF),
+    );
+    // the tear the riftlings climb out of
+    final tear = Path();
+    final tr = math.Random(9);
+    for (var i = 0; i < 10; i++) {
+      final a = i / 10 * math.pi * 2;
+      final rad = s * (0.36 + tr.nextDouble() * 0.12);
+      final q =
+          hatch + Offset(math.cos(a) * rad * 1.15, math.sin(a) * rad * 0.8);
+      i == 0 ? tear.moveTo(q.dx, q.dy) : tear.lineTo(q.dx, q.dy);
+    }
+    tear.close();
+    c.drawPath(
+      tear,
+      Paint()
+        ..color = Vx.rift.withValues(alpha: 0.6)
+        ..maskFilter = MaskFilter.blur(BlurStyle.normal, s * 0.16),
+    );
+    c.drawPath(
+      tear,
+      Paint()
+        ..shader = RadialGradient(
+          colors: const [
+            Color(0xFFF3EDFF),
+            Color(0xFFA78BFF),
+            Color(0xFF4A27A8),
+            Color(0xFF1C0F45),
+          ],
+          stops: const [0, 0.3, 0.75, 1],
+        ).createShader(Rect.fromCircle(center: hatch, radius: s * 0.5)),
+    );
+    c.drawPath(
+      tear,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = math.max(1, s * 0.03)
+        ..color = const Color(0xFF1C0F45),
+    );
+    c.restore();
+    // a light rim along the top of the slab
+    c.drawRRect(
+      rr.deflate(0.75),
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.5
+        ..shader = LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Colors.white.withValues(alpha: 0.55),
+            Colors.white.withValues(alpha: 0),
+          ],
+          stops: const [0, 0.25],
+        ).createShader(slab),
+    );
+    // ---- the two boards: a raised dais each, with deep sockets -----------
+    for (var side = 0; side < (f.mode == GameMode.coop ? 2 : 1); side++) {
       final o = f.boardOrigin(side);
-      final r = Rect.fromPoints(
-        geo.px(o.x, o.y),
+      final br = Rect.fromPoints(
+        geo.pv(o),
         geo.px(o.x + kBoardCols, o.y + kBoardRows),
-      );
-      final plat = RRect.fromRectAndRadius(
-        r.inflate(s * 0.1),
-        Radius.circular(s * 0.2),
+      ).inflate(s * 0.12);
+      final drr = RRect.fromRectAndRadius(br, Radius.circular(s * 0.26));
+      final mine = side == 0;
+      c.drawRRect(drr.shift(Offset(0, s * 0.1)), Paint()..color = th.daisEdge);
+      c.drawRRect(
+        drr,
+        Paint()
+          ..shader = LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [th.dais, Color.lerp(th.dais, th.daisEdge, 0.3)!],
+          ).createShader(br),
       );
       c.drawRRect(
-        plat.shift(Offset(0, s * 0.08)),
-        Paint()..color = const Color(0x55000000),
-      );
-      c.drawRRect(plat.inflate(1.5), Paint()..color = Pal.ink);
-      c.drawRRect(
-        plat,
-        Paint()..color = side == 0 ? th.platform : th.platform2,
+        drr,
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = math.max(2, s * 0.06)
+          ..shader = LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: mine
+                ? const [Color(0xFFFFE48A), Color(0xFFC98A2B)]
+                : const [Color(0xFFD5DCEC), Color(0xFF7480A0)],
+          ).createShader(br),
       );
       for (var i = 0; i < kBoardCols * kBoardRows; i++) {
         final cc = geo.pv(f.cellCenter(side, i));
-        final cr = Rect.fromCenter(center: cc, width: s * 0.9, height: s * 0.9);
-        final alt = ((i % kBoardCols) + (i ~/ kBoardCols)) % 2 == 0;
-        final base = side == 0 ? th.tile : th.tile2;
-        final tile = alt ? base : Color.lerp(base, Colors.black, 0.06)!;
-        c.drawRRect(
-          RRect.fromRectAndRadius(
-            cr.shift(Offset(0, s * 0.04)),
-            Radius.circular(s * 0.14),
-          ),
-          Paint()..color = Color.lerp(tile, Colors.black, 0.28)!,
+        final cr2 = Rect.fromCenter(
+          center: cc,
+          width: s * 0.84,
+          height: s * 0.84,
         );
+        final rr2 = RRect.fromRectAndRadius(cr2, Radius.circular(s * 0.2));
+        // rim
+        c.drawRRect(rr2.inflate(s * 0.02), Paint()..color = th.socketRim);
+        // recess: dark at the top left where the lip shades it
+        c.drawRRect(rr2, Paint()..color = th.socketDeep);
+        final face = rr2.deflate(s * 0.02).shift(Offset(s * 0.025, s * 0.045));
+        c.save();
+        c.clipRRect(rr2);
         c.drawRRect(
-          RRect.fromRectAndRadius(cr, Radius.circular(s * 0.14)),
-          Paint()..color = tile,
+          face,
+          Paint()
+            ..shader = RadialGradient(
+              center: const Alignment(0.1, 0.25),
+              radius: 0.8,
+              colors: [th.socket, Color.lerp(th.socket, th.socketDeep, 0.3)!],
+            ).createShader(cr2),
         );
+        c.restore();
+        // catch-light on the bottom-right of the rim
         c.drawRRect(
-          RRect.fromRectAndRadius(
-            Rect.fromLTWH(
-              cr.left + s * 0.08,
-              cr.top + s * 0.05,
-              cr.width - s * 0.16,
-              s * 0.14,
-            ),
-            Radius.circular(s * 0.07),
-          ),
-          Paint()..color = Colors.white.withValues(alpha: 0.22),
+          rr2.inflate(s * 0.01),
+          Paint()
+            ..style = PaintingStyle.stroke
+            ..strokeWidth = math.max(1, s * 0.025)
+            ..shader = LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Colors.black.withValues(alpha: 0.25),
+                Colors.white.withValues(alpha: 0),
+                Colors.white.withValues(alpha: 0.45),
+              ],
+              stops: const [0, 0.5, 1],
+            ).createShader(cr2),
         );
       }
-      if (g.cfg.mode == GameMode.coop) {
-        final label = side == 0 ? 'YOU' : kPartnerName.toUpperCase();
-        final lp = tp(label, s * 0.22, Colors.white);
-        lp.paint(
+      // name tab on the board's outer edge
+      final label = mine
+          ? 'YOU'
+          : (g.cfg.mode == GameMode.solo ? '' : 'BRENDA');
+      if (label.isNotEmpty) {
+        final ty = mine ? br.bottom : br.top;
+        final tpaint = tp(label, s * 0.2, Colors.white);
+        final pill = RRect.fromRectAndRadius(
+          Rect.fromCenter(
+            center: Offset(br.center.dx, ty),
+            width: tpaint.width + s * 0.4,
+            height: s * 0.32,
+          ),
+          Radius.circular(s * 0.16),
+        );
+        c.drawRRect(
+          pill.shift(Offset(0, s * 0.04)),
+          Paint()
+            ..color = mine ? const Color(0xFF8A5A14) : const Color(0xFF3E4766),
+        );
+        c.drawRRect(
+          pill,
+          Paint()
+            ..color = mine ? const Color(0xFFE2A93A) : const Color(0xFF7C88AA),
+        );
+        tpaint.paint(
           c,
-          Offset(
-            r.right - lp.width - s * 0.06,
-            side == 0 ? r.bottom + s * 0.12 : r.top - lp.height - s * 0.12,
-          ),
+          Offset(br.center.dx - tpaint.width / 2, ty - tpaint.height / 2),
         );
-      }
-    }
-    // Lamp posts along the long edges
-    for (final y in [0.0, f.h]) {
-      for (var x = 0.0; x <= f.w + 0.01; x += f.w / 6) {
-        final p = geo.px(x, y);
-        c.drawCircle(p, s * 0.13, Paint()..color = Pal.ink);
-        c.drawCircle(p, s * 0.1, Paint()..color = th.post);
       }
     }
   }
@@ -387,7 +490,6 @@ class FieldPainter extends CustomPainter {
   /// figurines.
   void _paintBondLinks(Canvas c, FieldGeom geo) {
     final s = geo.scale;
-    final pulse = 0.7 + 0.3 * math.sin(t * 3);
     for (final p in g.sides) {
       for (final b in p.bonds) {
         final a = geo.pv(g.field.cellCenter(p.index, b.i));
@@ -399,11 +501,11 @@ class FieldPainter extends CustomPainter {
         final u = dir / len;
         final half = s * 0.22;
         final glow = Paint()
-          ..color = const Color(0xFF1B130D)
+          ..color = const Color(0xFF6B4410)
           ..strokeWidth = math.max(4.0, s * (b.k > 1 ? 0.16 : 0.12))
           ..strokeCap = StrokeCap.round;
         final line = Paint()
-          ..color = const Color(0xFFE3B451).withValues(alpha: pulse)
+          ..color = const Color(0xFFF2C25A)
           ..strokeWidth = math.max(2.0, s * (b.k > 1 ? 0.1 : 0.07))
           ..strokeCap = StrokeCap.round;
         c.drawLine(mid - u * half, mid + u * half, glow);
@@ -433,7 +535,7 @@ class FieldPainter extends CustomPainter {
             Paint()
               ..style = PaintingStyle.stroke
               ..strokeWidth = 3
-              ..color = Pal.neon.withValues(alpha: 0.5 + 0.5 * math.sin(t * 6)),
+              ..color = Vx.gold,
           );
         }
         if (cell.isEmpty) continue;
@@ -448,7 +550,7 @@ class FieldPainter extends CustomPainter {
             ),
             Paint()
               ..color = Color(Tier.values[d.tier.index + 1].color)
-                  .withValues(alpha: 0.18 + 0.14 * math.sin(t * 5)),
+                  .withValues(alpha: 0.3),
           );
         }
         if (isSel) {
@@ -459,28 +561,10 @@ class FieldPainter extends CustomPainter {
             ),
             Paint()
               ..style = PaintingStyle.stroke
-              ..strokeWidth = 3.5
-              ..color = Pal.neon,
+              ..strokeWidth = 3
+              ..color = Colors.white,
           );
-          // range ring
-          final range =
-              d.range +
-              (p.activeUnions().contains('Sea') && d.tags.contains('Sea')
-                  ? 0.6
-                  : 0);
-          c.drawCircle(
-            cc,
-            range * s,
-            Paint()..color = Colors.white.withValues(alpha: 0.06),
-          );
-          c.drawCircle(
-            cc,
-            range * s,
-            Paint()
-              ..style = PaintingStyle.stroke
-              ..strokeWidth = 1.5
-              ..color = Colors.white.withValues(alpha: 0.35),
-          );
+          // The range ring only shows while dragging (see _paintDrag).
         }
         final n = cell.units.length;
         final disabled = cell.disabled > 0;
@@ -804,8 +888,28 @@ class FieldPainter extends CustomPainter {
         ),
         Paint()
           ..style = PaintingStyle.stroke
-          ..strokeWidth = 2
-          ..color = Pal.neon,
+          ..strokeWidth = 2.5
+          ..color = Colors.white,
+      );
+      // faint chalk range ring, only while dragging
+      final d = cell.def!;
+      final range =
+          d.range +
+          (g.you.activeUnions().contains('Sea') && d.tags.contains('Sea')
+              ? 0.6
+              : 0);
+      c.drawCircle(
+        cc,
+        range * geo.scale,
+        Paint()..color = Colors.white.withValues(alpha: 0.07),
+      );
+      c.drawCircle(
+        cc,
+        range * geo.scale,
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 1.5
+          ..color = Colors.white.withValues(alpha: 0.4),
       );
     }
     drawUnit(
@@ -823,163 +927,116 @@ class FieldPainter extends CustomPainter {
 
 /// Colours for each level's pier.
 class _Theme {
-  final Color seaTop,
-      seaBottom,
-      shallow,
-      foam,
-      deck,
-      deckEdge,
-      deckLine,
-      lane,
-      laneEdge,
-      platform,
-      platform2,
-      tile,
-      tile2,
-      legs,
-      post;
-  final List<Color> bulbs;
+  final Color stone, stoneLight, stoneDark, grout, edge;
+  final Color groove, grooveEdge;
+  final Color dais, daisEdge, socket, socketDeep, socketRim;
   final double fog;
   const _Theme({
-    required this.seaTop,
-    required this.seaBottom,
-    required this.shallow,
-    required this.foam,
-    required this.deck,
-    required this.deckEdge,
-    required this.deckLine,
-    required this.lane,
-    required this.laneEdge,
-    required this.platform,
-    required this.platform2,
-    required this.tile,
-    required this.tile2,
-    required this.legs,
-    required this.post,
-    required this.bulbs,
+    required this.stone,
+    required this.stoneLight,
+    required this.stoneDark,
+    required this.grout,
+    required this.edge,
+    required this.groove,
+    required this.grooveEdge,
+    required this.dais,
+    required this.daisEdge,
+    required this.socket,
+    required this.socketDeep,
+    required this.socketRim,
     this.fog = 0,
   });
 
+  // One stone per level: pale lavender slate, warm sandstone, sea-green
+  // slate in fog, rose granite, cool blue slate, then dark rift glass.
   static const _all = [
-    // Grimley Pier: warm boards on a bright sea
     _Theme(
-      seaTop: Color(0xFF2FB7DD),
-      seaBottom: Color(0xFF1479B8),
-      shallow: Color(0x8870E6E9),
-      foam: Colors.white,
-      deck: Color(0xFFC98A52),
-      deckEdge: Color(0xFF7E4A26),
-      deckLine: Color(0xFF9C6236),
-      lane: Color(0xFFF2D49B),
-      laneEdge: Color(0xFFB98B55),
-      platform: Color(0xFF6E4A2E),
-      platform2: Color(0xFF4F5D73),
-      tile: Color(0xFFF6E6BF),
-      tile2: Color(0xFFDCE7F2),
-      legs: Color(0xFF5B3A22),
-      post: Color(0xFF2E7CE3),
-      bulbs: [
-        Color(0xFFFFE07A),
-        Color(0xFFFF8FB1),
-        Color(0xFF8FE3FF),
-        Color(0xFFFFB45A),
-      ],
+      stone: Color(0xFFCFC8DE),
+      stoneLight: Color(0xFFE6E1F0),
+      stoneDark: Color(0xFFB4ABC8),
+      grout: Color(0xFF8E85A6),
+      edge: Color(0xFF5E5578),
+      groove: Color(0xFFA79DBE),
+      grooveEdge: Color(0xFF7D7398),
+      dais: Color(0xFF9E95B8),
+      daisEdge: Color(0xFF5B5276),
+      socket: Color(0xFFBBB4CF),
+      socketDeep: Color(0xFF6C6386),
+      socketRim: Color(0xFFBDB5D2),
     ),
-    // Fogbank Arcade: grey-green sea, painted arcade boards
     _Theme(
-      seaTop: Color(0xFF5FA9A8),
-      seaBottom: Color(0xFF2D6475),
-      shallow: Color(0x88A8E0D6),
-      foam: Colors.white,
-      deck: Color(0xFF9A6FA8),
-      deckEdge: Color(0xFF55356A),
-      deckLine: Color(0xFF7A5089),
-      lane: Color(0xFFF4D7E8),
-      laneEdge: Color(0xFFB98BAA),
-      platform: Color(0xFF4B2F5E),
-      platform2: Color(0xFF3F566E),
-      tile: Color(0xFFFBE7F2),
-      tile2: Color(0xFFDDE9F0),
-      legs: Color(0xFF3E2650),
-      post: Color(0xFFE5539A),
-      bulbs: [Color(0xFFFF8FD8), Color(0xFF8FFFE0), Color(0xFFFFE07A)],
-      fog: 0.08,
+      stone: Color(0xFFE3CFAE),
+      stoneLight: Color(0xFFF2E3C8),
+      stoneDark: Color(0xFFCDB48D),
+      grout: Color(0xFFA48A66),
+      edge: Color(0xFF6E5638),
+      groove: Color(0xFFC2A882),
+      grooveEdge: Color(0xFF977C58),
+      dais: Color(0xFFB79C78),
+      daisEdge: Color(0xFF6A5236),
+      socket: Color(0xFFD1BB98),
+      socketDeep: Color(0xFF7D6446),
+      socketRim: Color(0xFFD9C3A0),
     ),
-    // Crab Cove: turquoise shallows and sandy boards
     _Theme(
-      seaTop: Color(0xFF3FE0D8),
-      seaBottom: Color(0xFF169CB8),
-      shallow: Color(0xAAF6E2A8),
-      foam: Colors.white,
-      deck: Color(0xFFE0B072),
-      deckEdge: Color(0xFF9A6534),
-      deckLine: Color(0xFFBD8A4E),
-      lane: Color(0xFFFFF0C8),
-      laneEdge: Color(0xFFD1A867),
-      platform: Color(0xFF8A5A30),
-      platform2: Color(0xFF55708A),
-      tile: Color(0xFFFFF4D8),
-      tile2: Color(0xFFE2F0F6),
-      legs: Color(0xFF6B4423),
-      post: Color(0xFFE2443C),
-      bulbs: [Color(0xFFFFE07A), Color(0xFFFF7A6B), Color(0xFFFFFFFF)],
-    ),
-    // The Void Pier: purple-black water, cold lights
-    _Theme(
-      seaTop: Color(0xFF3A1F73),
-      seaBottom: Color(0xFF120A33),
-      shallow: Color(0x667E5CFF),
-      foam: Color(0xFFC9B8FF),
-      deck: Color(0xFF4A3D6B),
-      deckEdge: Color(0xFF241B3D),
-      deckLine: Color(0xFF382D57),
-      lane: Color(0xFFB9A8E6),
-      laneEdge: Color(0xFF6E5BA8),
-      platform: Color(0xFF241B3D),
-      platform2: Color(0xFF1E2C47),
-      tile: Color(0xFFDCD2F7),
-      tile2: Color(0xFFCFE0F2),
-      legs: Color(0xFF1A1330),
-      post: Color(0xFF8B52E3),
-      bulbs: [Color(0xFF8FE3FF), Color(0xFFC9A0FF), Color(0xFFFFFFFF)],
+      stone: Color(0xFFBFD3CC),
+      stoneLight: Color(0xFFD8E6E1),
+      stoneDark: Color(0xFFA2BAB2),
+      grout: Color(0xFF7C958D),
+      edge: Color(0xFF486058),
+      groove: Color(0xFF9BB3AB),
+      grooveEdge: Color(0xFF6F8981),
+      dais: Color(0xFF8FA79F),
+      daisEdge: Color(0xFF465D56),
+      socket: Color(0xFFACC1BA),
+      socketDeep: Color(0xFF587068),
+      socketRim: Color(0xFFB2C8C1),
       fog: 0.05,
+    ),
+    _Theme(
+      stone: Color(0xFFE3C4C2),
+      stoneLight: Color(0xFFF1DCDA),
+      stoneDark: Color(0xFFCCA6A4),
+      grout: Color(0xFFA4807E),
+      edge: Color(0xFF6E4B4B),
+      groove: Color(0xFFC4A19F),
+      grooveEdge: Color(0xFF99777A),
+      dais: Color(0xFFB5918F),
+      daisEdge: Color(0xFF6A4848),
+      socket: Color(0xFFD1B0AE),
+      socketDeep: Color(0xFF7D5A5A),
+      socketRim: Color(0xFFD8B9B7),
+    ),
+    _Theme(
+      stone: Color(0xFFC0CCE0),
+      stoneLight: Color(0xFFD8E1EE),
+      stoneDark: Color(0xFFA4B3CC),
+      grout: Color(0xFF7F8EAA),
+      edge: Color(0xFF4A5674),
+      groove: Color(0xFF9CAAC4),
+      grooveEdge: Color(0xFF71809E),
+      dais: Color(0xFF8F9DBA),
+      daisEdge: Color(0xFF475373),
+      socket: Color(0xFFACB9D1),
+      socketDeep: Color(0xFF596685),
+      socketRim: Color(0xFFB2BED6),
+    ),
+    _Theme(
+      stone: Color(0xFF7D7399),
+      stoneLight: Color(0xFF948BB0),
+      stoneDark: Color(0xFF675D84),
+      grout: Color(0xFF4A4166),
+      edge: Color(0xFF2B2445),
+      groove: Color(0xFF5E5480),
+      grooveEdge: Color(0xFF433A63),
+      dais: Color(0xFF5A5079),
+      daisEdge: Color(0xFF2A2342),
+      socket: Color(0xFF6F658C),
+      socketDeep: Color(0xFF362E50),
+      socketRim: Color(0xFF8C82AA),
+      fog: 0.04,
     ),
   ];
 
-  static final _weatheredAll = [for (final t in _all) t._weathered()];
-  static _Theme of(int level) =>
-      _weatheredAll[(level - 1) % _weatheredAll.length];
-
-  /// Rustic pass: every level keeps its own hue but reads as sun-bleached,
-  /// salt-stained paint over old timber rather than fresh candy colours.
-  _Theme _weathered() {
-    Color w(Color c, [double k = 0.38]) {
-      final m = Color.lerp(c, const Color(0xFF5E4B39), k)!;
-      return Color.lerp(
-        m,
-        const Color(0xFF000000),
-        0.12,
-      )!.withValues(alpha: c.a);
-    }
-
-    return _Theme(
-      seaTop: w(seaTop),
-      seaBottom: w(seaBottom),
-      shallow: w(shallow),
-      foam: w(foam, 0.2),
-      deck: w(deck, 0.3),
-      deckEdge: w(deckEdge, 0.3),
-      deckLine: w(deckLine, 0.3),
-      lane: w(lane, 0.3),
-      laneEdge: w(laneEdge, 0.3),
-      platform: w(platform),
-      platform2: w(platform2),
-      tile: w(tile, 0.28),
-      tile2: w(tile2, 0.28),
-      legs: w(legs),
-      post: w(post),
-      bulbs: [for (final b in bulbs) w(b, 0.25)],
-      fog: fog,
-    );
-  }
+  static _Theme of(int level) => _all[(level - 1) % _all.length];
 }

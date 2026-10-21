@@ -43,7 +43,8 @@ TextPainter tp(
     text: TextSpan(
       text: s,
       style: TextStyle(
-        fontFamily: 'Lilita',
+        fontFamily: 'Fredoka',
+        fontWeight: FontWeight.w600,
         fontSize: size,
         color: color,
         height: 1.0,
@@ -51,16 +52,11 @@ TextPainter tp(
         shadows: color.a < 0.9
             ? null
             : [
-                for (var i = 0; i < 8; i++)
-                  Shadow(
-                    color: const Color(0xFF10203F),
-                    offset:
-                        Offset(
-                          math.cos(i * math.pi / 4),
-                          math.sin(i * math.pi / 4),
-                        ) *
-                        math.max(1.0, size * 0.09),
-                  ),
+                Shadow(
+                  color: const Color(0xCC15132E),
+                  offset: Offset(0, math.max(1.0, size * 0.08)),
+                  blurRadius: math.max(1.0, size * 0.1),
+                ),
               ],
       ),
     ),
@@ -340,7 +336,7 @@ void drawEnemy(
     return;
   }
   var col = Color(d.color);
-  if (flash > 0) col = Color.lerp(col, Colors.white, 0.7)!;
+  if (flash > 0) col = Color.lerp(col, const Color(0xFF1A1030), 0.4)!;
   if (frozen) col = Color.lerp(col, const Color(0xFF9EE7FF), 0.6)!;
   final paint = Paint()..color = col;
   final ink = Paint()
@@ -516,7 +512,7 @@ void drawBoss(
     return;
   }
   var col = Color(b.color);
-  if (flash > 0) col = Color.lerp(col, Colors.white, 0.5)!;
+  if (flash > 0) col = Color.lerp(col, const Color(0xFF1A1030), 0.35)!;
   final alpha = submerged ? 0.25 : 1.0;
   final paint = Paint()..color = col.withValues(alpha: alpha);
   final ink = Paint()
@@ -828,8 +824,9 @@ void _drawCritter(
   final dst = _fit(img, Offset.zero, r * 2.1, r * 2.4);
   final paint = Paint()..filterQuality = FilterQuality.medium;
   if (flash > 0) {
+    // hit: darken briefly rather than flash white
     paint.colorFilter = ColorFilter.mode(
-      Colors.white.withValues(alpha: 0.75 * alpha),
+      const Color(0xFF1A1030).withValues(alpha: 0.45 * alpha),
       BlendMode.srcATop,
     );
   } else if (frozen) {

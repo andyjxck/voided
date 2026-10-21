@@ -994,7 +994,7 @@ class _Ticket extends StatelessWidget {
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: Vx.ink, width: 2.5),
+            border: Border.all(color: Vx.ink, width: 1.5),
             boxShadow: const [BoxShadow(color: Vx.ink, offset: Offset(0, 3))],
           ),
           child: ClipRRect(
@@ -1445,7 +1445,7 @@ class _BestiaryState extends State<Bestiary> {
                   colors: [Color(0xFF2E7FB8), Color(0xFF123C66)],
                 ),
                 borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: Vx.ink, width: 2),
+                border: Border.all(color: Vx.ink, width: 1.5),
               ),
               child: EnemyIcon(enemy: e, size: 52),
             ),

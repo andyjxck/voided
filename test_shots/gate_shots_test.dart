@@ -38,11 +38,15 @@ MetaSave vet() {
 
 void main() {
   setUpAll(() async {
-    await _font('Lilita', ['assets/fonts/LilitaOne-Regular.ttf']);
-    await _font('Nunito', [
-      'assets/fonts/Nunito-700.ttf',
-      'assets/fonts/Nunito-800.ttf',
-      'assets/fonts/Nunito-900.ttf',
+    await _font('Fredoka', [
+      'assets/fonts/Fredoka-500.ttf',
+      'assets/fonts/Fredoka-600.ttf',
+      'assets/fonts/Fredoka-700.ttf',
+    ]);
+    await _font('Rubik', [
+      'assets/fonts/Rubik-500.ttf',
+      'assets/fonts/Rubik-700.ttf',
+      'assets/fonts/Rubik-800.ttf',
     ]);
   });
 
