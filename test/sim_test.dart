@@ -431,9 +431,9 @@ void main() {
         expect(g.bossList.map((b) => b.route).toSet(), {0, 1});
         expect(g.bossList.where((b) => b.twinLead).length, 1);
         for (final b in g.bossList) {
-          expect(b.maxHp, closeTo(baseHp(10) * 7 * 0.5, 1e-6));
+          expect(b.maxHp, closeTo(baseHp(10) * 7 * kBossHpScale * 0.5, 1e-6));
         }
-        expect(g.bossHpMax, closeTo(baseHp(10) * 7, 1e-6));
+        expect(g.bossHpMax, closeTo(baseHp(10) * 7 * kBossHpScale, 1e-6));
         expect(g.bossTimer, kBossSeconds);
       },
     );
