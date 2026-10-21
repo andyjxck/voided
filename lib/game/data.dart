@@ -171,7 +171,7 @@ const List<UnitDef> _kUnitsBase = [
   // ---------------- COMMON ----------------
   UnitDef(
     id: 'gull',
-    name: 'Gull With A Grudge',
+    name: 'Riftgull',
     tier: Tier.common,
     tags: ['Birds'],
     color: 0xFFE8EEF2,
@@ -180,12 +180,13 @@ const List<UnitDef> _kUnitsBase = [
     dmg: 6,
     interval: 0.6,
     range: 2.6,
-    desc: 'Fast pecks at one target.',
-    quip: 'Chips. Now. Or else.',
+    desc:
+        'Fast pecks at one target, straight through the crack.',
+    quip: 'Flew into the Rift once. Came back angrier. Chips. Now.',
   ),
   UnitDef(
     id: 'dave',
-    name: 'Deckchair Dave',
+    name: 'Driftwood Dave',
     tier: Tier.common,
     tags: ['Staff'],
     color: 0xFF5BA4E6,
@@ -195,12 +196,13 @@ const List<UnitDef> _kUnitsBase = [
     interval: 1.6,
     range: 1.9,
     splash: 0.8,
-    desc: 'Swings a deckchair. Small splash.',
-    quip: 'I have been folding this since 1987.',
+    desc:
+        'Swings a splintered deckchair. Small splash.',
+    quip: 'Folding this since 1987. No crack in the sky is unfolding me.',
   ),
   UnitDef(
     id: 'rock',
-    name: 'Rock Candy Kid',
+    name: 'Rift Rock Kid',
     tier: Tier.common,
     tags: ['Sweets'],
     color: 0xFFFF8FB8,
@@ -211,12 +213,13 @@ const List<UnitDef> _kUnitsBase = [
     range: 2.6,
     slowPct: 0.2,
     slowDur: 1.0,
-    desc: 'Sticky rock. Slows 20%.',
-    quip: 'It says GRIMLEY all the way through. Like me.',
+    desc:
+        'Sticky rock with a purple seam. Slows 20%.',
+    quip: 'It says RIFT all the way through. Like me.',
   ),
   UnitDef(
     id: 'carl',
-    name: 'Coin-Pusher Carl',
+    name: 'Shard-Pusher Carl',
     tier: Tier.common,
     tags: ['Arcade'],
     color: 0xFFD4A84A,
@@ -226,13 +229,14 @@ const List<UnitDef> _kUnitsBase = [
     interval: 0.9,
     range: 2.4,
     killPennies: 1,
-    desc: 'Weak, but every kill pays 1 penny.',
-    quip: 'Nearly. Nearly. NEARLY.',
+    desc:
+        'Weak, but every kill pays 1 penny.',
+    quip: 'Nearly. Nearly. It is right on the edge. NEARLY.',
   ),
   // ---------------- RARE ----------------
   UnitDef(
     id: 'thwack',
-    name: 'Mister Thwack',
+    name: 'Mister Crack',
     tier: Tier.rare,
     tags: ['Arcade'],
     color: 0xFFE2483D,
@@ -243,12 +247,13 @@ const List<UnitDef> _kUnitsBase = [
     range: 2.1,
     stunChance: 0.15,
     stunDur: 0.8,
-    desc: 'Puppet with a stick. 15% chance to stun.',
-    quip: 'That is NOT how you do it.',
+    desc:
+        'Puppet with a split stick. 15% chance to stun.',
+    quip: 'That is NOT how you close a Rift.',
   ),
   UnitDef(
     id: 'floss',
-    name: 'Candyfloss Nan',
+    name: 'Voidfloss Nan',
     tier: Tier.rare,
     tags: ['Sweets'],
     color: 0xFFFFB3E1,
@@ -260,12 +265,13 @@ const List<UnitDef> _kUnitsBase = [
     splash: 1.0,
     slowPct: 0.35,
     slowDur: 1.5,
-    desc: 'Sticky splash. Slows 35%.',
-    quip: 'You look thin. Have some floss, love.',
+    desc:
+        'Sticky violet splash. Slows 35%.',
+    quip: 'You look thin. Have some floss, love. It is only a bit purple.',
   ),
   UnitDef(
     id: 'lou',
-    name: 'Lifeguard Lou',
+    name: 'Riftguard Lou',
     tier: Tier.rare,
     tags: ['Staff'],
     color: 0xFFFF6B4A,
@@ -275,12 +281,13 @@ const List<UnitDef> _kUnitsBase = [
     interval: 0.9,
     range: 3.0,
     chain: 2,
-    desc: 'Whistle blast chains to 3 targets.',
-    quip: 'NO. RUNNING. ON. THE. PIER.',
+    desc:
+        'Whistle blast chains to 3 targets.',
+    quip: 'NO. CLIMBING. OUT. OF. THE. RIFT.',
   ),
   UnitDef(
     id: 'admiral',
-    name: 'Admiral Tinbeak',
+    name: 'Admiral Ashbeak',
     tier: Tier.rare,
     tags: ['Birds'],
     color: 0xFF9AA7B4,
@@ -292,13 +299,14 @@ const List<UnitDef> _kUnitsBase = [
     auraTag: 'Birds',
     auraSpeed: 0.25,
     auraRange: 2.2,
-    desc: 'Birds within 2 cells attack 25% faster.',
-    quip: 'Formation! FORMATION! Oh, they have gone.',
+    desc:
+        'Birds within 2 cells attack 25% faster.',
+    quip: 'Formation! FORMATION! Oh, they have flown into the crack.',
   ),
   // ---------------- EPIC ----------------
   UnitDef(
     id: 'claw',
-    name: 'The Claw',
+    name: 'The Rift Claw',
     tier: Tier.epic,
     tags: ['Arcade'],
     color: 0xFF7A5CFF,
@@ -308,12 +316,13 @@ const List<UnitDef> _kUnitsBase = [
     interval: 1.4,
     range: 2.8,
     grabEvery: 4,
-    desc: 'Every 4th grab drags a target back down the lane.',
-    quip: 'It is rigged. It has always been rigged.',
+    desc:
+        'Every 4th grab drags a target back down the lane.',
+    quip: 'It is rigged. The Rift is rigged too. I checked.',
   ),
   UnitDef(
     id: 'sal',
-    name: 'Big Sal the Fryer',
+    name: 'Big Sal the Scorcher',
     tier: Tier.epic,
     tags: ['Staff'],
     color: 0xFFFFA62B,
@@ -325,12 +334,13 @@ const List<UnitDef> _kUnitsBase = [
     splash: 1.0,
     burnDps: 45,
     burnDur: 3,
-    desc: 'Flings hot oil: splash plus a 3s burn.',
-    quip: 'Salt and vinegar? You are getting both.',
+    desc:
+        'Flings hot oil: splash plus a 3s burn.',
+    quip: 'Salt and vinegar? Void and vinegar? You are getting both.',
   ),
   UnitDef(
     id: 'morag',
-    name: 'Fogwife Morag',
+    name: 'Riftwife Morag',
     tier: Tier.epic,
     tags: ['Sea'],
     color: 0xFF6FD3C8,
@@ -342,12 +352,13 @@ const List<UnitDef> _kUnitsBase = [
     multi: 2,
     cursePct: 0.25,
     curseDur: 4,
-    desc: 'Curses 2 targets: they take 25% more damage, armour ignored.',
-    quip: 'The sea told me your name. It mispronounced it.',
+    desc:
+        'Curses 2 targets: they take 25% more damage, armour ignored.',
+    quip: 'The Rift told me your name. It mispronounced it.',
   ),
   UnitDef(
     id: 'squall',
-    name: 'Squall of Gulls',
+    name: 'The Rift Squall',
     tier: Tier.epic,
     tags: ['Birds'],
     color: 0xFFF2F2F2,
@@ -357,13 +368,14 @@ const List<UnitDef> _kUnitsBase = [
     interval: 0.8,
     range: 2.8,
     multi: 4,
-    desc: 'Hits 4 targets at once.',
-    quip: 'MINE MINE MINE MINE MINE.',
+    desc:
+        'Hits 4 targets at once.',
+    quip: 'MINE MINE MINE MINE. The crack is MINE.',
   ),
   // ---------------- LEGENDARY ----------------
   UnitDef(
     id: 'vex',
-    name: 'Madame Vex',
+    name: 'Madame Fissure',
     tier: Tier.legendary,
     tags: ['Arcade'],
     color: 0xFFB04BFF,
@@ -375,12 +387,13 @@ const List<UnitDef> _kUnitsBase = [
     critChance: 0.25,
     critMult: 3,
     killPennies: 2,
-    desc: '25% to crit for 3x. Kills pay 2 pennies.',
-    quip: 'I foresee... a significant loss of pennies. Yours.',
+    desc:
+        '25% to crit for 3x. Kills pay 2 pennies.',
+    quip: 'I foresee... a crack in everything. And a significant loss of pennies. Yours.',
   ),
   UnitDef(
     id: 'bertie',
-    name: 'Big Wheel Bertie',
+    name: 'Broken Wheel Bertie',
     tier: Tier.legendary,
     tags: ['Arcade'],
     color: 0xFFFF4F9A,
@@ -390,12 +403,13 @@ const List<UnitDef> _kUnitsBase = [
     interval: 2.0,
     range: 3.4,
     pulse: true,
-    desc: 'Every 2s hits everything in range.',
-    quip: 'Round and round. Nobody ever gets off.',
+    desc:
+        'Every 2s hits everything in range.',
+    quip: 'Round and round the Rift. Nobody ever gets off.',
   ),
   UnitDef(
     id: 'keeper',
-    name: 'The Lighthouse Keeper',
+    name: 'The Dark Lamp Keeper',
     tier: Tier.legendary,
     tags: ['Sea'],
     color: 0xFFFFE066,
@@ -405,12 +419,13 @@ const List<UnitDef> _kUnitsBase = [
     interval: 1.2,
     range: 5.0,
     bossMult: 2,
-    desc: 'Huge range beam. Double damage to bosses.',
-    quip: 'I keep the light. The light keeps nothing.',
+    desc:
+        'Huge range beam. Double damage to bosses.',
+    quip: 'I keep the light on the Rift. The light keeps nothing.',
   ),
   UnitDef(
     id: 'albatross',
-    name: 'The Albatross',
+    name: 'The Void Albatross',
     tier: Tier.legendary,
     tags: ['Birds'],
     color: 0xFF8FB3D9,
@@ -422,13 +437,14 @@ const List<UnitDef> _kUnitsBase = [
     multi: 2,
     cursePct: 0.15,
     curseDur: 3,
-    desc: 'Hangs over 2 targets at once. They take 15% more damage.',
-    quip: 'I am not a bad omen. I am a VERY bad omen.',
+    desc:
+        'Hangs over 2 targets at once. They take 15% more damage.',
+    quip: 'I am not a bad omen. I am what came through after the bad omen.',
   ),
   // ---------------- MYTHIC (recipes) ----------------
   UnitDef(
     id: 'tide',
-    name: 'Old Mother Tide',
+    name: 'Old Mother Rift',
     tier: Tier.mythic,
     tags: ['Sea'],
     color: 0xFF2EC4FF,
@@ -441,12 +457,13 @@ const List<UnitDef> _kUnitsBase = [
     freezeEvery: 8,
     freezeDur: 1.5,
     freezeDmg: 650,
-    desc: 'Every 8s the tide stops: everything freezes 1.5s and takes 650.',
-    quip: 'Everything comes back to me, dear. Everything.',
+    desc:
+        'Every 8s the Rift holds its breath: everything freezes 1.5s and takes 650.',
+    quip: 'Everything falls back into me, dear. Everything.',
   ),
   UnitDef(
     id: 'jackpot',
-    name: 'The Jackpot',
+    name: 'The Rift Jackpot',
     tier: Tier.mythic,
     tags: ['Arcade'],
     color: 0xFFFFD700,
@@ -457,12 +474,13 @@ const List<UnitDef> _kUnitsBase = [
     range: 3.2,
     jackpotEvery: 10,
     pennyScale: 2,
-    desc: 'Hits harder the more pennies you hold. Every 10th pull: JACKPOT.',
-    quip: 'Three cherries. Three cherries. THREE CHERRIES.',
+    desc:
+        'Hits harder the more pennies you hold. Every 10th pull: JACKPOT.',
+    quip: 'Three cherries. Three cracks. THREE CHERRIES.',
   ),
   UnitDef(
     id: 'velvet',
-    name: 'Velvet, the Headliner',
+    name: 'Velvet, the Last Act',
     tier: Tier.mythic,
     tags: ['Staff'],
     color: 0xFFD6336C,
@@ -475,12 +493,13 @@ const List<UnitDef> _kUnitsBase = [
     auraSpeed: 0.3,
     auraRange: 99,
     executePct: 0.12,
-    desc: 'Every figurine attacks 30% faster. Finishes non-bosses under 12%.',
+    desc:
+        'Every figurine attacks 30% faster. Finishes non-bosses under 12%.',
     quip: 'Thirty-one years at the edge of the Rift, darling. I AM the edge.',
   ),
   UnitDef(
     id: 'gullivan',
-    name: 'Saint Gullivan',
+    name: 'Saint Riftwing',
     tier: Tier.mythic,
     tags: ['Birds'],
     color: 0xFFFFFFFF,
@@ -490,8 +509,9 @@ const List<UnitDef> _kUnitsBase = [
     interval: 0.25,
     range: 3.0,
     perBird: 0.06,
-    desc: 'Machine-gun pecks. +6% damage for every bird on your board.',
-    quip: 'Blessed are the chip-takers.',
+    desc:
+        'Machine-gun pecks. +6% damage for every bird on your board.',
+    quip: 'Blessed are the chip-takers, for they shall fly through the crack.',
   ),
 ];
 
@@ -993,7 +1013,7 @@ const List<BossDef> kBosses = [
   BossDef(
     'inspector',
     'The Rift Inspector',
-    'Grimley Borough Council',
+    'Department of Rifts',
     BossMech.inspector,
     hpMult: 9.5,
     speed: 0.6,
@@ -1197,7 +1217,7 @@ class LevelDef {
 const List<LevelDef> kLevels = [
   LevelDef(
     'The Breach',
-    'The Rift tore open on the last night of the season. Something is climbing out.',
+    'The Rift has just torn open. Something is climbing out.',
     'landlord',
     1.0,
     warden: 'brine',

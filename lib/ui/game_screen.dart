@@ -28,7 +28,7 @@ class TutStep {
 const List<TutStep> kTutorial = [
   TutStep(
     'Welcome to the Rift',
-    'Last night of the season, the Rift tore open at the end of the pier, and things are climbing out of it. They walk the path round and round. If $kLaneLimit get loose at once, it\'s over.',
+    'The Rift has torn the town in two, and things are climbing out of it. They walk the path round and round. If $kLaneLimit get loose at once, it\'s over.',
     'next',
   ),
   TutStep(
@@ -1302,7 +1302,7 @@ class _GameScreenState extends State<GameScreen>
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
-          'You have ${p.leaves} tea leaves. Madame Vex\'s cup decides.',
+          'You have ${p.leaves} tea leaves. Madame Fissure\'s cup decides.',
           textAlign: TextAlign.center,
           style: body(12.5, color: Vx.textDim),
         ),
@@ -1682,7 +1682,7 @@ class _GameScreenState extends State<GameScreen>
     final endlessOver = g.endless && g.wave > kFinalWave;
     final title = won
         ? 'THE RIFT IS SEALED'
-        : (endlessOver ? 'OFF SEASON OVER' : 'THE RIFT BROKE THROUGH');
+        : (endlessOver ? 'THE RIFT SWALLOWED YOU' : 'THE RIFT BROKE THROUGH');
     final tone = won || endlessOver ? Tone.yellow : Tone.red;
     final unlockedNext =
         won &&

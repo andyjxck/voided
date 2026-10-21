@@ -329,7 +329,7 @@ void main() {
       },
     );
 
-    test('the pier is overrun at $kLaneLimit enemies', () {
+    test('the Rift is overrun at $kLaneLimit enemies', () {
       final g = Game(const GameConfig());
       for (var i = 0; i < kLaneLimit; i++) {
         g.enemies.add(Enemy(i, kEnemyById['drip'], null, 1e9, 0, 0, 0, 0));

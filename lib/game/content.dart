@@ -85,7 +85,7 @@ const Map<String, String> kUnion5Rules = {
 const List<UnitDef> kUnitsNew = [
   UnitDef(
     id: 'lil',
-    name: 'Lampwick Lil',
+    name: 'Riftwick Lil',
     tier: Tier.common,
     tags: ['Lamp'],
     color: 0xFFFFD27A,
@@ -97,11 +97,11 @@ const List<UnitDef> kUnitsNew = [
     abil: Abil.reveal,
     desc:
         'A small lantern. Shows hidden things in range so everyone can hit them. Lamp hits never miss.',
-    quip: 'I am not scared of the dark. The dark is scared of me. Mostly.',
+    quip: 'I am not scared of the dark. The Rift is scared of me. Mostly.',
   ),
   UnitDef(
     id: 'bandsman',
-    name: 'Brass Bandsman',
+    name: 'The Rift Bandsman',
     tier: Tier.rare,
     tags: ['Staff'],
     color: 0xFFC8553D,
@@ -116,11 +116,11 @@ const List<UnitDef> kUnitsNew = [
     abilDur: 3,
     desc:
         'Every 6s the band strikes up: cells next to him can\'t be silenced, condemned, locked or grabbed for 3s.',
-    quip: 'Oom-pah. OOM-PAH.',
+    quip: 'Oom-pah. OOM-PAH. Louder than the Rift.',
   ),
   UnitDef(
     id: 'mouse',
-    name: 'Sugar Mouse',
+    name: 'Sugar Riftmouse',
     tier: Tier.rare,
     tags: ['Sweets'],
     color: 0xFFF7A1C4,
@@ -135,11 +135,11 @@ const List<UnitDef> kUnitsNew = [
     abilDur: 2,
     desc:
         'Sticky hits: for 2s the target can\'t blink, dive, ram or teleport.',
-    quip: 'Squeak. That means "you are stuck now".',
+    quip: 'Squeak. That means "you are stuck on this side now".',
   ),
   UnitDef(
     id: 'tess',
-    name: 'Toffee Hammer Tess',
+    name: 'Shatter Hammer Tess',
     tier: Tier.epic,
     tags: ['Sweets'],
     color: 0xFFB5651D,
@@ -153,12 +153,12 @@ const List<UnitDef> kUnitsNew = [
     abil: Abil.shatter,
     abilEvery: 5,
     desc:
-        'Every 5th hit shatters shields and shells outright, and slows. Tin Hermits, Razor Clams and the Landlord hate her.',
-    quip: 'Hard toffee. Harder hammer.',
+        'Every 5th hit shatters shields and shells outright, and slows. Hollow Hermits, Rift Clams and the Landlord hate her.',
+    quip: 'Hard toffee. Harder hammer. The Rift is just a big crack.',
   ),
   UnitDef(
     id: 'lamplighter',
-    name: 'The Lamplighter',
+    name: 'The Riftlighter',
     tier: Tier.epic,
     tags: ['Lamp'],
     color: 0xFFFFB347,
@@ -175,7 +175,7 @@ const List<UnitDef> kUnitsNew = [
   ),
   UnitDef(
     id: 'hale',
-    name: 'Harbourmaster Hale',
+    name: 'Riftmaster Hale',
     tier: Tier.epic,
     tags: ['Sea'],
     color: 0xFF3D5A80,
@@ -189,11 +189,11 @@ const List<UnitDef> kUnitsNew = [
     abilPow: 0.6,
     desc:
         'Every 4s his horn pushes everything in range back 0.6 cells (bosses 0.2).',
-    quip: 'Back. BACK. This is a harbour, not a holiday.',
+    quip: 'Back. BACK. This is a Rift, not a holiday.',
   ),
   UnitDef(
     id: 'icecream',
-    name: 'The Ice Cream Man',
+    name: 'The Void Ice Cream Man',
     tier: Tier.legendary,
     tags: ['Sweets'],
     color: 0xFFBDE0FE,
@@ -209,11 +209,11 @@ const List<UnitDef> kUnitsNew = [
     abilDur: 1,
     desc:
         'Every 6s his chime freezes a patch of lane solid for 1s.',
-    quip: 'Greensleeves, played slightly wrong, forever.',
+    quip: 'Greensleeves, played slightly wrong, from the far side of the crack, forever.',
   ),
   UnitDef(
     id: 'elmo',
-    name: 'Saint Elmo',
+    name: 'Saint Riftfire',
     tier: Tier.legendary,
     tags: ['Lamp'],
     color: 0xFF9AD1F5,
@@ -226,11 +226,11 @@ const List<UnitDef> kUnitsNew = [
     abilPow: 0.15,
     desc:
         'A beam that ignores dodging, hiding and Null, and burns 15% hotter for every second on the same target.',
-    quip: 'Sailors used to pray for me. Now they just point.',
+    quip: 'Sailors used to pray for me. Now they just point at the crack.',
   ),
   UnitDef(
     id: 'watchman',
-    name: 'The Night Watchman',
+    name: 'The Rift Watchman',
     tier: Tier.legendary,
     tags: ['Staff'],
     color: 0xFF6C757D,
@@ -244,11 +244,11 @@ const List<UnitDef> kUnitsNew = [
     abilPow: 0.15,
     desc:
         'His hits stop healing for 4s and mark the target to take 15% more damage.',
-    quip: 'Twelve o\'clock and all is NOT well.',
+    quip: 'Twelve o\'clock, the Rift is open, and all is NOT well.',
   ),
   UnitDef(
     id: 'diver',
-    name: 'Pearl Diver',
+    name: 'The Rift Diver',
     tier: Tier.legendary,
     tags: ['Sea'],
     color: 0xFFB08D57,
@@ -261,12 +261,12 @@ const List<UnitDef> kUnitsNew = [
     abil: Abil.diver,
     desc:
         'Hits diving, inked, tunnelled and submerged things. The Undertow, the Ghost Train\'s tunnel and Wrecker\'s Ghosts.',
-    quip: 'Holding my breath since 1952.',
+    quip: 'Holding my breath since 1952. The Rift goes deeper than the sea.',
   ),
   // ---- Mythics ----
   UnitDef(
     id: 'confectioner',
-    name: 'The Confectioner',
+    name: 'The Void Confectioner',
     tier: Tier.mythic,
     tags: ['Sweets'],
     color: 0xFFFFA62B,
@@ -283,11 +283,11 @@ const List<UnitDef> kUnitsNew = [
     abilDur: 2,
     desc:
         'Every 10s the lane caramelises: everything is stuck for 2s, sticky, and loses its shell.',
-    quip: 'Boiling point. Hard crack. Everybody stay still.',
+    quip: 'Boiling point. Hard crack. Rift crack. Everybody stay still.',
   ),
   UnitDef(
     id: 'beacon',
-    name: 'The Beacon',
+    name: 'The Rift Beacon',
     tier: Tier.mythic,
     tags: ['Lamp'],
     color: 0xFFFFE066,
@@ -301,11 +301,11 @@ const List<UnitDef> kUnitsNew = [
     abilPow: 0.2,
     desc:
         'Lights the whole lane so nothing can hide or dodge. Figurines in its light deal 20% more damage.',
-    quip: 'Lights on. Everyone. Look at me.',
+    quip: 'Lights on. Everyone. Look at me, not the crack.',
   ),
   UnitDef(
     id: 'freeholder',
-    name: 'The Freeholder',
+    name: 'The Rift Freeholder',
     tier: Tier.mythic,
     tags: ['Arcade'],
     color: 0xFF8E44AD,
@@ -324,7 +324,7 @@ const List<UnitDef> kUnitsNew = [
   ),
   UnitDef(
     id: 'cannon',
-    name: 'Cuttle\'s Cannon',
+    name: 'Cuttle\'s Rift Cannon',
     tier: Tier.mythic,
     tags: ['Sea'],
     color: 0xFF2E4057,
@@ -340,11 +340,11 @@ const List<UnitDef> kUnitsNew = [
     abilPow: 6,
     desc:
         'Every 9s a heavy ink shot splashes and blinds: no healing or dodging for 3s.',
-    quip: 'The Captain sends his regards. And his ink.',
+    quip: 'The Captain sends his regards. And his ink, by way of the Rift.',
   ),
   UnitDef(
     id: 'crown',
-    name: 'The Crab Crown',
+    name: 'The Cracked Crown',
     tier: Tier.mythic,
     tags: ['Staff'],
     color: 0xFFD62828,
@@ -357,11 +357,11 @@ const List<UnitDef> kUnitsNew = [
     abilPow: 0.3,
     desc:
         'Neighbouring cells can\'t be silenced, locked or condemned. Its pinches strip 30% armour.',
-    quip: 'Kneel. Sideways is fine.',
+    quip: 'Kneel. Sideways is fine. The crack goes sideways too.',
   ),
   UnitDef(
     id: 'lasttrain',
-    name: 'The Last Train',
+    name: 'The Last Train Through',
     tier: Tier.mythic,
     tags: ['Arcade'],
     color: 0xFF52B788,
@@ -375,12 +375,12 @@ const List<UnitDef> kUnitsNew = [
     abilEvery: 10,
     abilPow: 2,
     desc:
-        'Every 10s a phantom train laps the lane and hits everything once, one carriage per active union.',
-    quip: 'All aboard. No, really, all of you.',
+        'Every 10s a phantom train comes out of the Rift, laps the lane and hits everything once, one carriage per active union.',
+    quip: 'All aboard. No, really, all of you. Next stop: the other side.',
   ),
   UnitDef(
     id: 'kshadow',
-    name: 'The Keeper\'s Shadow',
+    name: 'The Lamp Keeper\'s Shadow',
     tier: Tier.mythic,
     tags: ['Lamp'],
     color: 0xFF3A0CA3,
@@ -393,11 +393,11 @@ const List<UnitDef> kUnitsNew = [
     abilPow: 1.5,
     desc:
         'Copies the attack of the strongest neighbouring non-Mythic at 150%.',
-    quip: 'He kept the light. I kept everything else.',
+    quip: 'He kept the light on the Rift. I kept everything else.',
   ),
   UnitDef(
     id: 'nothing',
-    name: 'Nothing',
+    name: 'The Nothing',
     tier: Tier.mythic,
     tags: kAllUnions,
     color: 0xFF7B2CBF,

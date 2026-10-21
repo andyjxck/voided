@@ -119,7 +119,7 @@ final List<Mission> kMissions = [
   ),
   Mission(
     'level1',
-    'Last Night of the Season',
+    'First Night at the Rift',
     'Clear Level 1: beat the Landlord on wave $kFinalWave.',
     50,
     (g) => g.cfg.level >= 1 && _won(g),
@@ -238,7 +238,7 @@ final List<Mission> kMissions = [
   ),
   Mission(
     'endless60',
-    'Off Season',
+    'Past the Edge',
     'Reach wave ${kFinalWave + 10} in Endless.',
     50,
     (g) => g.endless && g.wave >= kFinalWave + 10,

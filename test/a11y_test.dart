@@ -175,7 +175,7 @@ void main() {
     });
 
     test(
-      'lane warnings rise once per band and re-arm only after the pier clears',
+      'lane warnings rise once per band and re-arm only after the Rift clears',
       () {
         final g = Game(
           GameConfig(mode: GameMode.solo, difficulty: Difficulty.calm, seed: 8),
@@ -205,11 +205,11 @@ void main() {
       n.note('something');
       n.update(g, 1 / 60);
       g.status = GameStatus.lost;
-      g.endReason = 'The pier is overrun.';
+      g.endReason = 'The Rift is overrun.';
       final said = n.update(g, 1 / 60);
       expect(
         said.single.text,
-        'Game over. Reached wave 0. The pier is overrun.',
+        'Game over. Reached wave 0. The Rift is overrun.',
       );
       expect(n.update(g, 5), isEmpty);
     });
