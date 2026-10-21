@@ -26,9 +26,13 @@ void main(List<String> args) {
             if (r.bossTimeLeft[kFinalWave] case final t?) left.add(t);
           }
           waves.sort();
-          final l = left.isEmpty ? 0 : left.reduce((a, b) => a + b) / left.length;
+          final l = left.isEmpty
+              ? 0
+              : left.reduce((a, b) => a + b) / left.length;
           // ignore: avoid_print
-          print('L$level ${m.name} ${d.name}${slow ? ' slow' : ''}: win ${(100 * wins / runs).round()}% median ${waves[runs ~/ 2]} left ${l.toStringAsFixed(0)}s');
+          print(
+            'L$level ${m.name} ${d.name}${slow ? ' slow' : ''}: win ${(100 * wins / runs).round()}% median ${waves[runs ~/ 2]} left ${l.toStringAsFixed(0)}s',
+          );
         }
       }
     }

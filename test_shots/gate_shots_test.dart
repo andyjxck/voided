@@ -8,7 +8,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:pier_pressure/game/data.dart';
 import 'package:pier_pressure/game/meta.dart';
 import 'package:pier_pressure/ui/game_screen.dart';
-import 'package:pier_pressure/ui/menus.dart';
 import 'package:pier_pressure/ui/sprites.dart';
 
 Future<void> _font(String family, List<String> files) async {
@@ -65,6 +64,11 @@ void main() {
       for (final e in find.byType(Image).evaluate()) {
         await precacheImage((e.widget as Image).image, e);
       }
+      // The backdrop is a DecorationImage, not an Image widget.
+      await precacheImage(
+        const AssetImage('assets/backdrop.jpg'),
+        find.byType(MaterialApp).evaluate().first,
+      );
     });
     await t.pump(const Duration(milliseconds: 600));
     if (then != null) await then(t);

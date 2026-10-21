@@ -112,7 +112,8 @@ class FieldPainter extends CustomPainter {
     }
     canvas.drawPicture(_bg!);
     _paintWaves(canvas, size, geo);
-    _paintLights(canvas, geo);
+    // Festoon bulbs retired in the rustic pass: the backdrop carries the
+    // fairground lights, and blinking dots on the deck read as clutter.
     _paintBoards(canvas, geo);
     _paintEnemies(canvas, geo);
     _paintFx(canvas, geo);
@@ -152,8 +153,80 @@ class FieldPainter extends CustomPainter {
     final s = geo.scale;
     final th = _th;
     final f = g.field;
-    // No sea or deck of its own: the fairground backdrop behind the game
-    // shows through, and only the walkway, the gate and the boards are drawn.
+    // No painted sea: the fairground backdrop behind the screen shows
+    // through, darkened, so the deck reads as a raised wooden stage.
+    final deckRect = Rect.fromPoints(geo.px(0, 0), geo.px(f.w, f.h));
+    c.drawRect(Offset.zero & size, Paint()..color = const Color(0x59000000));
+    // Soft contact shadow under the stage for depth.
+    c.drawRRect(
+      RRect.fromRectAndRadius(
+        deckRect.inflate(s * 0.3).shift(Offset(s * 0.12, s * 0.22)),
+        Radius.circular(s * 0.5),
+      ),
+      Paint()
+        ..color = const Color(0x99000000)
+        ..maskFilter = MaskFilter.blur(BlurStyle.normal, s * 0.3),
+    );
+    // Deck: outline, frame, then planks
+    final frame = RRect.fromRectAndRadius(
+      deckRect.inflate(s * 0.08),
+      Radius.circular(s * 0.22),
+    );
+    c.drawRRect(
+      frame.shift(Offset(0, s * 0.1)),
+      Paint()..color = const Color(0x55000000),
+    );
+    c.drawRRect(frame.inflate(2), Paint()..color = Pal.ink);
+    c.drawRRect(frame, Paint()..color = th.deckEdge);
+    final deck = RRect.fromRectAndRadius(
+      deckRect.deflate(s * 0.04),
+      Radius.circular(s * 0.16),
+    );
+    c.drawRRect(deck, Paint()..color = th.deck);
+    c.save();
+    c.clipRRect(deck);
+    final plankLine = Paint()
+      ..color = th.deckLine
+      ..strokeWidth = math.max(1, s * 0.025);
+    final rnd = math.Random(3);
+    for (var y = 0.0; y < f.h; y += 0.42) {
+      final py = geo.px(0, y).dy;
+      c.drawLine(
+        Offset(deckRect.left, py),
+        Offset(deckRect.right, py),
+        plankLine,
+      );
+      for (
+        var x = rnd.nextDouble() * 1.6;
+        x < f.w;
+        x += 1.4 + rnd.nextDouble()
+      ) {
+        final px = geo.px(x, 0).dx;
+        c.drawLine(Offset(px, py), Offset(px, py + s * 0.42), plankLine);
+      }
+      // Weathering: darker grain streaks and a nail at each plank end.
+      final grain = Paint()
+        ..color = th.deckLine.withValues(alpha: 0.35)
+        ..strokeWidth = math.max(1, s * 0.015);
+      for (var k = 0; k < 3; k++) {
+        final gx = deckRect.left + rnd.nextDouble() * deckRect.width;
+        final gy = py + s * (0.1 + rnd.nextDouble() * 0.24);
+        c.drawLine(
+          Offset(gx, gy),
+          Offset(gx + s * (0.5 + rnd.nextDouble()), gy + s * 0.02),
+          grain,
+        );
+      }
+      final nail = Paint()..color = const Color(0x664A3A2C);
+      for (var x = 0.2; x < f.w; x += 1.4) {
+        c.drawCircle(geo.px(x, y + 0.21), math.max(1, s * 0.03), nail);
+      }
+      c.drawRect(
+        Rect.fromLTWH(deckRect.left, py + 1, deckRect.width, s * 0.06),
+        Paint()..color = Colors.white.withValues(alpha: 0.06),
+      );
+    }
+    c.restore();
     // Lane: dark edge, boardwalk, seams, rope rails
     final path = Path();
     for (final loop in f.walks) {
@@ -288,34 +361,7 @@ class FieldPainter extends CustomPainter {
 
   void _paintWaves(Canvas c, Size size, FieldGeom geo) {
     final th = _th;
-    final rect = Rect.fromPoints(
-      geo.px(0, 0),
-      geo.px(g.field.w, g.field.h),
-    ).inflate(geo.scale * 0.3);
-    final p = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round
-      ..strokeWidth = 2.5;
-    final rnd = math.Random(11);
-    for (var i = 0; i < 46; i++) {
-      final x0 = rnd.nextDouble() * size.width;
-      final y0 = rnd.nextDouble() * size.height;
-      final ph = rnd.nextDouble() * math.pi * 2;
-      final x =
-          (x0 + t * 8 * (0.5 + rnd.nextDouble())) % (size.width + 40) - 20;
-      final y = y0 + math.sin(t * 0.9 + ph) * 3;
-      if (rect.contains(Offset(x, y))) continue;
-      final a = 0.18 + 0.18 * math.sin(t * 1.3 + ph);
-      p.color = th.foam.withValues(alpha: a.clamp(0.0, 1.0));
-      final w = 10 + 14 * rnd.nextDouble();
-      c.drawArc(
-        Rect.fromCenter(center: Offset(x, y), width: w, height: w * 0.45),
-        math.pi * 1.1,
-        math.pi * 0.8,
-        false,
-        p,
-      );
-    }
+    // No foam arcs: there is no painted sea any more, only fog on fog levels.
     if (th.fog > 0) {
       for (var i = 0; i < 4; i++) {
         final x =
@@ -331,55 +377,6 @@ class FieldPainter extends CustomPainter {
             ..color = Colors.white.withValues(alpha: th.fog)
             ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 30),
         );
-      }
-    }
-  }
-
-  void _paintLights(Canvas c, FieldGeom geo) {
-    // Festoon lights strung between the lamp posts. They breathe gently
-    // instead of blinking.
-    final th = _th;
-    final f = g.field;
-    final s = geo.scale;
-    final wire = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = math.max(1, s * 0.025)
-      ..color = const Color(0xCC1A1410);
-    var k = 0;
-    for (final y in [0.0, f.h]) {
-      final span = f.w / 6;
-      for (var x = 0.0; x < f.w - 0.01; x += span) {
-        final a = geo.px(x, y), b = geo.px(x + span, y);
-        final sag = s * 0.22;
-        final mid = Offset((a.dx + b.dx) / 2, a.dy + sag * 2);
-        c.drawPath(
-          Path()
-            ..moveTo(a.dx, a.dy)
-            ..quadraticBezierTo(mid.dx, mid.dy, b.dx, b.dy),
-          wire,
-        );
-        for (var j = 1; j < 6; j++) {
-          final u = j / 6;
-          final p = Offset(
-            (1 - u) * (1 - u) * a.dx + 2 * (1 - u) * u * mid.dx + u * u * b.dx,
-            (1 - u) * (1 - u) * a.dy + 2 * (1 - u) * u * mid.dy + u * u * b.dy,
-          );
-          final col = th.bulbs[k % th.bulbs.length];
-          final glow = 0.55 + 0.25 * math.sin(t * 1.6 + k * 0.9);
-          c.drawCircle(
-            p,
-            s * 0.16,
-            Paint()
-              ..color = col.withValues(alpha: 0.28 * glow)
-              ..maskFilter = MaskFilter.blur(BlurStyle.normal, s * 0.1),
-          );
-          c.drawCircle(
-            p,
-            s * 0.055,
-            Paint()..color = Color.lerp(col, Colors.white, 0.45 * glow)!,
-          );
-          k++;
-        }
       }
     }
   }
@@ -913,5 +910,40 @@ class _Theme {
     ),
   ];
 
-  static _Theme of(int level) => _all[(level - 1) % _all.length];
+  static final _weatheredAll = [for (final t in _all) t._weathered()];
+  static _Theme of(int level) =>
+      _weatheredAll[(level - 1) % _weatheredAll.length];
+
+  /// Rustic pass: every level keeps its own hue but reads as sun-bleached,
+  /// salt-stained paint over old timber rather than fresh candy colours.
+  _Theme _weathered() {
+    Color w(Color c, [double k = 0.38]) {
+      final m = Color.lerp(c, const Color(0xFF5E4B39), k)!;
+      return Color.lerp(
+        m,
+        const Color(0xFF000000),
+        0.12,
+      )!.withValues(alpha: c.a);
+    }
+
+    return _Theme(
+      seaTop: w(seaTop),
+      seaBottom: w(seaBottom),
+      shallow: w(shallow),
+      foam: w(foam, 0.2),
+      deck: w(deck, 0.3),
+      deckEdge: w(deckEdge, 0.3),
+      deckLine: w(deckLine, 0.3),
+      lane: w(lane, 0.3),
+      laneEdge: w(laneEdge, 0.3),
+      platform: w(platform),
+      platform2: w(platform2),
+      tile: w(tile, 0.28),
+      tile2: w(tile2, 0.28),
+      legs: w(legs),
+      post: w(post),
+      bulbs: [for (final b in bulbs) w(b, 0.25)],
+      fog: fog,
+    );
+  }
 }

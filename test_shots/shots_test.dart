@@ -65,6 +65,11 @@ void main() {
       for (final e in find.byType(Image).evaluate()) {
         await precacheImage((e.widget as Image).image, e);
       }
+      // The backdrop is a DecorationImage, not an Image widget.
+      await precacheImage(
+        const AssetImage('assets/backdrop.jpg'),
+        find.byType(MaterialApp).evaluate().first,
+      );
     });
     await t.pump(const Duration(milliseconds: 600));
     if (then != null) await then(t);

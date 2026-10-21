@@ -12,14 +12,20 @@ void main(List<String> args) {
       final waves = <int>[];
       final peaks = <int>[];
       for (var s = 0; s < runs; s++) {
-        final r = simulateRun(GameConfig(mode: m, level: level, seed: 500 + s), playerSkill: skill, playerThink: skill < 1 ? 0.8 : 0.4);
+        final r = simulateRun(
+          GameConfig(mode: m, level: level, seed: 500 + s),
+          playerSkill: skill,
+          playerThink: skill < 1 ? 0.8 : 0.4,
+        );
         if (r.won) wins++;
         waves.add(r.wave);
         peaks.add(r.peakLane);
       }
       waves.sort();
       // ignore: avoid_print
-      print('level $level ${m.name} skill $skill: wins $wins/$runs waves $waves peak $peaks');
+      print(
+        'level $level ${m.name} skill $skill: wins $wins/$runs waves $waves peak $peaks',
+      );
     }
   }
 }
