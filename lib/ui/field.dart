@@ -1,4 +1,4 @@
-// The pier: lane, boards, figurines, sea things and all the juice.
+// The pier: lane, boards, figurines, riftlings and all the juice.
 
 import 'dart:math' as math;
 import 'dart:ui' as ui;
@@ -264,7 +264,7 @@ class FieldPainter extends CustomPainter {
         }
       }
     }
-    // The gate the sea things climb out of, with a chevron each way: one
+    // The gate the riftlings climb out of, with a chevron each way: one
     // turns left, its twin turns right.
     final st = geo.pv(f.gate);
     final chev = Paint()

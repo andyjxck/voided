@@ -1,4 +1,4 @@
-// Voided — meta-progression: sea glass, Back Room upgrades, the Jobs Board,
+// Voided — meta-progression: rift glass, Back Room upgrades, the Jobs Board,
 // the figurine album, levels, settings and the save file.
 //
 // Pure Dart (no Flutter), so tests and tools can use it headless. The UI keeps
@@ -10,7 +10,7 @@ import 'data.dart';
 import 'sim.dart';
 
 // ---------------------------------------------------------------------------
-// Back Room upgrades (permanent, bought with sea glass)
+// Back Room upgrades (permanent, bought with rift glass)
 // ---------------------------------------------------------------------------
 
 class MetaUpgrade {
@@ -105,7 +105,7 @@ final List<Mission> kMissions = [
   ),
   Mission(
     'wave25',
-    'Halfway Down the Pier',
+    'Halfway Into the Rift',
     'Reach wave 25.',
     15,
     (g) => g.wave >= 25,
@@ -155,7 +155,7 @@ final List<Mission> kMissions = [
   Mission(
     'level4',
     'Staring Back',
-    'Clear Level 4, the Void Pier.',
+    'Clear Level 4, the Rift Fair.',
     200,
     (g) => g.cfg.level >= 4 && _won(g),
   ),
@@ -204,14 +204,14 @@ final List<Mission> kMissions = [
   Mission(
     'kills3k',
     'Seafood Platter',
-    'Your board takes out 3,000 sea things in one run.',
+    'Your board takes out 3,000 riftlings in one run.',
     35,
     (g) => g.you.stats.kills >= 3000,
   ),
   Mission(
     'kills6k',
     'All You Can Eat',
-    'Your board takes out 6,000 sea things in one run.',
+    'Your board takes out 6,000 riftlings in one run.',
     60,
     (g) => g.you.stats.kills >= 6000,
   ),
@@ -231,7 +231,7 @@ final List<Mission> kMissions = [
   ),
   Mission(
     'tidy',
-    'Tidy Pier',
+    'Tidy Rift',
     'Clear a level without the lane going over 40.',
     90,
     (g) => _won(g) && g.peakLane <= 40,
@@ -265,10 +265,10 @@ final Map<String, Mission> kMissionById = {for (final m in kMissions) m.id: m};
 /// Copies of a figurine needed to fill its album page, by tier.
 int albumNeed(Tier t) => const [60, 30, 12, 4, 1][t.index];
 
-/// Sea glass for filling an album page, by tier.
+/// Rift glass for filling an album page, by tier.
 int albumReward(Tier t) => const [5, 8, 12, 20, 30][t.index];
 
-/// Sea glass per wave reached, per boss beaten, and for a win. Scaled by
+/// Rift glass per wave reached, per boss beaten, and for a win. Scaled by
 /// [kDifficultyGlassMult].
 const int kGlassPerWave = 1;
 const int kGlassPerBoss = 5;
@@ -276,7 +276,7 @@ const int kGlassForWin = 25;
 const List<double> kDifficultyGlassMult = [1.0, 1.5, 2.0];
 
 class RunSummary {
-  /// Sea glass from this run (missions included).
+  /// Rift glass from this run (missions included).
   final int seaGlass;
   final bool newBest;
   final List<Mission> newMissions;
@@ -362,7 +362,7 @@ class MetaSave {
     return b;
   }
 
-  /// Spend sea glass on the next level. False if maxed or too poor.
+  /// Spend rift glass on the next level. False if maxed or too poor.
   bool buy(MetaUpgrade u) {
     final l = level(u.id);
     if (l >= u.max) return false;

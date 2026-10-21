@@ -551,7 +551,7 @@ class Game {
   PlayerSide get you => sides[0];
   PlayerSide? get partner => sides.length > 1 ? sides[1] : null;
 
-  /// Sea things on the pier, by weight (a Plushie Pile counts as 3).
+  /// Riftlings on the pier, by weight (a Plushie Pile counts as 3).
   int get laneCount =>
       enemies.fold(0, (a, e) => e.dead ? a : a + (e.def?.weight ?? 1));
 
@@ -627,12 +627,12 @@ class Game {
     final lc = laneCount;
     if (lc > peakLane) peakLane = lc;
     if (lc >= laneLimit) {
-      _lose('The pier is overrun. $laneLimit sea things on the boardwalk.');
+      _lose('The Rift is overrun. $laneLimit riftlings loose.');
     }
     if (boss != null) {
       bossTimer -= dt;
       if (bossTimer <= 0) {
-        _lose('${boss!.name} outstayed the season. Boss timer ran out.');
+        _lose('${boss!.name} held the Rift open. Boss timer ran out.');
       }
     }
   }
@@ -1006,7 +1006,7 @@ class Game {
     final c = field.cellCenter(bestSide, bestCell);
     fx.add(Fx(FxType.condemn, x: c.x, y: c.y));
     final who = sides[bestSide].cells[bestCell].def!.name;
-    say('The Pier Inspector', '$who is CONDEMNED. Pending review.');
+    say('The Rift Inspector', '$who is CONDEMNED. Pending review.');
   }
 
   // ------------------------------------------------------------------

@@ -725,7 +725,7 @@ extension _Mech on Game {
     int cost(String id) => kEnemyById[id]!.threat;
     final show = showcaseFor(n, lv);
     if (show != null) {
-      // The showcase: the new thing alone with Drips.
+      // The showcase: the new thing alone with Seeps.
       final k = math.max(3, (budget * 0.4 / cost(show)).round());
       var spent = 0;
       for (var i = 0; i < k; i++) {
@@ -1004,8 +1004,8 @@ extension _Mech on Game {
         if (e.phase == 1 && frac < 0.25) {
           e.phase = 2;
           laneLimit = 80;
-          tell('The pier collapses: limit now 80', dur: 2.5, color: 0xFFFF5E7E);
-          say(b.name, 'Less pier. Same amount of you.');
+          tell('The Rift widens: limit now 80', dur: 2.5, color: 0xFFFF5E7E);
+          say(b.name, 'More Rift. Same amount of you.');
         }
       default:
         break;

@@ -1,5 +1,5 @@
 // Front of house: the arcade (home), the shift picker, the Back Room, the
-// Jobs board, the album and the sea things book.
+// Jobs board, the album and the riftlings book.
 
 import 'dart:math' as math;
 
@@ -38,7 +38,7 @@ Future<void> _startRun(
 }
 
 /// The page every menu screen sits on: the sea, a header with a back button
-/// and your sea glass, and one centred column so desktop doesn't sprawl.
+/// and your rift glass, and one centred column so desktop doesn't sprawl.
 class _Page extends StatelessWidget {
   final String title;
   final MetaSave meta;
@@ -80,7 +80,7 @@ class _GlassChip extends StatelessWidget {
   const _GlassChip(this.meta);
   @override
   Widget build(BuildContext context) => Semantics(
-    label: '${meta.seaGlass} sea glass',
+    label: '${meta.seaGlass} rift glass',
     excludeSemantics: true,
     child: CurrencyChip(
       icon: Icons.diamond,
@@ -288,7 +288,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   child: SmallCtl(
                                     icon: Icons.set_meal,
                                     sprite: 'i_buoy',
-                                    label: 'SEA THINGS',
+                                    label: 'RIFTLINGS',
                                     color: Pal.sea2,
                                     tone: Tone.teal,
                                     onTap: () => _go(Bestiary(meta: m)),
@@ -507,7 +507,7 @@ class _Logo extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Semantics(
     header: true,
-    label: 'Voided. A seaside tower defence.',
+    label: 'Voided. A tower defence at the Rift.',
     excludeSemantics: true,
     child: Column(
       children: [
@@ -542,7 +542,7 @@ class _Logo extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
           ),
           child: Text(
-            'Hold the pier till the season ends',
+            'Hold the line till the Rift closes',
             style: body(
               12.5,
               color: const Color(0xFFFFE9A8),
@@ -740,7 +740,7 @@ class _ModeSelectState extends State<ModeSelect> {
                   ? (m.bestOnLevel(l) > 0
                         ? 'Best wave ${m.bestOnLevel(l)}/$kFinalWave'
                         : levelDef(l).blurb)
-                  : 'Clear level ${l - 1} to open this stretch of coast',
+                  : 'Clear level ${l - 1} to go deeper into the Rift',
               on: lvl == l,
               locked: l > m.levelReached,
               leading: SpriteImg(
@@ -754,7 +754,7 @@ class _ModeSelectState extends State<ModeSelect> {
           _choice(
             title: 'Co-op with $kPartnerName',
             sub:
-                '$kPartnerName runs the other half of the pier. You can pass her figurines.',
+                '$kPartnerName holds the other side of the Rift. You can pass her figurines.',
             on: m.lastMode == GameMode.coop,
             leading: const SpriteImg('i_cup', size: 40),
             onTap: () => m.lastMode = GameMode.coop,
@@ -766,7 +766,7 @@ class _ModeSelectState extends State<ModeSelect> {
             leading: const SpriteImg('i_penny', size: 40),
             onTap: () => m.lastMode = GameMode.solo,
           ),
-          const _Label('Sea state'),
+          const _Label('How wide the Rift is'),
           for (final d in Difficulty.values)
             _choice(
               title: d.label,
@@ -817,7 +817,7 @@ class _BackRoomState extends State<BackRoom> {
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    'Madge keeps the good stuff behind the counter. Sea glass buys things that last from one season to the next.',
+                    'Madge keeps the good stuff behind the counter. Rift glass buys things that last from one night to the next.',
                     style: body(12.5, color: Vx.textDim, height: 1.3),
                   ),
                 ),
@@ -890,7 +890,7 @@ class _BackRoomState extends State<BackRoom> {
               enabled: can,
               semantics: maxed
                   ? '${u.name}, sold out'
-                  : 'Buy ${u.name} for $cost sea glass${can ? '' : ', not enough glass'}',
+                  : 'Buy ${u.name} for $cost rift glass${can ? '' : ', not enough glass'}',
               onTap: maxed
                   ? null
                   : () {
@@ -952,7 +952,7 @@ class JobsBoard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
-                  'Odd jobs pinned up by the management. Each pays sea glass once.',
+                  'Odd jobs pinned up by the management. Each pays rift glass once.',
                   style: body(12.5, color: Vx.textDim),
                 ),
                 const SizedBox(height: 8),
@@ -987,7 +987,7 @@ class _Ticket extends StatelessWidget {
     return Semantics(
       container: true,
       label:
-          '${job.name}. ${job.desc} ${done ? 'Done.' : 'Pays ${job.reward} sea glass.'}',
+          '${job.name}. ${job.desc} ${done ? 'Done.' : 'Pays ${job.reward} rift glass.'}',
       excludeSemantics: true,
       child: Padding(
         padding: const EdgeInsets.only(bottom: 10),
@@ -1144,7 +1144,7 @@ class Album extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Text(
-                      'Every figurine you place goes in the album. Fill a page and the arcade pays out sea glass.',
+                      'Every figurine you place goes in the album. Fill a page and the arcade pays out rift glass.',
                       style: body(12.5, color: Vx.textDim),
                     ),
                     const SizedBox(height: 8),
@@ -1386,7 +1386,7 @@ class _BestiaryState extends State<Bestiary> {
       ),
     );
     return _Page(
-      title: 'Sea Things',
+      title: 'Riftlings',
       meta: widget.meta,
       child: Column(
         children: [
@@ -1394,7 +1394,7 @@ class _BestiaryState extends State<Bestiary> {
             padding: const EdgeInsets.fromLTRB(14, 0, 14, 6),
             child: Row(
               children: [
-                tab('SEA THINGS', !bosses, () => bosses = false),
+                tab('RIFTLINGS', !bosses, () => bosses = false),
                 const SizedBox(width: 8),
                 tab('BOSSES', bosses, () => bosses = true),
               ],

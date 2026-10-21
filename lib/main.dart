@@ -12,7 +12,7 @@ const kSaveKey = 'pier_pressure_save_v1';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // The board, boss bar and pickers paint figurines, sea things and bosses
+  // The board, boss bar and pickers paint figurines, riftlings and bosses
   // from these images; until they arrive the painters use drawn shapes.
   unawaited(Sprites.load());
   SharedPreferences? prefs;

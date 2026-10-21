@@ -128,7 +128,7 @@ void main() {
             tutorial: true,
           ),
         );
-        expect(find.textContaining('Welcome to Grimley Pier'), findsOneWidget);
+        expect(find.textContaining('Welcome to the Rift'), findsOneWidget);
         await t.tap(find.text('Next'));
         await t.pump(const Duration(milliseconds: 300));
         expect(find.textContaining('Feed the machine'), findsOneWidget);

@@ -171,7 +171,7 @@ const List<UnitDef> kUnitsNew = [
     abilPow: 0.10,
     desc:
         'Lights the lane in range. Enemies there can\'t dodge or hide and take 10% more damage.',
-    quip: 'Every lamp on this pier, lit by hand. Every one.',
+    quip: 'Every lamp along the Rift, lit by hand. Every one.',
   ),
   UnitDef(
     id: 'hale',
@@ -320,7 +320,7 @@ const List<UnitDef> kUnitsNew = [
     abilPow: 3,
     desc:
         'Every 12s evicts the three front non-boss enemies back to the start of the lane.',
-    quip: 'I own the pier now. And you are all trespassing.',
+    quip: 'I own the Rift now. And you are all trespassing.',
   ),
   UnitDef(
     id: 'cannon',
@@ -531,7 +531,7 @@ const List<EnemyDef> kEnemiesNew = [
   ),
   EnemyDef(
     'clam',
-    'Razor Clam',
+    'Rift Clam',
     hpMult: 1.1,
     speed: 0.9,
     trait: Trait.shell,
@@ -544,7 +544,7 @@ const List<EnemyDef> kEnemiesNew = [
   ),
   EnemyDef(
     'bruiser',
-    'Bruiser Crab',
+    'Breach Crab',
     hpMult: 2.2,
     speed: 0.7,
     armor: 0.2,
@@ -558,7 +558,7 @@ const List<EnemyDef> kEnemiesNew = [
   ),
   EnemyDef(
     'castle',
-    'Sand Castle',
+    'Ash Castle',
     hpMult: 10,
     speed: 0.4,
     armor: 0.2,
@@ -573,7 +573,7 @@ const List<EnemyDef> kEnemiesNew = [
   ),
   EnemyDef(
     'pony',
-    'Carousel Pony',
+    'Hollow Pony',
     hpMult: 0.9,
     speed: 1.1,
     trait: Trait.pony,
@@ -598,7 +598,7 @@ const List<EnemyDef> kEnemiesNew = [
   ),
   EnemyDef(
     'dodgem',
-    'Dodgem',
+    'Phantom Dodgem',
     hpMult: 1.6,
     speed: 0.9,
     armor: 0.15,
@@ -626,7 +626,7 @@ const List<EnemyDef> kEnemiesNew = [
   ),
   EnemyDef(
     'moth',
-    'Lampmoth',
+    'Riftmoth',
     hpMult: 0.6,
     speed: 1.4,
     trait: Trait.moth,
@@ -652,7 +652,7 @@ const List<EnemyDef> kEnemiesNew = [
   ),
   EnemyDef(
     'lantern',
-    'Lantern Fish',
+    'Void Lantern',
     hpMult: 1.3,
     speed: 0.9,
     trait: Trait.flash,
@@ -665,7 +665,7 @@ const List<EnemyDef> kEnemiesNew = [
   ),
   EnemyDef(
     'foghorn',
-    'The Fog Horn',
+    'The Rift Horn',
     hpMult: 9,
     speed: 0.5,
     armor: 0.15,
@@ -731,7 +731,7 @@ const List<EnemyDef> kEnemiesNew = [
   ),
   EnemyDef(
     'clown',
-    'Clown',
+    'Cracked Clown',
     hpMult: 0.35,
     speed: 1.8,
     threat: 1,
@@ -742,7 +742,7 @@ const List<EnemyDef> kEnemiesNew = [
   ),
   EnemyDef(
     'lion',
-    'Circus Lion',
+    'Rift Lion',
     hpMult: 4,
     speed: 0.8,
     armor: 0.45,
@@ -804,7 +804,7 @@ extension LevelRuleInfo on LevelRule {
 }
 
 /// Which enemy each level brings, and the wave it first turns up. A type's
-/// first wave is a showcase: it comes alone with Drips.
+/// first wave is a showcase: it comes alone with Seeps.
 const Map<int, Map<String, int>> kLevelRoster = {
   1: {
     'drip': 1,

@@ -26,7 +26,7 @@ String hudLabel(Game g) {
     when =
         'Wave ${g.wave}${g.endless ? ', Endless' : ' of $kFinalWave'}. Next wave in $secs seconds.';
   }
-  return '$when ${g.laneCount} of $kLaneLimit sea things on the pier. '
+  return '$when ${g.laneCount} of $kLaneLimit riftlings loose. '
       '${p.pennies} ${p.pennies == 1 ? 'penny' : 'pennies'}, ${p.leaves} tea ${p.leaves == 1 ? 'leaf' : 'leaves'}.';
 }
 
@@ -212,7 +212,7 @@ class GameNarrator {
     if (band > _laneBand) {
       _push(
         Spoken(
-          'Warning: ${g.laneCount} of $kLaneLimit sea things on the pier.',
+          'Warning: ${g.laneCount} of $kLaneLimit riftlings loose.',
           urgent: band == bands.length,
         ),
       );

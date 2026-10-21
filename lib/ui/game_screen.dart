@@ -27,8 +27,8 @@ class TutStep {
 
 const List<TutStep> kTutorial = [
   TutStep(
-    'Welcome to Grimley Pier',
-    'Last night of the season, and things are climbing out of the sea. They walk the boardwalk round and round. If $kLaneLimit are on the pier at once, it\'s over.',
+    'Welcome to the Rift',
+    'Last night of the season, the Rift tore open at the end of the pier, and things are climbing out of it. They walk the path round and round. If $kLaneLimit get loose at once, it\'s over.',
     'next',
   ),
   TutStep(
@@ -43,17 +43,17 @@ const List<TutStep> kTutorial = [
   ),
   TutStep(
     'Move them about',
-    'Drag a figurine onto another cell to swap them. Cells next to the boardwalk see the most action, so put your best ones there.',
+    'Drag a figurine onto another cell to swap them. Cells next to the path see the most action, so put your best ones there.',
     'next',
   ),
   TutStep(
     'Luck and grease',
-    'Tea leaves come every fifth wave and from bosses. GAMBLE them for rare figurines. UPGRADE makes a whole tier hit harder. MYTHICS shows the recipes for the four legends of the pier.',
+    'Tea leaves come every fifth wave and from bosses. GAMBLE them for rare figurines. UPGRADE makes a whole tier hit harder. MYTHICS shows the recipes for the four legends of the Rift.',
     'next',
   ),
   TutStep(
     'Bosses',
-    'Every 10th wave a boss turns up, and you have $kBossSeconds seconds to get rid of it. Wave $kFinalWave brings the level\'s final boss. Beat it and the next stretch of coast opens. Good luck, love.',
+    'Every 10th wave a boss turns up, and you have $kBossSeconds seconds to get rid of it. Wave $kFinalWave brings the level\'s final boss. Beat it and the Rift drags you somewhere deeper. Good luck, love.',
     'next',
   ),
 ];
@@ -828,7 +828,7 @@ class _GameScreenState extends State<GameScreen>
           children: [
             Semantics(
               container: true,
-              label: 'The pier. $boards',
+              label: 'The Rift. $boards',
               excludeSemantics: true,
               child: GestureDetector(
                 behavior: HitTestBehavior.opaque,
@@ -1681,8 +1681,8 @@ class _GameScreenState extends State<GameScreen>
     final lvl = g.cfg.level;
     final endlessOver = g.endless && g.wave > kFinalWave;
     final title = won
-        ? 'THE PIER IS SAVED'
-        : (endlessOver ? 'OFF SEASON OVER' : 'CLOSED FOR THE SEASON');
+        ? 'THE RIFT IS SEALED'
+        : (endlessOver ? 'OFF SEASON OVER' : 'THE RIFT BROKE THROUGH');
     final tone = won || endlessOver ? Tone.yellow : Tone.red;
     final unlockedNext =
         won &&
@@ -1769,7 +1769,7 @@ class _GameScreenState extends State<GameScreen>
                                 const SpriteImg('i_glass', size: 34),
                                 const SizedBox(width: 6),
                                 Text(
-                                  '+${s.seaGlass} sea glass',
+                                  '+${s.seaGlass} rift glass',
                                   style: display(22, color: Vx.glass, w: 2),
                                 ),
                               ],

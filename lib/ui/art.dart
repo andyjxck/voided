@@ -1,4 +1,4 @@
-// Procedural art: figurines, sea things, bosses. One look throughout: flat
+// Procedural art: figurines, riftlings, bosses. One look throughout: flat
 // seaside-souvenir shapes with chunky outlines and googly eyes.
 
 import 'dart:math' as math;
@@ -802,7 +802,7 @@ void _drawUnitSprite(
   );
 }
 
-/// A sea thing or boss: waddles, flashes white when hit, goes icy when slowed.
+/// A riftling or boss: waddles, flashes white when hit, goes icy when slowed.
 void _drawCritter(
   Canvas c,
   Offset p,

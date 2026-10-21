@@ -71,7 +71,7 @@ class Vx {
   static const bgTop = Color(0xFF26302B);
   static const bgBottom = Color(0xFF12100C);
   static const gold = Color(0xFFE3B451); // aged brass
-  static const glass = Color(0xFF93CDB9); // sea glass
+  static const glass = Color(0xFF93CDB9); // rift glass
 }
 
 /// Button colours: face top, face bottom, lip (the 3D edge) and text stroke.
@@ -622,7 +622,7 @@ class LaneMeter extends StatelessWidget {
                 Center(
                   child: Text(
                     c.maxWidth >= 190
-                        ? '$count / $limit on the pier'
+                        ? '$count / $limit loose'
                         : '$count / $limit',
                     style: display(12, w: 1.4),
                   ),
@@ -1139,7 +1139,7 @@ class GameDialogFrame extends StatelessWidget {
   );
 }
 
-/// Screen header for the menu pages: back button, title plate, sea glass.
+/// Screen header for the menu pages: back button, title plate, rift glass.
 class ScreenHeader extends StatelessWidget {
   final String title;
   final Widget? trailing;

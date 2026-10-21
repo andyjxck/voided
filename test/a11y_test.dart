@@ -42,7 +42,7 @@ void main() {
       advance(g, 6);
       final l = hudLabel(g);
       expect(l, contains('Wave 1 of 50. Next wave in '));
-      expect(l, contains('of 100 sea things on the pier.'));
+      expect(l, contains('of 100 riftlings loose.'));
       expect(l, contains('${g.you.pennies} pennies, 0 tea leaves.'));
     });
 
@@ -184,7 +184,7 @@ void main() {
         narrate(n, g, 1);
         addCrabs(g, 52);
         expect(narrate(n, g, 3).map((s) => s.text), [
-          'Warning: 52 of 100 sea things on the pier.',
+          'Warning: 52 of 100 riftlings loose.',
         ]);
         // Hovering around the line says nothing more.
         g.enemies.removeRange(0, 4);
@@ -192,7 +192,7 @@ void main() {
         expect(narrate(n, g, 3), isEmpty);
         addCrabs(g, 40);
         final hi = narrate(n, g, 3);
-        expect(hi.single.text, 'Warning: 92 of 100 sea things on the pier.');
+        expect(hi.single.text, 'Warning: 92 of 100 riftlings loose.');
         expect(hi.single.urgent, isTrue);
       },
     );
@@ -254,12 +254,12 @@ void main() {
     await t.pump(const Duration(milliseconds: 100));
     expect(
       find.bySemanticsLabel(
-        RegExp(r'^Get ready\. Wave 1 in \d seconds\. 0 of 100 sea things'),
+        RegExp(r'^Get ready\. Wave 1 in \d seconds\. 0 of 100 riftlings'),
       ),
       findsOneWidget,
     );
     expect(
-      find.bySemanticsLabel(RegExp(r'^The pier\. Your board: empty')),
+      find.bySemanticsLabel(RegExp(r'^The Rift\. Your board: empty')),
       findsOneWidget,
     );
     expect(

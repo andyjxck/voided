@@ -1,4 +1,4 @@
-// Voided — all static game data: figurines, sea things, bosses, odds,
+// Voided — all static game data: figurines, riftlings, bosses, odds,
 // economy constants. Everything tunable lives here.
 
 part 'content.dart';
@@ -45,12 +45,12 @@ extension TierInfo on Tier {
 enum Difficulty { calm, choppy, storm }
 
 extension DifficultyInfo on Difficulty {
-  String get label => const ['Calm Seas', 'Choppy', 'Storm Warning'][index];
+  String get label => const ['Hairline', 'Widening', 'Full Breach'][index];
   double get hpMult => const [1.0, 1.45, 1.95][index];
   String get blurb => const [
-    'Last night of the season. Should be quiet.',
+    'Only a hairline crack so far. Should be quiet.',
     'The tide is in a mood. Enemies have 45% more health.',
-    'The council has closed the pier. You have not. +95% enemy health.',
+    'The Rift is wide open. You are still here. +95% enemy health.',
   ][index];
 }
 
@@ -476,7 +476,7 @@ const List<UnitDef> _kUnitsBase = [
     auraRange: 99,
     executePct: 0.12,
     desc: 'Every figurine attacks 30% faster. Finishes non-bosses under 12%.',
-    quip: 'Thirty-one years at the end of the pier, darling. I AM the end.',
+    quip: 'Thirty-one years at the edge of the Rift, darling. I AM the edge.',
   ),
   UnitDef(
     id: 'gullivan',
@@ -551,7 +551,7 @@ const double kBossSeconds = 60;
 
 /// Calm pacing from wave 19 to 48. In waves [kPaceFrom] to [kPaceTo] the next
 /// wave waits while its spawns are still coming out or more than
-/// [kPaceCrowd] sea things are still out, for up to [kPaceHoldMax] extra
+/// [kPaceCrowd] riftlings are still out, for up to [kPaceHoldMax] extra
 /// seconds, so the board can clear each wave before the next one lands and
 /// the wave 30/40/50 bosses don't arrive behind a pile (14-32 left by wave
 /// 29 without it). Waves are not thinned, so kills (and pennies) stay the
@@ -655,7 +655,7 @@ const List<EnemyDef> kEnemies = [..._kEnemiesBase, ...kEnemiesNew];
 const List<EnemyDef> _kEnemiesBase = [
   EnemyDef(
     'drip',
-    'Drip',
+    'Seep',
     color: 0xFF4FB286,
     blurb: 'A puddle with ambitions.',
   ),
@@ -663,7 +663,7 @@ const List<EnemyDef> _kEnemiesBase = [
     'pinchy',
     trait: Trait.armor,
     threat: 2,
-    'Pinchy',
+    'Riftpinch',
     hpMult: 1.4,
     speed: 0.75,
     armor: 0.4,
@@ -675,7 +675,7 @@ const List<EnemyDef> _kEnemiesBase = [
   EnemyDef(
     'eel',
     threat: 1,
-    'Slick Eel',
+    'Void Eel',
     hpMult: 0.6,
     speed: 1.9,
     color: 0xFF3F7CE8,
@@ -700,7 +700,7 @@ const List<EnemyDef> _kEnemiesBase = [
   EnemyDef(
     'wibble',
     threat: 1,
-    'Wibble',
+    'Flicker',
     hpMult: 0.3,
     speed: 1.3,
     color: 0xFFE7B3FF,
@@ -712,20 +712,20 @@ const List<EnemyDef> _kEnemiesBase = [
     'nanny',
     trait: Trait.heal,
     threat: 2,
-    'Kelp Nanny',
+    'Rift Nanny',
     hpMult: 1.6,
     speed: 0.8,
     healAura: 0.03,
     color: 0xFF2E8B57,
     body: 4,
     size: 0.36,
-    blurb: 'Heals nearby sea things 3% a second. Kill her first.',
+    blurb: 'Heals nearby riftlings 3% a second. Kill her first.',
   ),
   EnemyDef(
     'mist',
     trait: Trait.dodge,
     threat: 2,
-    'Sea Mist',
+    'Rift Mist',
     hpMult: 0.8,
     speed: 1.2,
     evade: 0.35,
@@ -737,7 +737,7 @@ const List<EnemyDef> _kEnemiesBase = [
     'pollock',
     trait: Trait.bonus,
     threat: 1,
-    'Lucky Pollock',
+    'Glintfish',
     hpMult: 2.0,
     speed: 2.4,
     color: 0xFFFFD34D,
@@ -749,7 +749,7 @@ const List<EnemyDef> _kEnemiesBase = [
     'bigdrip',
     trait: Trait.split,
     threat: 8,
-    'Big Drip',
+    'Big Seep',
     hpMult: 8,
     speed: 0.7,
     color: 0xFF1F8A5C,
@@ -760,7 +760,7 @@ const List<EnemyDef> _kEnemiesBase = [
   EnemyDef(
     'bailiff',
     threat: 2,
-    'Bailiff',
+    'Void Bailiff',
     hpMult: 1.5,
     speed: 0.9,
     armor: 0.3,
@@ -773,7 +773,7 @@ const List<EnemyDef> _kEnemiesBase = [
     'flyer',
     trait: Trait.flying,
     threat: 2,
-    'Chip Dart',
+    'Rift Dart',
     hpMult: 0.5,
     speed: 2.3,
     evade: 0.15,
@@ -786,7 +786,7 @@ const List<EnemyDef> _kEnemiesBase = [
     'barnacle',
     trait: Trait.grow,
     threat: 3,
-    'Barnacle Bob',
+    'Rift Barnacle',
     hpMult: 2.4,
     speed: 0.55,
     armor: 0.5,
@@ -805,13 +805,13 @@ const List<EnemyDef> _kEnemiesBase = [
     color: 0xFFF07A8A,
     body: 2,
     size: 0.28,
-    blurb: 'Spins down the boardwalk like a thrown plate.',
+    blurb: 'Spins down the path like a thrown plate.',
   ),
   EnemyDef(
     'hermit',
     trait: Trait.tin,
     threat: 2,
-    'Tin Hermit',
+    'Hollow Hermit',
     hpMult: 1.4,
     speed: 0.85,
     armor: 0.55,
@@ -824,7 +824,7 @@ const List<EnemyDef> _kEnemiesBase = [
     'puffer',
     trait: Trait.puff,
     threat: 3,
-    'Puffer',
+    'Void Puffer',
     hpMult: 2.8,
     speed: 0.75,
     color: 0xFFF59B2B,
@@ -858,7 +858,7 @@ const List<EnemyDef> _kEnemiesBase = [
     color: 0xFF2D5C8A,
     body: 4,
     size: 0.34,
-    blurb: 'Its lamp heals nearby sea things 2.5% a second.',
+    blurb: 'Its lamp heals nearby riftlings 2.5% a second.',
   ),
   EnemyDef(
     'voidling',
@@ -879,7 +879,7 @@ const List<EnemyDef> _kEnemiesBase = [
 
 final Map<String, EnemyDef> kEnemyById = {for (final e in kEnemies) e.id: e};
 
-/// Ordinary sea things (not bosses) have this much more health than
+/// Ordinary riftlings (not bosses) have this much more health than
 /// [baseHp], so the lane can actually fill up between bosses.
 const double kCrowdHpMult = 1.2;
 
@@ -917,7 +917,7 @@ List<String> enemyPool(int wave, [int level = 1]) {
 }
 
 /// The type that is brand new on [wave] of [level], if any. Its wave is a
-/// showcase: it arrives alone with Drips.
+/// showcase: it arrives alone with Seeps.
 String? showcaseFor(int wave, [int level = 1]) {
   for (final e in kLevelRoster[_lv(level)]!.entries) {
     if (e.value == wave && e.key != 'drip' && wave > 1) return e.key;
@@ -986,13 +986,13 @@ const List<BossDef> kBosses = [
     hpMult: 7,
     speed: 0.55,
     color: 0xFF2FA36B,
-    entrance: 'My babies. Go and play on the nice pier.',
+    entrance: 'My babies. Go and play by the nice Rift.',
     defeat: 'Mind... the... wet... floor...',
-    mechText: 'Spawns three Drips every 6 seconds.',
+    mechText: 'Spawns three Seeps every 6 seconds.',
   ),
   BossDef(
     'inspector',
-    'The Pier Inspector',
+    'The Rift Inspector',
     'Grimley Borough Council',
     BossMech.inspector,
     hpMult: 9.5,
@@ -1024,8 +1024,8 @@ const List<BossDef> kBosses = [
     speed: 0.5,
     armor: 0.2,
     color: 0xFF6B2D5C,
-    entrance: 'Lovely little pier. Shame about the rent.',
-    defeat: 'You can keep the pier. It is falling into the sea anyway.',
+    entrance: 'Lovely little Rift. Shame about the rent.',
+    defeat: 'You can keep the Rift. It is falling into itself anyway.',
     mechText: 'Takes 15% of your pennies each lap. Shields and calls Bailiffs at 66% and 33%.',
   ),
   BossDef(
@@ -1037,8 +1037,8 @@ const List<BossDef> kBosses = [
     speed: 0.6,
     armor: 0.1,
     color: 0xFFD9822B,
-    entrance: 'Arr. This pier be mine now. All of it. Even the toilets.',
-    defeat: 'Abandon... pier...',
+    entrance: 'Arr. This Rift be mine now. All of it. Even the toilets.',
+    defeat: 'Abandon... Rift...',
     mechText: 'Ink Column: every 10s inks one column of your board, halving its range for 4s. Plunder: at 66% and 33% four Token Thieves join him.',
   ),
   BossDef(
@@ -1057,7 +1057,7 @@ const List<BossDef> kBosses = [
   BossDef(
     'void',
     'The Void',
-    'What Was Under the Pier',
+    'What Came Through the Rift',
     BossMech.voidboss,
     hpMult: 13,
     speed: 0.5,
@@ -1094,7 +1094,7 @@ const List<BossDef> kBossesNew = [
     armor: 0.15,
     color: 0xFF6D597A,
     spawn: 'barnacle',
-    entrance: 'I have clung to this pier since before your grandmother.',
+    entrance: 'I have clung to this crack since before your grandmother.',
     defeat: 'Unclamping... with dignity...',
     mechText: 'Every 10s she clamps on: stops with 70% armour for 5s while everything else moves 30% faster. Burst her while she moves.',
   ),
@@ -1196,16 +1196,16 @@ class LevelDef {
 /// the rest of the difficulty is enemy mechanics and compositions.
 const List<LevelDef> kLevels = [
   LevelDef(
-    'Grimley Pier',
-    'Last night of the season. Something is climbing out of the sea.',
+    'The Breach',
+    'The Rift tore open on the last night of the season. Something is climbing out.',
     'landlord',
     1.0,
     warden: 'brine',
     guest: 'inspector',
   ),
   LevelDef(
-    'Fogbank Arcade',
-    'The fog has come in, and so has a pirate.',
+    'The Fogbound Arcade',
+    'The Rift breathes fog, and a drowned pirate rode it in.',
     'cuttle',
     1.1,
     rule: LevelRule.fog,
@@ -1213,8 +1213,8 @@ const List<LevelDef> kLevels = [
     guest: 'undertow',
   ),
   LevelDef(
-    'Crab Cove',
-    'Shells, claws and a crab who thinks he is royalty.',
+    'Shattered Cove',
+    'The Rift split the cove. Shells, claws and a crab who thinks he is royalty.',
     'kingcrab',
     1.2,
     rule: LevelRule.tide,
@@ -1222,7 +1222,7 @@ const List<LevelDef> kLevels = [
     guest: 'inspector',
   ),
   LevelDef(
-    'The Night Fair',
+    'The Rift Fair',
     'The rides are still running. Nobody is operating them.',
     'ghosttrain',
     1.3,
@@ -1231,7 +1231,7 @@ const List<LevelDef> kLevels = [
     guest: 'limpet',
   ),
   LevelDef(
-    'Lighthouse Point',
+    'The Dark Lamp',
     'The lamp still turns. The keeper does not.',
     'shadowkeeper',
     1.4,
@@ -1240,8 +1240,8 @@ const List<LevelDef> kLevels = [
     guest: 'ringmaster',
   ),
   LevelDef(
-    'The Void Pier',
-    'The end of the pier is not where it used to be.',
+    'The Rift\'s Edge',
+    'The edge of the world is not where it used to be.',
     'void',
     1.5,
     rule: LevelRule.statik,
@@ -1318,7 +1318,7 @@ bool isDoubleBill(int wave) => wave % kFinalWave == 40;
 // ---------------- Partner ----------------
 const String kPartnerName = 'Brenda';
 const List<String> kBrendaLines = [
-  'I have worked this pier for twenty years and I have never seen a crab that angry.',
+  'I have worked this front for twenty years and I have never seen a crab come out of the Rift that angry.',
   'Feed the machine, love. The machine is hungry.',
   'If we survive this I am asking for a raise. A small one. A biscuit.',
   'Three of the same? Squash \'em. That is what my mother did.',
