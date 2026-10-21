@@ -111,8 +111,9 @@ void _tone(
   final t = c.currentTime + math.max(0, at);
   final o = c.createOscillator()..type = type;
   o.frequency.setValueAtTime(f, t);
-  if (slide != null)
+  if (slide != null) {
     o.frequency.exponentialRampToValueAtTime(math.max(20, slide), t + dur);
+  }
   final g = c.createGain();
   g.gain.setValueAtTime(0.0001, t);
   g.gain.linearRampToValueAtTime(vol, t + attack);
@@ -173,8 +174,9 @@ void _play(String name, double v) {
           type: v >= 3 ? 'sawtooth' : 'square',
         );
       }
-      if (v >= 3)
+      if (v >= 3) {
         _noiseBurst(0.4, vol: 0.15, freq: 4000, type: 'highpass', at: 0.15);
+      }
     case 'merge':
       for (final s in [0, 4, 7, 12]) {
         _tone(_n(s + 5 + v.round() * 2), 0.35, type: 'triangle', vol: 0.12);
@@ -348,8 +350,9 @@ void _schedule() {
           out: bus,
         );
       }
-      if (_tense)
+      if (_tense) {
         _noiseBurst(0.05, vol: 0.04, freq: 6000, type: 'highpass', at: at);
+      }
       _nextBar += beat * 3;
       _bar++;
     }

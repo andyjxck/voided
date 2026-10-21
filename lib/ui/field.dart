@@ -59,8 +59,9 @@ class FieldGeom {
       final o = field.boardOrigin(s);
       final cx = (fx - o.x).floor();
       final cy = (fy - o.y).floor();
-      if (cx >= 0 && cx < kBoardCols && cy >= 0 && cy < kBoardRows)
+      if (cx >= 0 && cx < kBoardCols && cy >= 0 && cy < kBoardRows) {
         return (s, cy * kBoardCols + cx);
+      }
     }
     return null;
   }
@@ -696,12 +697,13 @@ class FieldPainter extends CustomPainter {
               ..strokeWidth = (f.type == FxType.beam ? 3.2 : 1.8) * f.size
               ..strokeCap = StrokeCap.round,
           );
-          if (k > 0.3)
+          if (k > 0.3) {
             c.drawCircle(
               q,
               s * 0.08 * (1 - k) * f.size,
               Paint()..color = Colors.white.withValues(alpha: a),
             );
+          }
         case FxType.hit:
           drawText(
             c,
