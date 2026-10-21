@@ -102,8 +102,8 @@ Tone toneForTier(int tier) => const [
 // Backdrops and frames
 // ---------------------------------------------------------------------------
 
-/// The painted fairground backdrop behind every screen: the weathered
-/// promenade at dusk, darkened at the edges so panels and figurines read.
+/// The painted Rift backdrop behind every screen: the cracked, rain-wet
+/// seafront split by the Rift, darkened at the edges so panels and figurines read.
 class SeaBackdrop extends StatelessWidget {
   final Widget child;
   const SeaBackdrop({super.key, required this.child});
@@ -114,9 +114,8 @@ class SeaBackdrop extends StatelessWidget {
       image: DecorationImage(
         image: AssetImage('assets/backdrop.jpg'),
         fit: BoxFit.cover,
-        // A touch right of centre on tall phones: keeps the torn stall canvas
-        // at the top left clear of the board's corner in co-op.
-        alignment: Alignment(0.25, 0),
+        // Centred: the Rift runs down the middle, behind the board.
+        alignment: Alignment.center,
       ),
     ),
     child: DecoratedBox(
