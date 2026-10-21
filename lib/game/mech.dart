@@ -719,7 +719,7 @@ extension _Mech on Game {
     final lv = cfg.level;
     // Everything comes out of the Hatch in twins (one per route), so each
     // route gets half the wave's threat.
-    final budget = math.max(2, (threatBudget(n, lv) / 2).ceil());
+    final budget = math.max(2, (threatBudget(n, lv) * kTwinWaveShare).ceil());
     final pool = enemyPool(n, lv);
     final out = <String>[];
     int cost(String id) => kEnemyById[id]!.threat;

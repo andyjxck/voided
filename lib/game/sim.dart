@@ -55,8 +55,20 @@ class Field {
       // outside, laneGap apart (from the centre-gate spawning work).
       const i = 0.5 + laneGap / 2, o = 0.5 - laneGap / 2;
       routes = [
-        [V2(cx, i), const V2(i, i), V2(i, h - i), V2(w - i, h - i), V2(w - i, i)],
-        [V2(cx, o), V2(w - o, o), V2(w - o, h - o), V2(o, h - o), const V2(o, o)],
+        [
+          V2(cx, i),
+          const V2(i, i),
+          V2(i, h - i),
+          V2(w - i, h - i),
+          V2(w - i, i),
+        ],
+        [
+          V2(cx, o),
+          V2(w - o, o),
+          V2(w - o, h - o),
+          V2(o, h - o),
+          const V2(o, o),
+        ],
       ];
     } else {
       h = kBoardRows * 2 + 3.0;
@@ -65,9 +77,21 @@ class Field {
       hatch = V2(cx, mid);
       routes = [
         // left, then round Brenda's board at the top
-        [V2(cx, mid - o), V2(0.5, mid - o), const V2(0.5, 0.5), V2(a, 0.5), V2(a, mid - o)],
+        [
+          V2(cx, mid - o),
+          V2(0.5, mid - o),
+          const V2(0.5, 0.5),
+          V2(a, 0.5),
+          V2(a, mid - o),
+        ],
         // right, then round your board at the bottom
-        [V2(cx, mid + o), V2(a, mid + o), V2(a, h - 0.5), V2(0.5, h - 0.5), V2(0.5, mid + o)],
+        [
+          V2(cx, mid + o),
+          V2(a, mid + o),
+          V2(a, h - 0.5),
+          V2(0.5, h - 0.5),
+          V2(0.5, mid + o),
+        ],
       ];
     }
     _cums = [];
@@ -476,7 +500,10 @@ class Game {
   /// Every boss of this wave, dead or alive (the name the UI uses).
   List<Enemy> get bosses => bossList;
 
-  List<Enemy> get bossesAlive => [for (final b in bossList) if (!b.dead) b];
+  List<Enemy> get bossesAlive => [
+    for (final b in bossList)
+      if (!b.dead) b,
+  ];
 
   /// Combined health of every boss out, for the boss bar.
   double get bossHpLeft => bossesAlive.fold(0.0, (a, b) => a + b.hp);
@@ -493,7 +520,18 @@ class Game {
     int color = 0xFFFFD166,
     bool alert = true,
   }) {
-    tells.add(Tell(label, color: color, x: x, y: y, r: r, side: side, cell: cell, dur: dur));
+    tells.add(
+      Tell(
+        label,
+        color: color,
+        x: x,
+        y: y,
+        r: r,
+        side: side,
+        cell: cell,
+        dur: dur,
+      ),
+    );
     if (tells.length > 24) tells.removeAt(0);
     if (alert) {
       alerts.add(label);
@@ -512,6 +550,7 @@ class Game {
 
   PlayerSide get you => sides[0];
   PlayerSide? get partner => sides.length > 1 ? sides[1] : null;
+
   /// Sea things on the pier, by weight (a Plushie Pile counts as 3).
   int get laneCount =>
       enemies.fold(0, (a, e) => e.dead ? a : a + (e.def?.weight ?? 1));
@@ -617,13 +656,29 @@ class Game {
     }
     if (boss != null) return; // boss waves advance when every boss is down
     waveTimer -= dt;
-    if (waveTimer <= 0) startNextWave();
+    if (waveTimer <= 0) {
+      // Calm, waves 19-49: give a crowded board a breather before the next
+      // wave (see kPaceCrowd), so bosses don't arrive behind a pile.
+      if (cfg.difficulty == Difficulty.calm &&
+          wave >= kPaceFrom &&
+          wave <= kPaceTo &&
+          paceHeld < kPaceHoldMax &&
+          (_spawnQueue.isNotEmpty || enemies.length > kPaceCrowd)) {
+        paceHeld += dt;
+        return;
+      }
+      startNextWave();
+    }
   }
+
+  /// Seconds the current wave has been held open by the Calm pacing.
+  double paceHeld = 0;
 
   void startNextWave() {
     if (wave >= kFinalWave && !endless) return;
     wave++;
     unmadeThisWave = 0;
+    paceHeld = 0;
     for (final s in sides) {
       final pay = waveWages(wave);
       s.pennies += pay;
@@ -649,7 +704,11 @@ class Game {
         }
         say(b.name, b.entrance);
         fx.add(Fx(FxType.boss, text: b.name, color: b.color));
-        tell('${b.name} climbs out of the Hatch, twice', dur: 2, color: b.color);
+        tell(
+          '${b.name} climbs out of the Hatch, twice',
+          dur: 2,
+          color: b.color,
+        );
       }
       bossTimer = kBossSeconds;
       waveTimer = kBossSeconds;
@@ -668,7 +727,8 @@ class Game {
 
   /// A boss at [scale] of this wave's boss health, on [route].
   Enemy _spawnBoss(BossDef b, {double scale = 1, double s = 0, int route = 0}) {
-    final hp = baseHp(math.max(1, wave)) *
+    final hp =
+        baseHp(math.max(1, wave)) *
         b.hpMult *
         hpScale(boss: true) *
         _endlessBossMult(wave) *
@@ -682,7 +742,12 @@ class Game {
     if (b.mech == BossMech.ghosttrain) {
       e.carriages = 5;
       for (var k = 1; k <= 5; k++) {
-        final c = _spawn('carriage', route: route, s: s - 0.45 * k, traveled: 0);
+        final c = _spawn(
+          'carriage',
+          route: route,
+          s: s - 0.45 * k,
+          traveled: 0,
+        );
         c.maxHp = hp * 0.12;
         c.hp = c.maxHp;
         c.trainOf = e;
@@ -759,7 +824,14 @@ class Game {
       if (e.hitFlash > 0) e.hitFlash -= dt;
       if (e.burnT > 0) {
         e.burnT -= dt;
-        _damage(e, e.burnDps * dt, null, canEvade: false, quiet: true, kind: kHitStatus);
+        _damage(
+          e,
+          e.burnDps * dt,
+          null,
+          canEvade: false,
+          quiet: true,
+          kind: kHitStatus,
+        );
         if (e.dead) continue;
       }
       if (e.slowT > 0) {
@@ -845,7 +917,12 @@ class Game {
           }
           _broodFlip = !_broodFlip;
           for (var i = 0; i < 3; i++) {
-            _spawn(b.spawn, route: from.route, s: from.s - 0.3 * i, traveled: from.traveled);
+            _spawn(
+              b.spawn,
+              route: from.route,
+              s: from.s - 0.3 * i,
+              traveled: from.traveled,
+            );
           }
           fx.add(
             Fx(FxType.text, x: pos.x, y: pos.y, text: 'BLOOP', color: b.color),
@@ -994,17 +1071,43 @@ class Game {
         u.cd -= dt * (1 + sb) * slowCell;
         if (u.cd > 0) continue;
         // The Wrecker's false lantern soaks single-target shots.
-        if (single && lanternT > 0 && lanternHits > 0 && lanternPos.dist(pos) <= range) {
+        if (single &&
+            lanternT > 0 &&
+            lanternHits > 0 &&
+            lanternPos.dist(pos) <= range) {
           u.cd += d.interval;
           lanternHits--;
-          fx.add(Fx(FxType.shot, x: pos.x, y: pos.y, x2: lanternPos.x, y2: lanternPos.y, color: d.color));
+          fx.add(
+            Fx(
+              FxType.shot,
+              x: pos.x,
+              y: pos.y,
+              x2: lanternPos.x,
+              y2: lanternPos.y,
+              color: d.color,
+            ),
+          );
           if (lanternHits <= 0) {
             lanternT = 0;
-            fx.add(Fx(FxType.text, x: lanternPos.x, y: lanternPos.y, text: 'LANTERN OUT', color: 0xFFFFC300));
+            fx.add(
+              Fx(
+                FxType.text,
+                x: lanternPos.x,
+                y: lanternPos.y,
+                text: 'LANTERN OUT',
+                color: 0xFFFFC300,
+              ),
+            );
           }
           continue;
         }
-        final targets = _targets(pos, range, d.pulse ? 999 : d.multi, by: d, side: p);
+        final targets = _targets(
+          pos,
+          range,
+          d.pulse ? 999 : d.multi,
+          by: d,
+          side: p,
+        );
         if (targets.isEmpty) {
           u.cd = 0;
           continue;
@@ -1016,7 +1119,13 @@ class Game {
     }
   }
 
-  List<Enemy> _targets(V2 pos, double range, int n, {UnitDef? by, PlayerSide? side}) {
+  List<Enemy> _targets(
+    V2 pos,
+    double range,
+    int n, {
+    UnitDef? by,
+    PlayerSide? side,
+  }) {
     final inRange = <Enemy>[];
     for (final e in enemies) {
       if (e.dead || e.submerged || e.s < 0) continue;
@@ -1126,16 +1235,20 @@ class Game {
         for (final o in [...enemies]) {
           if (o == t || o.dead || o.submerged) continue;
           if (field.at(o).dist(tp) <= d.splash) {
-            _damage(o, hit * 0.6, p, unit: d, canEvade: false, quiet: true, kind: kHitArea);
+            _damage(
+              o,
+              hit * 0.6,
+              p,
+              unit: d,
+              canEvade: false,
+              quiet: true,
+              kind: kHitArea,
+            );
           }
-          if (d.burnDps > 0 &&
-              !o.dead &&
-              field.at(o).dist(tp) <= d.splash) {
+          if (d.burnDps > 0 && !o.dead && field.at(o).dist(tp) <= d.splash) {
             _burn(o, p, d);
           }
-          if (d.slowPct > 0 &&
-              !o.dead &&
-              field.at(o).dist(tp) <= d.splash) {
+          if (d.slowPct > 0 && !o.dead && field.at(o).dist(tp) <= d.splash) {
             _slow(o, d, sweets);
           }
         }
@@ -1150,7 +1263,15 @@ class Game {
           // Out of the tin: no armour, double speed.
           t.tin = false;
           t.speed *= 2;
-          fx.add(Fx(FxType.text, x: tp.x, y: tp.y, text: 'TIN CRACKED', color: 0xFFB8B8B8));
+          fx.add(
+            Fx(
+              FxType.text,
+              x: tp.x,
+              y: tp.y,
+              text: 'TIN CRACKED',
+              color: 0xFFB8B8B8,
+            ),
+          );
         }
       }
       if (d.stunChance > 0 && rng.nextDouble() < d.stunChance) {
@@ -1241,10 +1362,12 @@ class Game {
     // Only the rear carriage of the Ghost Train can be hit.
     if (e.boss?.mech == BossMech.ghosttrain && e.carriages > 0) return false;
     if (e.trainOf != null && !e.trainOf!.dead) {
-      final rear = enemies.where((c) => !c.dead && c.trainOf == e.trainOf).fold<Enemy?>(
-        null,
-        (a, c) => a == null || c.traveled < a.traveled ? c : a,
-      );
+      final rear = enemies
+          .where((c) => !c.dead && c.trainOf == e.trainOf)
+          .fold<Enemy?>(
+            null,
+            (a, c) => a == null || c.traveled < a.traveled ? c : a,
+          );
       if (rear != e) return false;
     }
     if (canEvade) {
@@ -1271,7 +1394,16 @@ class Game {
       e.shellHits--;
       if (!quiet) {
         final p = field.at(e);
-        fx.add(Fx(FxType.text, x: p.x, y: p.y, text: 'SHELL ${e.shellHits}', color: 0xFFE9C46A, size: 0.7));
+        fx.add(
+          Fx(
+            FxType.text,
+            x: p.x,
+            y: p.y,
+            text: 'SHELL ${e.shellHits}',
+            color: 0xFFE9C46A,
+            size: 0.7,
+          ),
+        );
       }
       return true;
     }
@@ -1296,7 +1428,17 @@ class Game {
       if (group.isNotEmpty) {
         final part = a / (group.length + 1);
         for (final o in group) {
-          _damage(o, part, src, unit: unit, canEvade: false, ignoreArmor: true, quiet: true, kind: kind, shared: true);
+          _damage(
+            o,
+            part,
+            src,
+            unit: unit,
+            canEvade: false,
+            ignoreArmor: true,
+            quiet: true,
+            kind: kind,
+            shared: true,
+          );
         }
         a = part;
       }
@@ -1412,7 +1554,14 @@ class Game {
         bossesKilled++;
         say(e.name, e.boss!.defeat);
       } else {
-        tell('One ${e.name} down. One to go.', x: pos.x, y: pos.y, r: 1, dur: 2, color: e.boss!.color);
+        tell(
+          'One ${e.name} down. One to go.',
+          x: pos.x,
+          y: pos.y,
+          r: 1,
+          dur: 2,
+          color: e.boss!.color,
+        );
       }
       fx.add(Fx(FxType.shake, size: 0.8));
       return;

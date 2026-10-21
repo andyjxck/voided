@@ -12,11 +12,24 @@ const double kSoloHpMultiplier = 0.5;
 
 /// Bosses also take [kSoloHpMultiplier] in Solo, times this. 1.0 means bosses
 /// scale exactly like everything else (the sims showed they stay a fight).
-final double kSoloBossExtra = double.parse(const String.fromEnvironment('SOLOB', defaultValue: '0.7'));
+final double kSoloBossExtra = double.parse(
+  const String.fromEnvironment('SOLOB', defaultValue: '0.7'),
+);
+
+/// Share of a wave's threat budget each route gets (its twin gets the
+/// same). 0.5 splits the wave exactly in two.
+final double kTwinWaveShare = double.parse(
+  const String.fromEnvironment('TWINW', defaultValue: '0.5'),
+);
+
 // 0.75 and 0.7 (above) bring Calm/Choppy win rates back near the
 // pre-content numbers after the content plan's new boss moves (tool/death_probe.dart).
-final double kBossHpScale = double.parse(const String.fromEnvironment('BOSSHP', defaultValue: '0.75'));
-final double kSecondFormHp = double.parse(const String.fromEnvironment('F2HP', defaultValue: '1.0'));
+final double kBossHpScale = double.parse(
+  const String.fromEnvironment('BOSSHP', defaultValue: '0.75'),
+);
+final double kSecondFormHp = double.parse(
+  const String.fromEnvironment('F2HP', defaultValue: '1.0'),
+);
 
 enum GameMode { coop, solo }
 
@@ -148,7 +161,8 @@ const Map<String, String> kUnionRules = {
   'Sweets': 'Sweets slow 50% harder and longer',
   'Arcade': '+1 penny every 8 kills by Arcade',
   'Sea': 'Sea figurines get +0.6 range',
-  'Lamp': 'Lamp figurines show hidden things to everyone, and Lamp hits never miss',
+  'Lamp':
+      'Lamp figurines show hidden things to everyone, and Lamp hits never miss',
 };
 
 const List<UnitDef> kUnits = [..._kUnitsBase, ...kUnitsNew];
@@ -534,6 +548,30 @@ const int kStackMax = 3;
 const int kLaneLimit = 100;
 const double kWaveSeconds = 20;
 const double kBossSeconds = 60;
+
+/// Calm pacing from wave 19 to 48. In waves [kPaceFrom] to [kPaceTo] the next
+/// wave waits while its spawns are still coming out or more than
+/// [kPaceCrowd] sea things are still out, for up to [kPaceHoldMax] extra
+/// seconds, so the board can clear each wave before the next one lands and
+/// the wave 30/40/50 bosses don't arrive behind a pile (14-32 left by wave
+/// 29 without it). Waves are not thinned, so kills (and pennies) stay the
+/// same. Calm only; Choppy and Storm keep the flat [kWaveSeconds]. It stops
+/// at 48 so the final boss still arrives into a busy board and stays a fight
+/// (holding wave 49 too left it under a third of its timer used in Solo).
+/// tool/death_probe.dart, seeds 1000-1023: Calm co-op 63% -> 88%, solo
+/// 42% -> 83%; winning runs about 17 -> 20 minutes.
+final int kPaceFrom = int.parse(
+  const String.fromEnvironment('PACEFROM', defaultValue: '19'),
+);
+final int kPaceTo = int.parse(
+  const String.fromEnvironment('PACETO', defaultValue: '48'),
+);
+final int kPaceCrowd = int.parse(
+  const String.fromEnvironment('PACECROWD', defaultValue: '2'),
+);
+final double kPaceHoldMax = double.parse(
+  const String.fromEnvironment('PACEHOLD', defaultValue: '30'),
+);
 
 /// Waves in one level. Beat the final boss on this wave to clear the level.
 const int kFinalWave = 50;
