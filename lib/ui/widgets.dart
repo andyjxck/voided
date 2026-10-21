@@ -12,20 +12,23 @@ class LaneMeter extends StatelessWidget {
   Widget build(BuildContext context) {
     final f = (count / limit).clamp(0.0, 1.0);
     final col = Color.lerp(const Color(0xFF4FB286), Pal.danger, f)!;
-    return Row(children: [
-      Expanded(
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(5),
-          child: Stack(children: [
-            Container(height: 10, color: Colors.black38),
-            FractionallySizedBox(widthFactor: f, child: Container(height: 10, color: col)),
-          ]),
+    final style = TextStyle(color: f > 0.7 ? Pal.danger : Colors.white60, fontSize: 11, fontWeight: FontWeight.w800);
+    // On narrow phones the words go and the numbers stay.
+    return LayoutBuilder(builder: (context, c) {
+      return Row(children: [
+        Expanded(
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(5),
+            child: Stack(children: [
+              Container(height: 10, color: Colors.black38),
+              FractionallySizedBox(widthFactor: f, child: Container(height: 10, color: col)),
+            ]),
+          ),
         ),
-      ),
-      const SizedBox(width: 6),
-      Text('$count/$limit on the pier',
-          style: TextStyle(color: f > 0.7 ? Pal.danger : Colors.white60, fontSize: 11, fontWeight: FontWeight.w800)),
-    ]);
+        const SizedBox(width: 6),
+        Text(c.maxWidth >= 190 ? '$count/$limit on the pier' : '$count/$limit', style: style),
+      ]);
+    });
   }
 }
 
@@ -174,7 +177,12 @@ class SummonButton extends StatelessWidget {
                 BoxShadow(color: glow ? Pal.neon : Colors.black54, blurRadius: glow ? 16 : 4, offset: const Offset(0, 3)),
               ],
             ),
-            child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+              child: Center(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Column(mainAxisSize: MainAxisSize.min, children: [
               Text('SUMMON', style: TextStyle(color: enabled ? Pal.ink : Colors.white54, fontWeight: FontWeight.w900, fontSize: 18, letterSpacing: 2)),
               Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                 Icon(Icons.circle, size: 11, color: enabled ? const Color(0xFF8A4B00) : Colors.white38),
@@ -182,6 +190,9 @@ class SummonButton extends StatelessWidget {
                 Text('$cost', style: TextStyle(color: enabled ? const Color(0xFF5A3000) : Colors.white54, fontWeight: FontWeight.w900, fontSize: 13)),
               ]),
             ]),
+                ),
+              ),
+            ),
           ),
         ),
       );

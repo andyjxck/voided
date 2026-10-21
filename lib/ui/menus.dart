@@ -88,7 +88,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                     onTap: () => _go(Album(meta: meta))),
                 MenuButton(label: 'Sea Things & Bosses', onTap: () => _go(const Bestiary())),
                 const SizedBox(height: 8),
-                Row(mainAxisSize: MainAxisSize.min, children: [
+                Wrap(alignment: WrapAlignment.center, runSpacing: 6, children: [
                   _toggle('Sound', meta.sound, (v) {
                     meta.sound = v;
                     Sfx.sound = v;
@@ -216,7 +216,10 @@ class _ModeSelectState extends State<ModeSelect> {
     final m = widget.meta;
     return _Page(
       title: 'Open the pier',
-      child: ListView(padding: const EdgeInsets.all(16), children: [
+      // The list scrolls; OPEN UP stays pinned so it is never below the fold.
+      child: Column(children: [
+          Expanded(
+            child: ListView(padding: const EdgeInsets.fromLTRB(16, 16, 16, 8), children: [
         const Text('WHO\'S ON SHIFT', style: TextStyle(color: Colors.white54, fontWeight: FontWeight.w900, letterSpacing: 1.5)),
         const SizedBox(height: 8),
         _choice(
@@ -242,7 +245,11 @@ class _ModeSelectState extends State<ModeSelect> {
             body: d.index > m.maxDifficulty ? 'Win on ${Difficulty.values[d.index - 1].label} to unlock.' : d.blurb,
             onTap: d.index > m.maxDifficulty ? null : () => setState(() => diff = d),
           ),
-        const SizedBox(height: 16),
+            ]),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+            child: Column(mainAxisSize: MainAxisSize.min, children: [
         Center(
           child: MenuButton(
             label: 'OPEN UP',
@@ -265,7 +272,9 @@ class _ModeSelectState extends State<ModeSelect> {
               child: const Text('Play with the tutorial again', style: TextStyle(color: Colors.white54)),
             ),
           ),
-      ]),
+            ]),
+          ),
+        ]),
     );
   }
 

@@ -69,6 +69,9 @@ class _GameScreenState extends State<GameScreen> with SingleTickerProviderStateM
   bool _ended = false;
   RunSummary? summary;
   final ValueNotifier<int> frame = ValueNotifier(0);
+  // One node for the whole screen. (A new FocusNode per build leaked 60 nodes
+  // a second and stole focus every frame, which broke taps in the browser.)
+  final FocusNode _keysFocus = FocusNode(debugLabel: 'game keys');
   final math.Random _r = math.Random();
   FieldGeom? _geo;
   int _lastChat = 0;
@@ -98,6 +101,7 @@ class _GameScreenState extends State<GameScreen> with SingleTickerProviderStateM
   void dispose() {
     _ticker.dispose();
     frame.dispose();
+    _keysFocus.dispose();
     super.dispose();
   }
 
@@ -272,9 +276,23 @@ class _GameScreenState extends State<GameScreen> with SingleTickerProviderStateM
     dragPos = null;
   }
 
+  bool get _tutCanNext =>
+      tut >= 0 && tut < kTutorial.length && (kTutorial[tut].wait == 'next' || (kTutorial[tut].wait == 'summon' && _tutSummons >= 3));
+
+  void _tutNext() => setState(() {
+        Sfx.unlock();
+        tut++;
+        if (tut >= kTutorial.length) {
+          tut = -1;
+          widget.meta.tutorialDone = true;
+          widget.onSave();
+        }
+      });
+
   void _keys(KeyEvent e) {
     if (e is! KeyDownEvent) return;
     final k = e.logicalKey;
+    if ((k == LogicalKeyboardKey.enter || k == LogicalKeyboardKey.numpadEnter) && _tutCanNext) return _tutNext();
     if (k == LogicalKeyboardKey.space || k == LogicalKeyboardKey.keyS) _summon();
     if (k == LogicalKeyboardKey.keyP || k == LogicalKeyboardKey.escape) setState(() => paused = !paused);
     if (k == LogicalKeyboardKey.keyM && selected != null && g.canMerge(g.you, selected!)) g.merge(g.you, selected!);
@@ -287,7 +305,7 @@ class _GameScreenState extends State<GameScreen> with SingleTickerProviderStateM
     return Scaffold(
       backgroundColor: Pal.sea,
       body: KeyboardListener(
-        focusNode: FocusNode()..requestFocus(),
+        focusNode: _keysFocus,
         autofocus: true,
         onKeyEvent: _keys,
         child: SafeArea(
@@ -328,26 +346,32 @@ class _GameScreenState extends State<GameScreen> with SingleTickerProviderStateM
       child: Row(children: [
         Expanded(
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Row(children: [
-              Text(waveLabel, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 15, letterSpacing: 1)),
-              const SizedBox(width: 8),
-              Text('${timer.ceil()}s',
-                  style: TextStyle(color: g.boss != null && timer < 15 ? Pal.danger : Colors.white54, fontWeight: FontWeight.w700, fontSize: 13)),
-            ]),
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerLeft,
+              child: Row(mainAxisSize: MainAxisSize.min, children: [
+                Text(waveLabel, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 15, letterSpacing: 1)),
+                const SizedBox(width: 8),
+                Text('${timer.ceil()}s',
+                    style: TextStyle(color: g.boss != null && timer < 15 ? Pal.danger : Colors.white54, fontWeight: FontWeight.w700, fontSize: 13)),
+              ]),
+            ),
             const SizedBox(height: 4),
             LaneMeter(count: lc, limit: kLaneLimit),
           ]),
         ),
-        const SizedBox(width: 10),
+        const SizedBox(width: 8),
         CurrencyChip(icon: Icons.circle, color: Pal.penny, value: '${p.pennies}'),
-        const SizedBox(width: 6),
+        const SizedBox(width: 4),
         CurrencyChip(icon: Icons.eco, color: Pal.leaf, value: '${p.leaves}'),
         IconButton(
+          visualDensity: VisualDensity.compact,
           tooltip: speed == 1 ? 'Speed up (F)' : 'Normal speed (F)',
           onPressed: () => setState(() => speed = speed == 1 ? 2 : 1),
           icon: Text('${speed}x', style: TextStyle(color: speed == 2 ? Pal.neon : Colors.white70, fontWeight: FontWeight.w900)),
         ),
         IconButton(
+          visualDensity: VisualDensity.compact,
           tooltip: 'Pause (P)',
           onPressed: () => setState(() => paused = true),
           icon: const Icon(Icons.pause_rounded, color: Colors.white),
@@ -586,7 +610,7 @@ class _GameScreenState extends State<GameScreen> with SingleTickerProviderStateM
               _brendaCard(),
             ],
             const SizedBox(height: 8),
-            const Text('Keys: Space summon · M merge selected · F speed · P pause',
+            const Text('Keys: Space summon · M merge selected · F speed · P pause · Enter next tip',
                 style: TextStyle(color: Colors.white38, fontSize: 11)),
           ]),
         ),
@@ -774,27 +798,21 @@ class _GameScreenState extends State<GameScreen> with SingleTickerProviderStateM
                 Text(s.body, style: const TextStyle(color: Colors.white, fontSize: 13, height: 1.35)),
                 const SizedBox(height: 10),
                 Row(children: [
-                  TextButton(
-                    onPressed: () => setState(() {
-                      tut = -1;
-                      widget.meta.tutorialDone = true;
-                      widget.onSave();
-                    }),
-                    child: const Text('Skip tutorial', style: TextStyle(color: Colors.white54)),
+                  Flexible(
+                    child: TextButton(
+                      onPressed: () => setState(() {
+                        tut = -1;
+                        widget.meta.tutorialDone = true;
+                        widget.onSave();
+                      }),
+                      child: const Text('Skip tutorial', overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.white54)),
+                    ),
                   ),
                   const Spacer(),
-                  if (s.wait == 'next' || (s.wait == 'summon' && _tutSummons >= 3))
+                  if (_tutCanNext)
                     FilledButton(
                       style: FilledButton.styleFrom(backgroundColor: Pal.neon, foregroundColor: Pal.ink),
-                      onPressed: () => setState(() {
-                        Sfx.unlock();
-                        tut++;
-                        if (tut >= kTutorial.length) {
-                          tut = -1;
-                          widget.meta.tutorialDone = true;
-                          widget.onSave();
-                        }
-                      }),
+                      onPressed: _tutNext,
                       child: Text(tut == kTutorial.length - 1 ? 'Let\'s go' : 'Next', style: const TextStyle(fontWeight: FontWeight.w900)),
                     )
                   else
