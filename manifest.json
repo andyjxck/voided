@@ -5,7 +5,7 @@
     "display": "standalone",
     "background_color": "#0D2552",
     "theme_color": "#0D2552",
-    "description": "Voided: a seaside tower defence. Hold the pier till the season ends.",
+    "description": "Voided: a tower defence at the Rift. Hold the line till the Rift closes.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
