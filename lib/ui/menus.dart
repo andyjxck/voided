@@ -219,8 +219,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                 _SoundBtn(meta: m, save: widget.save),
                               ],
                             ),
-                            SizedBox(height: math.max(40, heroH - 120)),
-                            const _Logo(),
+                            // Short screens give up sky so PLAY stays above the fold.
+                            SizedBox(
+                              height: ((c.maxHeight - 600) * 0.6).clamp(
+                                12.0,
+                                200.0,
+                              ),
+                            ),
+                            _Logo(size: c.maxHeight < 700 ? 50 : 64),
                             const SizedBox(height: 14),
                             _levelCard(),
                             const SizedBox(height: 10),
@@ -496,7 +502,8 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 class _Logo extends StatelessWidget {
-  const _Logo();
+  final double size;
+  const _Logo({this.size = 64});
   @override
   Widget build(BuildContext context) => Semantics(
     header: true,
@@ -510,7 +517,7 @@ class _Logo extends StatelessWidget {
             'VOIDED',
             style:
                 display(
-                  64,
+                  size,
                   color: Vx.gold,
                   stroke: const Color(0xFF3A1A00),
                   w: 5,
