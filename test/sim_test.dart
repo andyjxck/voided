@@ -267,7 +267,12 @@ void main() {
         [
           for (final w in [10, 20, 30, 40, 50]) bossForWave(w).id,
         ],
-        ['brine', 'inspector', 'undertow', 'brine', 'landlord'],
+        ['brine', 'inspector', 'brine', 'brine', 'landlord'],
+      );
+      // Level 1's wave 40 is a double bill: the warden and the guest.
+      expect(
+        [for (final b in bossesForWave(40)) b.id],
+        ['brine', 'inspector'],
       );
     });
 
@@ -275,7 +280,14 @@ void main() {
       final finals = [
         for (var l = 1; l <= kLevels.length; l++) bossForWave(kFinalWave, l).id,
       ];
-      expect(finals, ['landlord', 'cuttle', 'kingcrab', 'void']);
+      expect(finals, [
+        'landlord',
+        'cuttle',
+        'kingcrab',
+        'ghosttrain',
+        'shadowkeeper',
+        'void',
+      ]);
       expect(finals.toSet().length, kLevels.length);
       for (var l = 1; l <= kLevels.length * 2; l++) {
         expect(bossForWave(kFinalWave, l).id, levelDef(l).finalBoss);
@@ -284,17 +296,17 @@ void main() {
           expect(bossForWave(w, l).id, isNot(levelDef(l).finalBoss));
         }
       }
-      // Laps after the fourth level come round tougher.
-      expect(levelDef(5).hpMult, greaterThan(levelDef(4).hpMult));
-      expect(levelDef(5).finalBoss, levelDef(1).finalBoss);
+      // Laps after the sixth level come round tougher.
+      expect(levelDef(7).hpMult, greaterThan(levelDef(6).hpMult));
+      expect(levelDef(7).finalBoss, levelDef(1).finalBoss);
     });
 
     test('a level run spawns that level\'s final boss and enemies', () {
-      final g = Game(const GameConfig(level: 4, seed: 3));
+      final g = Game(const GameConfig(level: 6, seed: 3));
       g.wave = kFinalWave - 1;
       g.startNextWave();
       expect(g.boss?.boss?.id, 'void');
-      expect(enemyPool(10, 4), contains('voidling'));
+      expect(enemyPool(10, 6), contains('voidling'));
       expect(enemyPool(10, 1), isNot(contains('voidling')));
     });
 
@@ -362,6 +374,50 @@ void main() {
     });
   });
 
+  group('the Hatch', () {
+    for (final mode in GameMode.values) {
+      test('${mode.name}: things climb out in twins, one left, one right', () {
+        final g = Game(GameConfig(mode: mode, seed: 5));
+        g.wave = 2;
+        g.startNextWave();
+        advance(g, 0.05);
+        final out = g.enemies.where((e) => !e.dead).toList();
+        expect(out.length, 2);
+        expect(out[0].def!.id, out[1].def!.id);
+        expect(out.map((e) => e.route).toSet(), {0, 1});
+        // Both start at the Hatch...
+        final h = g.field.hatch;
+        for (final e in out) {
+          expect(g.field.posAt(0, e.route).dist(h), lessThan(0.3));
+        }
+        // ...and the left one heads left, the right one heads right.
+        final l = g.field.posAt(1, 0), r = g.field.posAt(1, 1);
+        expect(l.x, lessThan(h.x));
+        expect(r.x, greaterThan(h.x));
+      });
+    }
+
+    test('co-op: the Hatch is dead centre and each route rounds one board', () {
+      final f = Field(GameMode.coop);
+      expect(f.hatch.x, closeTo(f.w / 2, 1e-9));
+      expect(f.hatch.y, closeTo(f.h / 2, 1e-9));
+      expect(f.sideOfRoute(0), 1);
+      expect(f.sideOfRoute(1), 0);
+      // The two routes are the same length, so neither side gets the short one.
+      var len1 = 0.0;
+      final pts = f.routes[1];
+      for (var i = 0; i < pts.length; i++) {
+        len1 += pts[i].dist(pts[(i + 1) % pts.length]);
+      }
+      expect(len1, closeTo(f.lap, 1e-9));
+      // Route 0 stays in the top half, route 1 in the bottom half.
+      for (var i = 0; i < 40; i++) {
+        expect(f.posAt(f.lap * i / 40, 0).y, lessThanOrEqualTo(f.h / 2));
+        expect(f.posAt(f.lap * i / 40, 1).y, greaterThanOrEqualTo(f.h / 2));
+      }
+    });
+  });
+
   group('bosses', () {
     test(
       'a boss wave spawns the boss with the right health and a ${kBossSeconds.round()}s timer',
@@ -369,7 +425,15 @@ void main() {
         final g = gameAtBoss(10);
         expect(g.boss, isNotNull);
         expect(g.boss!.boss!.id, 'brine');
-        expect(g.boss!.maxHp, closeTo(baseHp(10) * 7, 1e-6));
+        // Twins: one heads left, one heads right, half the health each.
+        g.update(0.02);
+        expect(g.bossList.length, 2);
+        expect(g.bossList.map((b) => b.route).toSet(), {0, 1});
+        expect(g.bossList.where((b) => b.twinLead).length, 1);
+        for (final b in g.bossList) {
+          expect(b.maxHp, closeTo(baseHp(10) * 7 * 0.5, 1e-6));
+        }
+        expect(g.bossHpMax, closeTo(baseHp(10) * 7, 1e-6));
         expect(g.bossTimer, kBossSeconds);
       },
     );
@@ -410,7 +474,11 @@ void main() {
     );
 
     test('the Undertow dives out of reach, heals, then surges', () {
-      final g = gameAtBoss(30);
+      // The Undertow is level 2's guest, on wave 20.
+      final g = Game(const GameConfig(level: 2, seed: 3));
+      g.wave = 19;
+      g.startNextWave();
+      expect(g.boss!.boss!.id, 'undertow');
       final b = g.boss!;
       b.hp = b.maxHp * 0.5;
       advance(g, 4.1);
@@ -439,7 +507,8 @@ void main() {
     test('the Landlord takes 15% of everyone\'s pennies each lap', () {
       final g = gameAtBoss(kFinalWave);
       g.you.pennies = 1000;
-      g.boss!.traveled = g.field.lap - 0.001;
+      g.update(0.02);
+      g.boss!.traveled = g.field.cycle - 0.001;
       advance(g, 0.1);
       expect(g.you.pennies, 850);
     });
@@ -450,7 +519,10 @@ void main() {
         // Solo, so the boss starts next to your board.
         final g = gameAtBoss(10, mode: GameMode.solo);
         final leaves = g.you.leaves;
-        g.boss!.hp = 0.0001;
+        g.update(0.02);
+        for (final b in g.bossList) {
+          b.hp = 0.0001;
+        }
         fillBoard(g.you);
         advance(g, 3);
         expect(g.boss, isNull);
@@ -459,9 +531,12 @@ void main() {
         expect(g.status, GameStatus.playing);
 
         final last = gameAtBoss(kFinalWave, mode: GameMode.solo);
-        last.boss!
-          ..hp = 0.0001
-          ..phase = 2; // past both shield phases
+        last.update(0.02);
+        for (final b in last.bossList) {
+          b
+            ..hp = 0.0001
+            ..phase = 2; // past both shield phases
+        }
         fillBoard(last.you);
         advance(last, 3);
         expect(last.status, GameStatus.won);

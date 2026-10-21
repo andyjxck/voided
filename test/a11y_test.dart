@@ -163,7 +163,9 @@ void main() {
       expect(narrate(n, g, 3).map((s) => s.text), [
         '15 seconds left on the boss.',
       ]);
-      g.boss = null;
+      for (final b in g.bossList) {
+        b.dead = true;
+      }
       expect(narrate(n, g, 3).map((s) => s.text), ['Boss defeated.']);
     });
 

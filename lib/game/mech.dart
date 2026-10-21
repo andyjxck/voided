@@ -63,12 +63,12 @@ extension _Mech on Game {
       if (!shown && !lamp && !deep) return false;
     }
     if (_inFog(e) && !lamp && d != null && d.chain == 0) {
-      if (field.posAt(e.s).dist(pos) > 3.0) return false;
+      if (field.at(e).dist(pos) > 3.0) return false;
     }
     // The Void's event horizon: only area and Lamp hits land inside it.
     final v = _voidBoss;
     if (v != null && e != v && d != null && !lamp && d.splash <= 0 && !d.pulse && d.chain == 0) {
-      if (field.posAt(e.s).dist(field.posAt(v.s)) < 1.4) return false;
+      if (field.at(e).dist(field.at(v)) < 1.4) return false;
     }
     return true;
   }
@@ -93,7 +93,7 @@ extension _Mech on Game {
   double _armorOf(Enemy e) {
     var a = e.armor;
     if (e.trait == Trait.grow) {
-      a = math.min(0.6, (e.traveled % field.lap) / field.lap * 0.6);
+      a = math.min(0.6, (e.traveled % field.cycle) / field.cycle * 0.6);
     }
     if (e.copied == Trait.armor) a = math.max(a, 0.3);
     if (e.trait == Trait.tin && e.tin) a = math.max(a, 0.6);
@@ -114,7 +114,7 @@ extension _Mech on Game {
       if (e.stacks >= 3) {
         e.stacks = 0;
         e.immuneT = 6;
-        final p = field.posAt(e.s);
+        final p = field.at(e);
         fx.add(Fx(FxType.text, x: p.x, y: p.y, text: 'SHRUG', color: 0xFFFF8C42));
       }
     }
@@ -252,14 +252,14 @@ extension _Mech on Game {
         if (d.abil == Abil.reveal ||
             (d.tags.contains('Lamp') && unions.contains('Lamp'))) {
           for (final e in enemies) {
-            if (!e.dead && field.posAt(e.s).dist(pos) <= d.range) {
+            if (!e.dead && field.at(e).dist(pos) <= d.range) {
               e.revealT = math.max(e.revealT, 0.3);
             }
           }
         }
         if (d.abil == Abil.lighter) {
           for (final e in enemies) {
-            if (!e.dead && field.posAt(e.s).dist(pos) <= d.range) {
+            if (!e.dead && field.at(e).dist(pos) <= d.range) {
               e.litT = math.max(e.litT, 0.3);
             }
           }
@@ -291,7 +291,7 @@ extension _Mech on Game {
       case Abil.horn:
         var any = false;
         for (final e in enemies) {
-          if (e.dead || field.posAt(e.s).dist(pos) > d.range) continue;
+          if (e.dead || field.at(e).dist(pos) > d.range) continue;
           if (e.boss?.mech == BossMech.limpet && e.clampT > 0) continue;
           final back = e.isBoss ? 0.2 : d.abilPow;
           e.s -= back;
@@ -306,7 +306,7 @@ extension _Mech on Game {
         if (ts.isEmpty) return;
         final at = field.posAt(ts.first.s);
         for (final e in enemies) {
-          if (e.dead || field.posAt(e.s).dist(at) > 1.2) continue;
+          if (e.dead || field.at(e).dist(at) > 1.2) continue;
           if (_controlBlocked(e)) continue;
           e.freezeT = math.max(e.freezeT, e.isBoss ? 0.3 : d.abilDur);
         }
@@ -329,7 +329,7 @@ extension _Mech on Game {
           final back = e.traveled % field.lap;
           e.s -= back;
           e.traveled -= back;
-          final ep = field.posAt(e.s);
+          final ep = field.at(e);
           fx.add(Fx(FxType.text, x: ep.x, y: ep.y, text: 'EVICTED', color: d.color));
         }
       case Abil.ink:
@@ -337,7 +337,7 @@ extension _Mech on Game {
         if (ts.isEmpty) return;
         final at = field.posAt(ts.first.s);
         for (final e in [...enemies]) {
-          if (e.dead || field.posAt(e.s).dist(at) > 1.5) continue;
+          if (e.dead || field.at(e).dist(at) > 1.5) continue;
           e.inkT = math.max(e.inkT, d.abilDur);
           e.noHealT = math.max(e.noHealT, d.abilDur);
           _damage(e, d.dmg * d.abilPow * m, p, unit: d, canEvade: false, quiet: true, kind: kHitArea);
@@ -353,13 +353,13 @@ extension _Mech on Game {
       case Abil.erase:
         Enemy? best;
         for (final e in enemies) {
-          if (e.dead || field.posAt(e.s).dist(pos) > d.range + 1) continue;
+          if (e.dead || field.at(e).dist(pos) > d.range + 1) continue;
           if (e.isBoss) continue;
           if (best == null || e.hp > best.hp) best = e;
         }
         if (best != null) {
           _damage(best, best.hp + best.shield + 1, p, unit: d, canEvade: false, ignoreArmor: true, quiet: true, kind: kHitStatus);
-          final bp = field.posAt(best.s);
+          final bp = field.at(best);
           fx.add(Fx(FxType.text, x: bp.x, y: bp.y, text: 'ERASED', color: d.color));
         } else if (boss != null && !boss!.dead) {
           _damage(boss!, boss!.maxHp * d.abilPow, p, unit: d, canEvade: false, ignoreArmor: true, quiet: true, kind: kHitStatus);
@@ -408,7 +408,7 @@ extension _Mech on Game {
           t.shellHits = 0;
           t.tin = false;
           t.puff = 0;
-          final tp = field.posAt(t.s);
+          final tp = field.at(t);
           fx.add(Fx(FxType.text, x: tp.x, y: tp.y, text: 'CRACK', color: d.color));
         }
       case Abil.watch:
@@ -457,13 +457,13 @@ extension _Mech on Game {
         if (e.traitT >= e.def!.every) {
           e.traitT = 0;
           for (var i = 0; i < 2; i++) {
-            _spawnScaled('pinchy', e.s - 0.3 * (i + 1), e.traveled);
+            _spawnScaled('pinchy', e, e.s - 0.3 * (i + 1), e.traveled);
           }
         }
       case Trait.ram:
         if (e.traitT >= e.def!.every - 1 && !e.rammed) {
           e.rammed = true;
-          final ep = field.posAt(e.s);
+          final ep = field.at(e);
           tell('Dodgem revving', x: ep.x, y: ep.y, r: 0.5, dur: 1, color: 0xFFE63946, alert: false);
         }
         if (e.traitT >= e.def!.every) {
@@ -471,11 +471,11 @@ extension _Mech on Game {
           e.rammed = false;
           if (e.stickyT <= 0 && e.stunT <= 0 && e.freezeT <= 0) {
             for (final o in enemies) {
-              if (o.dead || (o.s - e.s).abs() > 1.0) continue;
+              if (o.dead || o.route != e.route || (o.s - e.s).abs() > 1.0) continue;
               o.s += 0.5;
               o.traveled += 0.5;
             }
-            final ep = field.posAt(e.s);
+            final ep = field.at(e);
             fx.add(Fx(FxType.text, x: ep.x, y: ep.y, text: 'RAM', color: 0xFFE63946));
           }
         }
@@ -490,7 +490,7 @@ extension _Mech on Game {
       case Trait.foghorn:
         if (e.traitT >= e.def!.every - 2 && !e.rammed) {
           e.rammed = true;
-          final ep = field.posAt(e.s);
+          final ep = field.at(e);
           tell('Fog Horn swelling', x: ep.x, y: ep.y, r: 1.2, dur: 2, color: 0xFF8D6E63);
         }
         if (e.traitT >= e.def!.every) {
@@ -527,7 +527,10 @@ extension _Mech on Game {
     if (tr == Trait.heal || (e.copied == Trait.heal)) {
       for (final o in enemies) {
         if (o == e || o.dead || o.isBoss || o.noHealT > 0 || o.burnT > 0) continue;
-        if ((o.s - e.s).abs() < 1.3) {
+        // Heals don't stack: one healer per thing per moment.
+        if (o.healedAt == time) continue;
+        if (o.route == e.route && (o.s - e.s).abs() < 1.3) {
+          o.healedAt = time;
           o.hp = math.min(o.maxHp, o.hp + o.maxHp * 0.02 * dt);
         }
       }
@@ -599,12 +602,12 @@ extension _Mech on Game {
           p.pennies -= take;
           e.stolen += take;
         }
-        final ep = field.posAt(e.s);
+        final ep = field.at(e);
         fx.add(Fx(FxType.text, x: ep.x, y: ep.y, text: '-2p', color: 0xFFFF5E7E));
       case Trait.bigtop:
         final pool = enemyPool(wave, cfg.level).where((id) => !kDisruptive.contains(id)).toList();
         for (var i = 0; i < 2; i++) {
-          _spawnScaled(pool[rng.nextInt(pool.length)], e.s - 0.3 * (i + 1), e.traveled);
+          _spawnScaled(pool[rng.nextInt(pool.length)], e, e.s - 0.3 * (i + 1), e.traveled);
         }
         tell('The Big Top lets out two more', dur: 1.5, alert: true);
       case Trait.unmaker:
@@ -639,8 +642,8 @@ extension _Mech on Game {
   }
 
   /// Spawn an extra enemy mid-wave at this wave's health.
-  Enemy _spawnScaled(String id, double s, double traveled) {
-    final e = _spawn(id, s: s, traveled: traveled);
+  Enemy _spawnScaled(String id, Enemy from, double s, double traveled) {
+    final e = _spawn(id, route: from.route, s: s, traveled: traveled);
     return e;
   }
 
@@ -648,7 +651,7 @@ extension _Mech on Game {
   // Deaths
   // ------------------------------------------------------------------
   void _onDeath(Enemy e, UnitDef? unit, int kind) {
-    final pos = field.posAt(e.s);
+    final pos = field.at(e);
     if (e.latchSide >= 0) {
       final c = sides[e.latchSide].cells[e.latchCell];
       c.moths = math.max(0, c.moths - 1);
@@ -661,7 +664,7 @@ extension _Mech on Game {
         }
       case Trait.ink:
         for (final o in enemies) {
-          if (o == e || o.dead || (o.s - e.s).abs() > 1.0) continue;
+          if (o == e || o.dead || o.route != e.route || (o.s - e.s).abs() > 1.0) continue;
           o.tunnelT = math.max(o.tunnelT, 1.5);
         }
         fx.add(Fx(FxType.pulse, x: pos.x, y: pos.y, size: 1.0, color: 0xFF1B1B3A));
@@ -677,7 +680,7 @@ extension _Mech on Game {
       case Trait.mirror:
         if (kind == kHitSingle && !e.isCopy) {
           for (var i = 0; i < 2; i++) {
-            final c = _spawn('mirror', s: e.s - 0.2 * i, traveled: e.traveled);
+            final c = _spawn('mirror', route: e.route, s: e.s - 0.2 * i, traveled: e.traveled);
             c.maxHp = e.maxHp * 0.3;
             c.hp = c.maxHp;
             c.isCopy = true;
@@ -704,7 +707,7 @@ extension _Mech on Game {
     if (e.pairDue > 0 && time >= e.pairDue) {
       e.pairDue = 0;
       if (e.noHealT <= 0) e.hp = e.maxHp;
-      final ep = field.posAt(e.s);
+      final ep = field.at(e);
       fx.add(Fx(FxType.text, x: ep.x, y: ep.y, text: 'MENDED', color: 0xFFFFB4A2));
     }
   }
@@ -714,7 +717,9 @@ extension _Mech on Game {
   // ------------------------------------------------------------------
   List<String> _composeWave(int n) {
     final lv = cfg.level;
-    final budget = threatBudget(n, lv);
+    // Everything comes out of the Hatch in twins (one per route), so each
+    // route gets half the wave's threat.
+    final budget = math.max(2, (threatBudget(n, lv) / 2).ceil());
     final pool = enemyPool(n, lv);
     final out = <String>[];
     int cost(String id) => kEnemyById[id]!.threat;
@@ -804,7 +809,7 @@ extension _Mech on Game {
 
   void _bossMech2(Enemy e, double dt) {
     final b = e.boss!;
-    final pos = field.posAt(e.s);
+    final pos = field.at(e);
     switch (b.mech) {
       case BossMech.cuttle:
         // Ink Column: one column of a board gets half range.
@@ -830,7 +835,7 @@ extension _Mech on Game {
         if ((e.phase == 0 && frac < 0.66) || (e.phase == 1 && frac < 0.33)) {
           e.phase++;
           for (var i = 0; i < 4; i++) {
-            _spawn('thief', s: e.s - 0.4 * (i + 1), traveled: e.traveled);
+            _spawn('thief', route: e.route, s: e.s - 0.4 * (i + 1), traveled: e.traveled);
           }
           say(b.name, 'Plunder! Take their pennies, lads!');
         }
@@ -839,12 +844,12 @@ extension _Mech on Game {
         if (e.mechT <= 0) {
           e.mechT = 8;
           for (var i = 0; i < 2; i++) {
-            _spawn('pinchy', s: e.s - 0.3 * (i + 1), traveled: e.traveled);
+            _spawn('pinchy', route: e.route, s: e.s - 0.3 * (i + 1), traveled: e.traveled);
           }
         }
         if ((e.phase == 0 && frac < 0.66) || (e.phase == 1 && frac < 0.33)) {
           e.phase++;
-          final h = _spawn('husk', s: e.s - 0.2, traveled: e.traveled);
+          final h = _spawn('husk', route: e.route, s: e.s - 0.2, traveled: e.traveled);
           h.maxHp = e.maxHp * 0.12;
           h.hp = h.maxHp;
           e.surgeT = 8 * 0.4; // a short burst
@@ -872,7 +877,7 @@ extension _Mech on Game {
           e.clampT = e.form2 ? 6 : 5;
           say(b.name, 'I. Will. Not. Be. Moved.');
         }
-        limpetClamped = e.clampT > 0;
+        limpetClamped = bossList.any((b) => !b.dead && b.clampT > 0);
       case BossMech.ringmaster:
         if (act == null && e.mechT <= 2) {
           const acts = ['Clowns', 'Lion', 'Knife Thrower'];
@@ -888,10 +893,10 @@ extension _Mech on Game {
           for (var k = 0; k < times; k++) {
             if (a == 'Clowns') {
               for (var i = 0; i < 6; i++) {
-                _spawn('clown', s: e.s - 0.25 * (i + 1), traveled: e.traveled);
+                _spawn('clown', route: e.route, s: e.s - 0.25 * (i + 1), traveled: e.traveled);
               }
             } else if (a == 'Lion') {
-              _spawn('lion', s: e.s - 0.4, traveled: e.traveled);
+              _spawn('lion', route: e.route, s: e.s - 0.4, traveled: e.traveled);
             } else {
               e.knifeMiss += 5;
             }
@@ -978,7 +983,7 @@ extension _Mech on Game {
       case BossMech.voidboss:
         // Event Horizon: pull everything in the lane a little closer.
         for (final o in enemies) {
-          if (o == e || o.dead || o.isBoss) continue;
+          if (o == e || o.dead || o.isBoss || o.route != e.route) continue;
           final dd = e.s - o.s;
           if (dd > 0 && dd < 3) {
             o.s += 0.15 * dt;
@@ -986,11 +991,11 @@ extension _Mech on Game {
           }
         }
         final frac = e.hp / e.maxHp;
-        if (e.phase == 0 && frac < 0.66) {
+        if (e.phase == 0 && frac < 0.66 && e.twinLead) {
           e.phase = 1;
           // replays every earlier final, weakened
           for (final id in ['landlord', 'cuttle', 'kingcrab', 'ghosttrain', 'shadowkeeper']) {
-            final r = _spawnBoss(kBossById[id]!, scale: 0.12, s: e.s - 0.5);
+            final r = _spawnBoss(kBossById[id]!, scale: 0.12, s: e.s - 0.5, route: e.route);
             r.mechT = 4;
           }
           tell('The Void replays every final', dur: 2, color: 0xFF7B2CBF);

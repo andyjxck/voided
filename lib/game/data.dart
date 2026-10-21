@@ -12,7 +12,9 @@ const double kSoloHpMultiplier = 0.5;
 
 /// Bosses also take [kSoloHpMultiplier] in Solo, times this. 1.0 means bosses
 /// scale exactly like everything else (the sims showed they stay a fight).
-const double kSoloBossExtra = 1.0;
+final double kSoloBossExtra = double.parse(const String.fromEnvironment('SOLOB', defaultValue: '1.0'));
+final double kBossHpScale = double.parse(const String.fromEnvironment('BOSSHP', defaultValue: '1.0'));
+final double kSecondFormHp = double.parse(const String.fromEnvironment('F2HP', defaultValue: '1.0'));
 
 enum GameMode { coop, solo }
 
