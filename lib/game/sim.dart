@@ -5,6 +5,8 @@ import 'dart:math' as math;
 
 import 'data.dart';
 
+part 'mech.dart';
+
 class V2 {
   final double x, y;
   const V2(this.x, this.y);
@@ -92,6 +94,10 @@ class Field {
 }
 
 class UnitInst {
+  double abilT = 0;
+  int hits = 0;
+  Enemy? rampOn;
+  double rampT = 0;
   final UnitDef def;
   final int uid;
   double cd;
@@ -104,6 +110,21 @@ class UnitInst {
 class Cell {
   final List<UnitInst> units = [];
   double disabled = 0;
+
+  /// Brass Bandsman cover: can't be disabled or grabbed.
+  double protectT = 0;
+
+  /// Cuttle's ink: half range. Lantern Fish flash: half speed.
+  double inkT = 0, flashT = 0;
+
+  /// The Lighthouse beam: 20% faster.
+  double beamT = 0;
+
+  /// Static: the wave this cell stops flickering (0 = not flickering).
+  int flicker = 0;
+
+  /// Lampmoths sitting on this cell.
+  int moths = 0;
   bool get isEmpty => units.isEmpty;
   UnitDef? get def => units.isEmpty ? null : units.first.def;
   bool canTake(UnitDef d) =>
@@ -154,6 +175,18 @@ class PlayerSide {
   int countOf(String id) => allUnits.where((u) => u.def.id == id).length;
 
   /// Union rules switched on: 3+ distinct figurines sharing the tag.
+  /// Unions the Redactor has crossed out, with seconds left.
+  final Map<String, double> redacted = {};
+
+  /// How many different members of [tag] are on the board.
+  int unionSize(String tag) {
+    final ids = <String>{};
+    for (final c in cells) {
+      if (!c.isEmpty && c.def!.tags.contains(tag)) ids.add(c.def!.id);
+    }
+    return ids.length;
+  }
+
   Set<String> activeUnions() {
     final byTag = <String, Set<String>>{};
     for (final u in allUnits) {
@@ -163,12 +196,26 @@ class PlayerSide {
     }
     return {
       for (final e in byTag.entries)
-        if (e.value.length >= 3) e.key,
+        if (e.value.length >= 3 && !redacted.containsKey(e.key)) e.key,
     };
   }
 }
 
 class Enemy {
+  // ---- content-plan state (see mech.dart) ----
+  int weight = 1;
+  double revealT = 0, litT = 0, stickyT = 0, noHealT = 0, markT = 0;
+  double markPct = 0, inkT = 0, stripT = 0, immuneT = 0, traitT = 0;
+  double tunnelT = 0, clampT = 0, puff = 0, bareT = 0, pairDue = 0;
+  int shellHits = 0, stacks = 0, stolen = 0, knifeMiss = 0, carriages = 0;
+  int latchSide = -1, latchCell = -1, pairId = -1, group = -1, resist = -1;
+  bool tin = false, form2 = false, rammed = false, shellUsed = false;
+  bool isCopy = false;
+  Trait copied = Trait.none;
+  Enemy? trainOf;
+  final List<double> hurtBy = [0, 0, 0];
+  Trait get trait => def?.trait ?? Trait.none;
+
   final int id;
   final EnemyDef? def;
   final BossDef? boss;
