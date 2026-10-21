@@ -129,6 +129,7 @@ extension _Mech on Game {
       tl.t += dt;
     }
     tells.removeWhere((tl) => tl.t > tl.dur + 0.4);
+    if (bondsCut > 0) bondsCut -= dt;
     _lampAll = _lampLane;
     for (final p in sides) {
       for (final c in p.cells) {

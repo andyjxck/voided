@@ -6,6 +6,7 @@ import 'dart:math' as math;
 import 'data.dart';
 
 part 'mech.dart';
+part 'rules.dart';
 
 class V2 {
   final double x, y;
@@ -234,6 +235,19 @@ class PlayerSide {
   int dryStreak = 0;
   final SideStats stats = SideStats();
 
+  /// Bonds switched on this tick, and what each cell gets from them.
+  List<ActiveBond> bonds = const [];
+  List<BondMod?> bondMods = List<BondMod?>.filled(
+    kBoardCols * kBoardRows,
+    null,
+  );
+
+  /// Bonds that would be on if the Severer had not cut them.
+  List<ActiveBond> bondsWaiting = const [];
+
+  /// House rule payouts this run.
+  int interestPaid = 0, sweeps = 0, quickKills = 0;
+
   /// Every figurine id this side has had on its board (for the album).
   final Set<String> seen = {};
 
@@ -453,6 +467,9 @@ class Game {
   bool _brendaGift = false;
   int peakLane = 0;
   final Map<int, int> condemned = {}; // side -> cell (for UI)
+
+  /// Seconds left on the Severer's cut: no bonds anywhere while above 0.
+  double bondsCut = 0;
 
   // ---- content-plan state (see mech.dart) ----
   final List<Tell> tells = [];
@@ -679,6 +696,7 @@ class Game {
     wave++;
     unmadeThisWave = 0;
     paceHeld = 0;
+    payWaveRules();
     for (final s in sides) {
       final pay = waveWages(wave);
       s.pennies += pay;
@@ -1015,6 +1033,7 @@ class Game {
   double dmgMult(PlayerSide p, UnitDef d) {
     var m = 1 + kUpgradeStep * p.upg[upgradeGroup(d.tier)];
     if (p.index == 0) m *= 1 + cfg.dmgBonus;
+    m *= 1 + hoardBonus(p);
     return m;
   }
 
@@ -1044,17 +1063,21 @@ class Game {
   void _sideAttacks(PlayerSide p, double dt) {
     final unions = p.activeUnions();
     final birds = p.allUnits.where((u) => u.def.tags.contains('Birds')).length;
+    refreshBonds(p);
     for (var ci = 0; ci < p.cells.length; ci++) {
       final cell = p.cells[ci];
       if (cell.isEmpty) continue;
       if (!_cellWorks(cell)) continue;
       final d = cell.def!;
-      var sb = speedBonus(p, ci, unions);
+      final bond = p.bondMods[ci];
+      var sb = speedBonus(p, ci, unions) + fullStackBonus(cell);
+      if (bond != null) sb += bond.spd;
       if (cell.beamT > 0) sb += 0.2;
       final pos = field.cellCenter(p.index, ci);
       var range =
           d.range +
-          (unions.contains('Sea') && d.tags.contains('Sea') ? 0.6 : 0);
+          (unions.contains('Sea') && d.tags.contains('Sea') ? 0.6 : 0) +
+          (bond?.range ?? 0);
       if (cell.inkT > 0) range *= 0.5;
       var slowCell = 1.0;
       if (cell.flashT > 0) slowCell *= 0.5;
@@ -1157,6 +1180,8 @@ class Game {
         ? kHitSingle
         : kHitArea;
     var dmg = d.dmg * dmgMult(p, d);
+    final bond = bondAt(p, ci);
+    if (bond != null) dmg *= 1 + bond.dmg;
     if (unions.contains('Staff') && d.tags.contains('Staff')) dmg *= 1.2;
     if (d.perBird > 0) dmg *= 1 + d.perBird * birds;
     if (d.pennyScale > 0) {
@@ -1222,10 +1247,15 @@ class Game {
       }
       prev = tp;
       var hit = dmg * _hitMult(p, ci, d, t);
-      if (t.isBoss) hit *= d.bossMult;
+      if (t.isBoss) hit *= d.bossMult * (1 + (bond?.boss ?? 0));
       var crit = false;
       if (d.critChance > 0 && rng.nextDouble() < d.critChance) {
         hit *= d.critMult;
+        crit = true;
+      } else if (bond != null &&
+          bond.crit > 0 &&
+          rng.nextDouble() < bond.crit) {
+        hit *= 2;
         crit = true;
       }
       final landed = _damage(t, hit, p, unit: d, crit: crit, kind: mainKind);
@@ -1491,6 +1521,13 @@ class Game {
         src.pennies += unit.killPennies;
         src.stats.pennyEarned += unit.killPennies;
       }
+      if (unit != null) {
+        final chance = bondPennyFor(src, unit);
+        if (chance > 0 && rng.nextDouble() < chance) {
+          src.pennies++;
+          src.stats.pennyEarned++;
+        }
+      }
       if (unit != null &&
           unit.tags.contains('Arcade') &&
           src.activeUnions().contains('Arcade')) {
@@ -1569,6 +1606,7 @@ class Game {
     bossesKilled++;
     say(e.name, e.boss!.defeat);
     fx.add(Fx(FxType.shake, size: 1.2));
+    payQuickKill();
     bossList.clear();
     condemned.clear();
     for (final p in sides) {

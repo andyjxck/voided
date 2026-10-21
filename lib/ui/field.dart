@@ -115,6 +115,7 @@ class FieldPainter extends CustomPainter {
     // Festoon bulbs retired in the rustic pass: the backdrop carries the
     // fairground lights, and blinking dots on the deck read as clutter.
     _paintBoards(canvas, geo);
+    _paintBondLinks(canvas, geo);
     _paintEnemies(canvas, geo);
     _paintFx(canvas, geo);
     _paintDrag(canvas, geo);
@@ -376,6 +377,41 @@ class FieldPainter extends CustomPainter {
           Paint()
             ..color = Colors.white.withValues(alpha: th.fog)
             ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 30),
+        );
+      }
+    }
+  }
+
+  /// A short brass link across the edge between each pair of touching cells
+  /// with a bond on. It sits on the cell borders, so it never covers the
+  /// figurines.
+  void _paintBondLinks(Canvas c, FieldGeom geo) {
+    final s = geo.scale;
+    final pulse = 0.7 + 0.3 * math.sin(t * 3);
+    for (final p in g.sides) {
+      for (final b in p.bonds) {
+        final a = geo.pv(g.field.cellCenter(p.index, b.i));
+        final z = geo.pv(g.field.cellCenter(p.index, b.j));
+        final mid = Offset((a.dx + z.dx) / 2, (a.dy + z.dy) / 2);
+        final dir = z - a;
+        final len = dir.distance;
+        if (len <= 0) continue;
+        final u = dir / len;
+        final half = s * 0.22;
+        final glow = Paint()
+          ..color = const Color(0xFF1B130D)
+          ..strokeWidth = math.max(4.0, s * (b.k > 1 ? 0.16 : 0.12))
+          ..strokeCap = StrokeCap.round;
+        final line = Paint()
+          ..color = const Color(0xFFE3B451).withValues(alpha: pulse)
+          ..strokeWidth = math.max(2.0, s * (b.k > 1 ? 0.1 : 0.07))
+          ..strokeCap = StrokeCap.round;
+        c.drawLine(mid - u * half, mid + u * half, glow);
+        c.drawLine(mid - u * half, mid + u * half, line);
+        c.drawCircle(
+          mid,
+          math.max(2.5, s * 0.07),
+          Paint()..color = const Color(0xFFFFE6A6),
         );
       }
     }

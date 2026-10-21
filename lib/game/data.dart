@@ -2,6 +2,7 @@
 // economy constants. Everything tunable lives here.
 
 part 'content.dart';
+part 'synergy.dart';
 
 /// Enemy health in Solo, as a fraction of Co-op health. One constant, on
 /// purpose: tune it here and every enemy, mini-boss and boss follows.
@@ -964,6 +965,10 @@ enum BossMech {
   ghosttrain,
   shadowkeeper,
   voidboss,
+  auditor,
+  severer,
+  choir,
+  colossus,
 }
 
 class BossDef {

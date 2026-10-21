@@ -7,6 +7,13 @@ part of 'data.dart';
 enum Abil {
   none,
 
+  /// Bonds touching this cell count double.
+  matchmaker,
+
+  /// Every [abilEvery]s collects a penny for every 3 riftlings in range, up
+  /// to [abilPow].
+  toll,
+
   /// Reveals hidden enemies in range for every figurine.
   reveal,
 
@@ -471,6 +478,25 @@ enum Trait {
   unmaker,
   hollow,
   husk,
+
+  /// While alive, the Hoard rule gives nobody any damage.
+  leech,
+
+  /// Every [every]s shields riftlings within 1.5 cells for [pow] of their
+  /// health.
+  warden,
+
+  /// Takes at most [pow] of its health from any one hit.
+  cap,
+
+  /// Gets back up once at [pow] health, unless the hit was area damage.
+  revive,
+
+  /// Riftlings within 1.5 cells move [pow] faster.
+  drum,
+
+  /// Every [every]s burrows for 1.5s: can't be hit, moves twice as fast.
+  burrow,
 }
 
 /// Enemy types that disrupt your board or economy. At most two of these

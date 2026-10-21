@@ -164,8 +164,11 @@ void main() {
         }
         final wages = [for (var w = 1; w <= 5; w++) waveWages(w)]
             .reduce((a, b) => a + b);
-        expect(g.you.pennies, p0 + wages);
-        expect(g.partner!.pennies, kStartPennies + wages);
+        // Plus the house rules: interest on what each side holds, and a
+        // clean sweep for every wave that starts with the lane nearly empty.
+        int rules(PlayerSide p) => p.interestPaid + p.sweeps * kCleanSweepPay;
+        expect(g.you.pennies, p0 + wages + rules(g.you));
+        expect(g.partner!.pennies, kStartPennies + wages + rules(g.partner!));
         expect(g.you.leaves, 1);
       },
     );
@@ -194,10 +197,12 @@ void main() {
         final p = g.you;
         p.pennies = 1000;
         final d = kUnitById['gull']!;
-        expect(g.dmgMult(p, d), 1);
+        // Leave the Hoard bonus out: it rises with the pennies held.
+        double grease() => g.dmgMult(p, d) / (1 + g.hoardBonus(p));
+        expect(grease(), 1);
         expect(g.upgrade(p, 0).ok, isTrue);
         expect(p.pennies, 1000 - upgradeCost(0, 0));
-        expect(g.dmgMult(p, d), closeTo(1 + kUpgradeStep, 1e-9));
+        expect(grease(), closeTo(1 + kUpgradeStep, 1e-9));
         p.pennies = 0;
         expect(g.upgrade(p, 0).ok, isFalse);
       },
@@ -206,8 +211,11 @@ void main() {
     test('Elbow Grease multiplies your damage, not Brenda\'s', () {
       final g = Game(const GameConfig(dmgBonus: 0.2));
       final d = kUnitById['gull']!;
-      expect(g.dmgMult(g.you, d), closeTo(1.2, 1e-9));
-      expect(g.dmgMult(g.partner!, d), 1);
+      expect(
+        g.dmgMult(g.you, d) / (1 + g.hoardBonus(g.you)),
+        closeTo(1.2, 1e-9),
+      );
+      expect(g.dmgMult(g.partner!, d) / (1 + g.hoardBonus(g.partner!)), 1);
     });
 
     test('gambling spends leaves and wins about as often as it says', () {
@@ -270,10 +278,7 @@ void main() {
         ['brine', 'inspector', 'brine', 'brine', 'landlord'],
       );
       // Level 1's wave 40 is a double bill: the warden and the guest.
-      expect(
-        [for (final b in bossesForWave(40)) b.id],
-        ['brine', 'inspector'],
-      );
+      expect([for (final b in bossesForWave(40)) b.id], ['brine', 'inspector']);
     });
 
     test('every level has its own final boss on wave $kFinalWave', () {

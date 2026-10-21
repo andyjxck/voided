@@ -16,6 +16,7 @@ import '../game/sim.dart';
 import 'a11y.dart';
 import 'art.dart';
 import 'field.dart';
+import 'synergy_ui.dart';
 import 'widgets.dart';
 
 class TutStep {
@@ -526,6 +527,14 @@ class _GameScreenState extends State<GameScreen>
                         child: Column(
                           children: [
                             _hud(),
+                            SynergyStrip(
+                              g: g,
+                              onTap: () => _sheet(
+                                'Synergies',
+                                Tone.yellow,
+                                () => SynergySheet(g: g),
+                              ),
+                            ),
                             if (g.boss != null) _bossBar(),
                             Expanded(child: _fieldArea()),
                             _controls(),
@@ -961,8 +970,10 @@ class _GameScreenState extends State<GameScreen>
         if (e.value.contains(d.id)) kUnitById[e.key]!.name,
     ];
     final r = _cellRect(geo, i);
+    final bonds = bondLines(g, g.you, i).take(2).toList();
+    final stacked = cell.units.length >= kStackMax;
     const w = 248.0;
-    const h = 112.0;
+    final h = 112.0 + 14.0 * (bonds.length + (stacked ? 1 : 0));
     final below = r.bottom + h + 4 <= size.height;
     final left = (r.center.dx - w / 2).clamp(
       4.0,
@@ -1040,6 +1051,29 @@ class _GameScreenState extends State<GameScreen>
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: body(10, color: const Color(0xFFFFB3C1)),
+                ),
+              ),
+            if (stacked)
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Full stack: attacks ${(kFullStackSpeed * 100).round()}% faster until merged',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: body(10, color: Vx.textDim),
+                ),
+              ),
+            for (final (line, on) in bonds)
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Tooltip(
+                  message: line,
+                  child: Text(
+                    line,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: body(10, color: on ? kBondGold : Vx.textDim),
+                  ),
                 ),
               ),
             const SizedBox(height: 5),
