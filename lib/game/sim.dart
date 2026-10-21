@@ -5,48 +5,186 @@ import 'dart:math' as math;
 
 import 'data.dart';
 
+/// Seconds between sea things leaving the gate. A pair counts as two.
+const double kSpawnGap = 0.75;
+
+/// Share of the boss's health each twin gets on Calm, by mode.
+///
+/// Co-op: each board fights its own twin, so each twin is close to a whole
+/// boss. Solo: your one board meets both, one coming each way round. Two
+/// targets half a lap apart keep far more figurines in range than one does,
+/// so each twin still needs well over half a boss's health.
+///
+/// Splitting a boss also blunts the difficulty's health multiplier (two
+/// targets soak it less than one), so on Choppy and Storm the share grows
+/// with the square root of that multiplier; see [twinBossHpShare]. The
+/// numbers were set by simulated runs against the single-boss version
+/// (tool/twin_probe.dart) to keep the same win rates on Calm and the same
+/// step up to Choppy and Storm.
+const Map<GameMode, double> kTwinBossHpShare = {
+  GameMode.coop: 0.9,
+  GameMode.solo: 0.55,
+};
+
+/// What each twin gets of a boss's health in [mode] on [d].
+double twinBossHpShare(GameMode mode, Difficulty d) =>
+    kTwinBossHpShare[mode]! * math.sqrt(d.hpMult);
+
 class V2 {
   final double x, y;
   const V2(this.x, this.y);
   double dist(V2 o) => math.sqrt((x - o.x) * (x - o.x) + (y - o.y) * (y - o.y));
 }
 
-/// Field geometry, in cell units. Solo: one loop around your board.
-/// Co-op: an S-shaped loop: around Brenda's board, along the shared middle
-/// boardwalk, around yours, and along the middle again. Both boards reach the
-/// middle, which is where co-op earns its keep.
+/// Field geometry, in cell units.
+///
+/// Everything comes out of one gate in the middle of the boardwalk and splits:
+/// one sea thing turns left, its twin turns right. Each turning is its own
+/// closed loop (a "route"), and both loops have the same length.
+///
+/// Co-op: the gate is the exact centre of the map, on the shared middle
+/// boardwalk between the two boards. Left goes round your board (bottom),
+/// right goes round Brenda's (top). Each board has its own loop and every pair
+/// sends one sea thing to each board; the middle boardwalk is a two-lane road
+/// the two loops share, so figurines on the inner rows reach both.
+///
+/// Solo: there is one board, so the gate sits at the middle of the boardwalk
+/// above it. Left goes round the board anticlockwise, right goes round it
+/// clockwise, each on its own side of the boardwalk so they pass, not stack.
+///
+/// An enemy's route lives in its [Enemy.s]: route r runs from
+/// `routeBase(r)`, which is a whole number of laps, so `s % lap` is still the
+/// distance round the loop and code that compares two `s` values only ever
+/// treats enemies on the same route as close.
 class Field {
   final GameMode mode;
   late final double w;
   late final double h;
   late final double lap;
-  late final List<V2> pts;
-  late final List<double> _cum;
+
+  /// Where the gate is: the middle of the map in co-op.
+  late final V2 gate;
+
+  /// One closed loop per route. Route 0 turns left out of the gate, route 1
+  /// turns right.
+  late final List<List<V2>> routes;
+  late final List<List<double>> _cums;
+
+  /// The boardwalk to draw: closed loops through the middle of the planks.
+  /// Enemies walk in lanes either side of these.
+  late final List<List<V2>> walks;
+
+  /// How far apart the two lanes are where loops share or retrace boardwalk.
+  static const double laneGap = 0.34;
+
   Field(this.mode) {
     w = kBoardCols + 2.0;
     final a = w - 0.5;
+    final cx = w / 2;
     if (mode == GameMode.solo) {
       h = kBoardRows + 2.0;
-      pts = [const V2(0.5, 0.5), V2(a, 0.5), V2(a, h - 0.5), V2(0.5, h - 0.5)];
+      gate = V2(cx, 0.5);
+      // Anticlockwise rides the inside lane of the boardwalk, clockwise the
+      // outside, so the two only ever pass side by side. The outside lane is a
+      // little longer; posAt stretches each loop to one shared lap, so in
+      // solo the clockwise walker covers ground about 6% faster and the
+      // anticlockwise one about 6% slower. Both lap in the same time.
+      const d = laneGap / 2;
+      final ring = [
+        const V2(0.5, 0.5),
+        V2(0.5, h - 0.5),
+        V2(a, h - 0.5),
+        V2(a, 0.5),
+      ];
+      walks = [ring];
+      List<V2> inset(List<V2> pts, double by) => [
+        for (final p in pts)
+          V2(
+            p.x < cx ? p.x + by : (p.x > cx ? p.x - by : p.x),
+            p.y < h / 2 ? p.y + by : p.y - by,
+          ),
+      ];
+      final left = [V2(cx, 0.5), ...ring];
+      final right = [V2(cx, 0.5), ...ring.skip(1).toList().reversed, ring[0]];
+      routes = [inset(left, d), inset(right, -d)];
     } else {
       h = kBoardRows * 2 + 3.0;
       final mid = kBoardRows + 1.5;
-      pts = [
-        const V2(0.5, 0.5),
-        V2(a, 0.5),
-        V2(a, mid),
-        V2(0.5, mid),
+      gate = V2(cx, mid);
+      const d = laneGap / 2;
+      // Left: round your board (bottom), on the lower lane of the middle.
+      final left = [
+        V2(cx, mid + d),
+        V2(0.5, mid + d),
         V2(0.5, h - 0.5),
         V2(a, h - 0.5),
-        V2(a, mid),
-        V2(0.5, mid),
+        V2(a, mid + d),
+      ];
+      // Right: round Brenda's board (top), on the upper lane of the middle.
+      final right = [
+        V2(cx, mid - d),
+        V2(a, mid - d),
+        V2(a, 0.5),
+        const V2(0.5, 0.5),
+        V2(0.5, mid - d),
+      ];
+      // Both loops are the same length: each vertical run is shortened by d.
+      routes = [left, right];
+      walks = [
+        [V2(0.5, mid), V2(0.5, h - 0.5), V2(a, h - 0.5), V2(a, mid)],
+        [V2(a, mid), V2(a, 0.5), const V2(0.5, 0.5), V2(0.5, mid)],
       ];
     }
-    _cum = [0];
-    for (var i = 0; i < pts.length; i++) {
-      _cum.add(_cum.last + pts[i].dist(pts[(i + 1) % pts.length]));
+    _cums = [
+      for (final pts in routes)
+        () {
+          final c = <double>[0];
+          for (var i = 0; i < pts.length; i++) {
+            c.add(c.last + pts[i].dist(pts[(i + 1) % pts.length]));
+          }
+          return c;
+        }(),
+    ];
+    // The shared lap: the average loop. Co-op loops are exactly equal.
+    lap = _cums.map((c) => c.last).reduce((x, y) => x + y) / _cums.length;
+  }
+
+  int get routeCount => routes.length;
+
+  /// The loop for route 0, kept for code that wants one outline.
+  List<V2> get pts => routes.first;
+
+  /// Start of route [r] in [Enemy.s] terms. A whole number of laps apart, so
+  /// `s % lap` ignores it.
+  double routeBase(int r) => r * lap * _band;
+  static const int _band = 1000;
+
+  /// Which route an [Enemy.s] is on. Bands are centred on their base, so a
+  /// child spawned a little behind the gate stays on its parent's route.
+  int routeOf(double s) {
+    final r = ((s + lap * _band / 2) / (lap * _band)).floor();
+    return r.clamp(0, routes.length - 1);
+  }
+
+  /// Index of the board a route goes round (co-op), or 0 in solo.
+  int boardOfRoute(int r) => mode == GameMode.solo ? 0 : (r == 0 ? 0 : 1);
+
+  V2 posAt(double s) {
+    final r = routeOf(s);
+    final pts = routes[r];
+    final cum = _cums[r];
+    var t = (s - routeBase(r)) % lap;
+    if (t < 0) t += lap;
+    // Every route is walked in one shared lap; a longer loop is stretched.
+    t *= cum.last / lap;
+    var i = 0;
+    while (i < pts.length - 1 && cum[i + 1] <= t) {
+      i++;
     }
-    lap = _cum.last;
+    final p0 = pts[i], p1 = pts[(i + 1) % pts.length];
+    final segLen = cum[i + 1] - cum[i];
+    final f = segLen <= 0 ? 0.0 : (t - cum[i]) / segLen;
+    return V2(p0.x + (p1.x - p0.x) * f, p0.y + (p1.y - p0.y) * f);
   }
 
   /// Board top-left for side [i]. Side 0 is always the human player (bottom).
@@ -60,28 +198,17 @@ class Field {
     return V2(o.x + cell % kBoardCols + 0.5, o.y + cell ~/ kBoardCols + 0.5);
   }
 
-  V2 posAt(double s) {
-    var t = s % lap;
-    if (t < 0) t += lap;
-    var i = 0;
-    while (i < pts.length - 1 && _cum[i + 1] <= t) {
-      i++;
-    }
-    final p0 = pts[i], p1 = pts[(i + 1) % pts.length];
-    final segLen = _cum[i + 1] - _cum[i];
-    final f = segLen <= 0 ? 0.0 : (t - _cum[i]) / segLen;
-    return V2(p0.x + (p1.x - p0.x) * f, p0.y + (p1.y - p0.y) * f);
-  }
-
-  /// Fraction of the lap within [r] of a cell: how good a spot it is.
+  /// Fraction of all the boardwalk within [r] of a cell: how good a spot it is.
   double coverage(int side, int cell, [double r = 2.8]) {
     const n = 200;
     var hit = 0;
     final c = cellCenter(side, cell);
-    for (var i = 0; i < n; i++) {
-      if (posAt(lap * i / n).dist(c) <= r) hit++;
+    for (var k = 0; k < routes.length; k++) {
+      for (var i = 0; i < n; i++) {
+        if (posAt(routeBase(k) + lap * i / n).dist(c) <= r) hit++;
+      }
     }
-    return hit / n;
+    return hit / (n * routes.length);
   }
 
   late final List<List<int>> placeOrder = [
@@ -298,9 +425,21 @@ class Game {
   double time = 0;
   int wave = 0;
   double waveTimer = 4; // grace before wave 1
-  final List<String> _spawnQueue = [];
+  /// What the gate lets out next. A pair walks out together, one turning
+  /// left and one right; a single (a mini-boss, the Pollock, the odd one out
+  /// of an odd-sized wave) takes the next turning in [_nextSingleRoute].
+  final List<({String id, bool pair})> _spawnQueue = [];
+  int _nextSingleRoute = 0;
   double _spawnT = 0;
+
+  /// The boss that leads the wave: the first twin still standing. Boss waves
+  /// send two, one each way out of the gate; this stays set until both are
+  /// down.
   Enemy? boss;
+
+  /// Both twins of the current boss wave, dead or alive, in route order.
+  /// Empty outside boss waves.
+  final List<Enemy> bosses = [];
   double bossTimer = 0;
   GameStatus status = GameStatus.playing;
   String endReason = '';
@@ -420,8 +559,19 @@ class Game {
     if (_spawnQueue.isNotEmpty) {
       _spawnT -= dt;
       if (_spawnT <= 0) {
-        _spawnT = 0.75;
-        _spawn(_spawnQueue.removeAt(0));
+        final next = _spawnQueue.removeAt(0);
+        if (next.pair) {
+          // Two at once, so the gap after them is two singles long: the
+          // wave lets out the same number of sea things in the same time.
+          _spawnT = kSpawnGap * 2;
+          for (var r = 0; r < field.routeCount; r++) {
+            _spawn(next.id, route: r);
+          }
+        } else {
+          _spawnT = kSpawnGap;
+          _spawn(next.id, route: _nextSingleRoute);
+          _nextSingleRoute = (_nextSingleRoute + 1) % field.routeCount;
+        }
       }
     }
     if (boss != null) return; // boss waves advance when the boss dies
@@ -440,10 +590,28 @@ class Game {
     }
     if (isBossWave(wave)) {
       final b = bossForWave(wave, cfg.level);
-      final e = Enemy(_eid++, null, b, bossHp(wave), 0, b.speed, b.armor, 0);
-      e.mechT = 4;
-      enemies.add(e);
-      boss = e;
+      // Twins: one turns left out of the gate, one right. Their health is
+      // set by kTwinBossHpShare.
+      bosses.clear();
+      final n = field.routeCount;
+      for (var r = 0; r < n; r++) {
+        final e = Enemy(
+          _eid++,
+          null,
+          b,
+          n == 1
+              ? bossHp(wave)
+              : bossHp(wave) * twinBossHpShare(cfg.mode, cfg.difficulty),
+          field.routeBase(r),
+          b.speed,
+          b.armor,
+          0,
+        );
+        e.mechT = 4 + r * _twinStagger(b.mech);
+        enemies.add(e);
+        bosses.add(e);
+      }
+      boss = bosses.first;
       bossTimer = kBossSeconds;
       waveTimer = kBossSeconds;
       say(b.name, b.entrance);
@@ -454,17 +622,48 @@ class Game {
     waveTimer = kWaveSeconds;
     final pool = enemyPool(wave, cfg.level);
     final n = spawnCount(wave);
-    for (var i = 0; i < n; i++) {
-      _spawnQueue.add(pool[rng.nextInt(pool.length)]);
+    // Same head count as ever, let out in matching pairs so both turnings
+    // (in co-op, both boards) meet the same sea things. An odd one out walks
+    // alone.
+    for (var i = 0; i < n ~/ 2; i++) {
+      _spawnQueue.add((id: pool[rng.nextInt(pool.length)], pair: true));
     }
-    if (isMiniBossWave(wave)) _spawnQueue.insert(0, 'bigdrip');
+    if (n.isOdd) {
+      _spawnQueue.add((id: pool[rng.nextInt(pool.length)], pair: false));
+    }
+    if (isMiniBossWave(wave)) {
+      _spawnQueue.insert(0, (id: 'bigdrip', pair: false));
+    }
     if (wave >= 4 && rng.nextDouble() < 0.12) {
-      _spawnQueue.insert(rng.nextInt(_spawnQueue.length), 'pollock');
+      _spawnQueue.insert(rng.nextInt(_spawnQueue.length), (
+        id: 'pollock',
+        pair: false,
+      ));
     }
     _spawnT = 0;
   }
 
-  Enemy _spawn(String id, {double s = 0, double? traveled}) {
+  /// How long after its twin a boss's first move comes, so the two don't
+  /// fire the same trick at the same moment.
+  double _twinStagger(BossMech m) => switch (m) {
+    BossMech.brood => 6,
+    BossMech.inspector => 0,
+    BossMech.undertow => 4.5,
+    BossMech.landlord => 0,
+  };
+
+  /// Sea things on the pier per route: [0] left of the gate, [1] right.
+  List<int> laneCountByRoute() {
+    final out = List.filled(field.routeCount, 0);
+    for (final e in enemies) {
+      if (!e.dead) out[field.routeOf(e.s)]++;
+    }
+    return out;
+  }
+
+  /// A sea thing at the gate on [route], or at [s] (a child spawned beside
+  /// its parent, which keeps the parent's route).
+  Enemy _spawn(String id, {double? s, double? traveled, int route = 0}) {
     final d = kEnemyById[id]!;
     final hp = enemyHp(id, math.max(1, wave));
     final e = Enemy(
@@ -472,7 +671,7 @@ class Game {
       d,
       null,
       hp,
-      s,
+      s ?? field.routeBase(route),
       d.speed * (1 + wave * 0.004),
       d.armor,
       d.evade,
@@ -522,19 +721,29 @@ class Game {
       final laps = (e.traveled / field.lap).floor();
       if (laps > e.laps) {
         e.laps = laps;
-        if (e.boss?.mech == BossMech.landlord) {
+        // Rent is collected once per lap of the lead twin, not once per
+        // twin. The loops are half as long in co-op as the old figure-eight
+        // walk, so the cut is halved there to keep the same rent per minute.
+        if (e.boss?.mech == BossMech.landlord && identical(e, boss)) {
+          final cut = 0.15 * field.lap / _legacyLap;
           for (final p in sides) {
-            final take = (p.pennies * 0.15).floor();
+            final take = (p.pennies * cut).floor();
             p.pennies -= take;
           }
-          say(e.name, 'Rent day. Fifteen percent, thank you.');
+          say(
+            e.name,
+            cut >= 0.149
+                ? 'Rent day. Fifteen percent, thank you.'
+                : 'Rent day. Seven and a half percent, thank you. Twice.',
+          );
           final pp = field.posAt(e.s);
           fx.add(
             Fx(
               FxType.text,
               x: pp.x,
               y: pp.y,
-              text: 'RENT -15%',
+              text:
+                  'RENT -${(cut * 100).toStringAsFixed(cut >= 0.149 ? 0 : 1)}%',
               color: 0xFFFF5E7E,
               size: 1.4,
             ),
@@ -551,7 +760,8 @@ class Game {
     switch (b.mech) {
       case BossMech.brood:
         if (e.mechT <= 0) {
-          e.mechT = 6;
+          // Each twin broods half as often: the same adds per minute.
+          e.mechT = 6.0 * bosses.length.clamp(1, 2);
           for (var i = 0; i < 3; i++) {
             _spawn(b.spawn, s: e.s - 0.3 * i, traveled: e.traveled);
           }
@@ -562,6 +772,8 @@ class Game {
       case BossMech.inspector:
         e.slowPct = 0;
         e.stunT = 0;
+        // One inspection for the pair, from whichever twin leads.
+        if (!identical(e, boss)) break;
         if (e.mechT <= 0) {
           e.mechT = 7;
           _condemn();
@@ -592,7 +804,9 @@ class Game {
         if ((e.phase == 0 && frac < 0.66) || (e.phase == 1 && frac < 0.33)) {
           e.phase++;
           e.shield = e.maxHp * 0.15;
-          for (var i = 0; i < 4; i++) {
+          // Four Bailiffs a phase between the twins: two each.
+          final calls = 4 ~/ bosses.length.clamp(1, 4);
+          for (var i = 0; i < calls; i++) {
             final bb = _spawn(
               'bailiff',
               s: e.s - 0.4 * (i + 1),
@@ -611,6 +825,11 @@ class Game {
         }
     }
   }
+
+  /// Length of the old single loop (solo ring, or the co-op figure-eight).
+  /// Rent and similar per-lap effects are scaled against it.
+  double get _legacyLap =>
+      cfg.mode == GameMode.solo ? field.lap : field.lap * 2;
 
   void _condemn() {
     var bestSide = -1, bestCell = -1;
@@ -999,10 +1218,22 @@ class Game {
   }
 
   void _bossDown(Enemy e) {
+    final standing = bosses.where((b) => !b.dead).toList();
+    if (standing.isNotEmpty) {
+      // One twin down. The wave isn't over until both are.
+      final lead = boss!;
+      boss = standing.first;
+      // The Inspector's countdown carries on under the new lead.
+      if (lead != boss && boss!.mechT > lead.mechT) boss!.mechT = lead.mechT;
+      say(e.name, 'That\'s one of us. The other one\'s still on the pier.');
+      fx.add(Fx(FxType.shake, size: 0.6));
+      return;
+    }
     bossesKilled++;
     say(e.name, e.boss!.defeat);
     fx.add(Fx(FxType.shake, size: 1.2));
     boss = null;
+    bosses.clear();
     condemned.clear();
     for (final p in sides) {
       for (final c in p.cells) {

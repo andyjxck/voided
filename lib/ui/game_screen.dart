@@ -691,9 +691,46 @@ class _GameScreenState extends State<GameScreen>
     );
   }
 
+  /// One twin's health bar. A dead twin shows an empty bar.
+  Widget _twinBar(Enemy b) {
+    final frac = b.dead ? 0.0 : (b.hp / b.maxHp).clamp(0.0, 1.0);
+    return Container(
+      height: 12,
+      decoration: BoxDecoration(
+        color: Colors.black54,
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: Vx.ink, width: 2),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(4),
+        child: Stack(
+          children: [
+            FractionallySizedBox(
+              widthFactor: frac,
+              child: Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [Color(0xFFFF8473), Color(0xFFC22B3A)],
+                  ),
+                ),
+              ),
+            ),
+            if (!b.dead && b.shield > 0)
+              FractionallySizedBox(
+                widthFactor: (b.shield / b.maxHp).clamp(0.0, 1.0),
+                child: Container(color: const Color(0xCC9EE7FF)),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _bossBar() {
     final b = g.boss!;
-    final frac = (b.hp / b.maxHp).clamp(0.0, 1.0);
+    final twins = g.bosses.isEmpty ? [b] : g.bosses;
     final last = g.wave == kFinalWave && !g.endless;
     return Semantics(
       container: true,
@@ -725,7 +762,7 @@ class _GameScreenState extends State<GameScreen>
                     children: [
                       Expanded(
                         child: Text(
-                          '${last ? 'FINAL BOSS · ' : ''}${b.name.toUpperCase()}',
+                          '${last ? 'FINAL BOSS · ' : ''}${twins.length > 1 ? '2 × ' : ''}${b.name.toUpperCase()}',
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: display(
@@ -748,40 +785,13 @@ class _GameScreenState extends State<GameScreen>
                     ],
                   ),
                   const SizedBox(height: 3),
-                  Container(
-                    height: 12,
-                    decoration: BoxDecoration(
-                      color: Colors.black54,
-                      borderRadius: BorderRadius.circular(6),
-                      border: Border.all(color: Vx.ink, width: 2),
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(4),
-                      child: Stack(
-                        children: [
-                          FractionallySizedBox(
-                            widthFactor: frac,
-                            child: Container(
-                              decoration: const BoxDecoration(
-                                gradient: LinearGradient(
-                                  begin: Alignment.topCenter,
-                                  end: Alignment.bottomCenter,
-                                  colors: [
-                                    Color(0xFFFF8473),
-                                    Color(0xFFC22B3A),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                          if (b.shield > 0)
-                            FractionallySizedBox(
-                              widthFactor: (b.shield / b.maxHp).clamp(0.0, 1.0),
-                              child: Container(color: const Color(0xCC9EE7FF)),
-                            ),
-                        ],
-                      ),
-                    ),
+                  Row(
+                    children: [
+                      for (var i = 0; i < twins.length; i++) ...[
+                        if (i > 0) const SizedBox(width: 6),
+                        Expanded(child: _twinBar(twins[i])),
+                      ],
+                    ],
                   ),
                   const SizedBox(height: 2),
                   Text(

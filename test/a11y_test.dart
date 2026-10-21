@@ -69,10 +69,12 @@ void main() {
 
     test('boss bar rounds health to 5% and names the boss', () {
       final g = gameAtBoss(10);
-      expect(bossLabel(g), contains('Boss: ${g.boss!.name}'));
-      expect(bossLabel(g), contains('100 percent health'));
+      expect(bossLabel(g), contains('Boss: ${g.boss!.name} times two'));
+      expect(bossLabel(g), contains('Left 100 percent, right 100 percent'));
       g.boss!.hp = g.boss!.maxHp * 0.612;
-      expect(bossLabel(g), contains('65 percent health'));
+      expect(bossLabel(g), contains('Left 65 percent'));
+      g.bosses[0].dead = true;
+      expect(bossLabel(g), contains('Left one down, right 100 percent'));
     });
 
     test('board summary and spot labels', () {
@@ -157,7 +159,10 @@ void main() {
       final g = gameAtBoss(10);
       final n = GameNarrator();
       final first = n.update(g, 1 / 60);
-      expect(first.single.text, startsWith('Boss wave 10: ${g.boss!.name}'));
+      expect(
+        first.single.text,
+        startsWith('Boss wave 10: ${g.boss!.name} times two, one each way'),
+      );
       expect(first.single.urgent, isTrue);
       g.bossTimer = 14.2;
       expect(narrate(n, g, 3).map((s) => s.text), [

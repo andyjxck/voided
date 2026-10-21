@@ -113,7 +113,10 @@ void main() {
         await t.pump(const Duration(milliseconds: 500));
         final gs = t.widget<GameScreen>(find.byType(GameScreen));
         expect(gs.level, 2);
-        expect(find.textContaining(levelDef(2).name.toUpperCase()), findsWidgets);
+        expect(
+          find.textContaining(levelDef(2).name.toUpperCase()),
+          findsWidgets,
+        );
         await t.pumpWidget(const SizedBox());
       });
       testWidgets('game with the tutorial', (t) async {

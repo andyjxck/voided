@@ -34,9 +34,19 @@ String hudLabel(Game g) {
 /// label doesn't change on every hit.
 String bossLabel(Game g) {
   final b = g.boss!;
-  final hp = ((b.hp / b.maxHp).clamp(0.0, 1.0) * 20).ceil() * 5;
-  final shield = b.shield > 0 ? ' Shielded.' : '';
-  return 'Boss: ${b.name}, ${b.boss!.title}. $hp percent health.$shield ${g.bossTimer.ceil()} seconds left.';
+  int pct(Enemy e) =>
+      e.dead ? 0 : ((e.hp / e.maxHp).clamp(0.0, 1.0) * 20).ceil() * 5;
+  final twins = g.bosses;
+  if (twins.length < 2) {
+    final shield = b.shield > 0 ? ' Shielded.' : '';
+    return 'Boss: ${b.name}, ${b.boss!.title}. ${pct(b)} percent health.$shield ${g.bossTimer.ceil()} seconds left.';
+  }
+  String one(String side, Enemy e) => e.dead
+      ? '$side one down'
+      : '$side ${pct(e)} percent${e.shield > 0 ? ', shielded' : ''}';
+  return 'Boss: ${b.name} times two, ${b.boss!.title}. '
+      '${one('Left', twins[0])}, ${one('right', twins[1])}. '
+      '${g.bossTimer.ceil()} seconds left.';
 }
 
 /// One spot on your board, for the invisible per-spot buttons.
@@ -156,18 +166,23 @@ class GameNarrator {
     if (g.status != GameStatus.playing) return out;
 
     final boss = g.boss;
+    // The wave's first twin stands for the whole boss wave, so the second
+    // taking the lead doesn't sound like a new boss arriving.
+    final bossWave = boss == null
+        ? null
+        : (g.bosses.isNotEmpty ? g.bosses.first : boss);
     if (g.wave != _wave) {
       _wave = g.wave;
       if (boss == null) {
         _push(Spoken('Wave ${g.wave}${g.endless ? '' : ' of $kFinalWave'}.'));
       }
     }
-    if (!identical(boss, _boss)) {
+    if (!identical(bossWave, _boss)) {
       if (boss != null) {
         _bossWarned = false;
         _push(
           Spoken(
-            'Boss wave ${g.wave}: ${boss.name}, ${boss.boss!.title}. ${boss.boss!.mechText} '
+            'Boss wave ${g.wave}: ${g.bosses.length > 1 ? '${boss.name} times two, one each way' : boss.name}, ${boss.boss!.title}. ${boss.boss!.mechText} '
             '${g.bossTimer.ceil()} seconds to beat it.',
             urgent: true,
           ),
@@ -175,7 +190,7 @@ class GameNarrator {
       } else if (_boss != null) {
         _push(const Spoken('Boss defeated.'));
       }
-      _boss = boss;
+      _boss = bossWave;
     }
     if (boss != null && !_bossWarned && g.bossTimer <= 15) {
       _bossWarned = true;

@@ -366,11 +366,30 @@ void main() {
     test(
       'a boss wave spawns the boss with the right health and a ${kBossSeconds.round()}s timer',
       () {
-        final g = gameAtBoss(10);
-        expect(g.boss, isNotNull);
-        expect(g.boss!.boss!.id, 'brine');
-        expect(g.boss!.maxHp, closeTo(baseHp(10) * 7, 1e-6));
-        expect(g.bossTimer, kBossSeconds);
+        for (final mode in GameMode.values) {
+          final g = gameAtBoss(10, mode: mode);
+          expect(g.boss, isNotNull);
+          expect(g.bosses, hasLength(2), reason: mode.name);
+          for (final b in g.bosses) {
+            expect(b.boss!.id, 'brine');
+            expect(
+              b.maxHp,
+              closeTo(
+                g.bossHp(10) * twinBossHpShare(mode, Difficulty.calm),
+                1e-6,
+              ),
+            );
+          }
+          expect(g.bossTimer, kBossSeconds);
+        }
+        // Co-op twins are each nearly a whole boss on Calm, and take a
+        // bigger share on harder seas.
+        final co = gameAtBoss(10);
+        expect(co.boss!.maxHp, closeTo(baseHp(10) * 7 * 0.9, 1e-6));
+        expect(
+          twinBossHpShare(GameMode.coop, Difficulty.storm),
+          greaterThan(twinBossHpShare(GameMode.coop, Difficulty.choppy)),
+        );
       },
     );
 
@@ -422,26 +441,49 @@ void main() {
       expect(b.surgeT, greaterThan(0));
     });
 
-    test('the Landlord shields and calls four Bailiffs at 66% and 33%', () {
-      final g = gameAtBoss(kFinalWave);
-      final b = g.boss!;
-      b.hp = b.maxHp * 0.6;
-      advance(g, 0.1);
-      expect(b.phase, 1);
-      expect(b.shield, closeTo(b.maxHp * 0.15, 1e-6));
-      expect(g.enemies.where((e) => e.def?.id == 'bailiff').length, 4);
-      b.hp = b.maxHp * 0.3;
-      advance(g, 0.1);
-      expect(b.phase, 2);
-      expect(g.enemies.where((e) => e.def?.id == 'bailiff').length, 8);
-    });
+    test(
+      'each Landlord twin shields and calls two Bailiffs at 66% and 33%',
+      () {
+        final g = gameAtBoss(kFinalWave);
+        final b = g.boss!;
+        b.hp = b.maxHp * 0.6;
+        advance(g, 0.1);
+        expect(b.phase, 1);
+        expect(b.shield, closeTo(b.maxHp * 0.15, 1e-6));
+        expect(g.enemies.where((e) => e.def?.id == 'bailiff').length, 2);
+        // Bailiffs walk behind their own twin, on its route.
+        for (final e in g.enemies.where((e) => e.def?.id == 'bailiff')) {
+          expect(g.field.routeOf(e.s), g.field.routeOf(b.s));
+        }
+        b.hp = b.maxHp * 0.3;
+        advance(g, 0.1);
+        expect(b.phase, 2);
+        expect(g.enemies.where((e) => e.def?.id == 'bailiff').length, 4);
+        // The other twin's phases call the other four: still eight a wave.
+        final other = g.bosses[1];
+        other.hp = other.maxHp * 0.3;
+        advance(g, 0.1);
+        advance(g, 0.1);
+        expect(g.enemies.where((e) => e.def?.id == 'bailiff').length, 8);
+      },
+    );
 
     test('the Landlord takes 15% of everyone\'s pennies each lap', () {
-      final g = gameAtBoss(kFinalWave);
+      // Solo: one rent a lap, from the lead twin only.
+      final g = gameAtBoss(kFinalWave, mode: GameMode.solo);
       g.you.pennies = 1000;
-      g.boss!.traveled = g.field.lap - 0.001;
+      for (final b in g.bosses) {
+        b.traveled = g.field.lap - 0.001;
+      }
       advance(g, 0.1);
       expect(g.you.pennies, 850);
+      // Co-op loops are half the old figure-eight, so half the cut a lap:
+      // the same rent per minute.
+      final co = gameAtBoss(kFinalWave);
+      co.you.pennies = 1000;
+      co.boss!.traveled = co.field.lap - 0.001;
+      advance(co, 0.1);
+      expect(co.you.pennies, 925);
     });
 
     test(
@@ -450,18 +492,28 @@ void main() {
         // Solo, so the boss starts next to your board.
         final g = gameAtBoss(10, mode: GameMode.solo);
         final leaves = g.you.leaves;
-        g.boss!.hp = 0.0001;
         fillBoard(g.you);
+        // One twin down is not the wave: no pay yet, the other leads.
+        final first = g.bosses[0], second = g.bosses[1];
+        first.hp = 0.0001;
+        advance(g, 3);
+        expect(first.dead, isTrue);
+        expect(g.boss, same(second));
+        expect(g.bossesKilled, 0);
+        second.hp = 0.0001;
         advance(g, 3);
         expect(g.boss, isNull);
+        expect(g.bosses, isEmpty);
         expect(g.bossesKilled, 1);
         expect(g.you.leaves, greaterThanOrEqualTo(leaves + 3));
         expect(g.status, GameStatus.playing);
 
         final last = gameAtBoss(kFinalWave, mode: GameMode.solo);
-        last.boss!
-          ..hp = 0.0001
-          ..phase = 2; // past both shield phases
+        for (final b in last.bosses) {
+          b
+            ..hp = 0.0001
+            ..phase = 2; // past both shield phases
+        }
         fillBoard(last.you);
         advance(last, 3);
         expect(last.status, GameStatus.won);

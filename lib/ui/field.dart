@@ -229,9 +229,11 @@ class FieldPainter extends CustomPainter {
     c.restore();
     // Lane: dark edge, boardwalk, seams, rope rails
     final path = Path();
-    for (var i = 0; i <= f.pts.length; i++) {
-      final p = geo.pv(f.pts[i % f.pts.length]);
-      i == 0 ? path.moveTo(p.dx, p.dy) : path.lineTo(p.dx, p.dy);
+    for (final loop in f.walks) {
+      for (var i = 0; i <= loop.length; i++) {
+        final p = geo.pv(loop[i % loop.length]);
+        i == 0 ? path.moveTo(p.dx, p.dy) : path.lineTo(p.dx, p.dy);
+      }
     }
     Paint stroke(Color col, double w) => Paint()
       ..color = col
@@ -249,16 +251,39 @@ class FieldPainter extends CustomPainter {
     final seam = Paint()
       ..color = th.laneEdge.withValues(alpha: 0.55)
       ..strokeWidth = math.max(1, s * 0.03);
-    for (var d = 0.0; d < f.lap; d += 0.3) {
-      final a = f.posAt(d), b = f.posAt(d + 0.05);
-      final dx = b.x - a.x, dy = b.y - a.y;
-      final len = math.sqrt(dx * dx + dy * dy);
-      if (len == 0) continue;
-      final nx = -dy / len * 0.34, ny = dx / len * 0.34;
-      c.drawLine(geo.px(a.x + nx, a.y + ny), geo.px(a.x - nx, a.y - ny), seam);
+    for (final loop in f.walks) {
+      for (var i = 0; i < loop.length; i++) {
+        final a = loop[i], b = loop[(i + 1) % loop.length];
+        final dx = b.x - a.x, dy = b.y - a.y;
+        final len = math.sqrt(dx * dx + dy * dy);
+        if (len == 0) continue;
+        final nx = -dy / len * 0.34, ny = dx / len * 0.34;
+        for (var d = 0.15; d < len; d += 0.3) {
+          final x = a.x + dx / len * d, y = a.y + dy / len * d;
+          c.drawLine(geo.px(x + nx, y + ny), geo.px(x - nx, y - ny), seam);
+        }
+      }
     }
-    // Slipway the sea things climb up
-    final st = geo.pv(f.pts.first);
+    // The gate the sea things climb out of, with a chevron each way: one
+    // turns left, its twin turns right.
+    final st = geo.pv(f.gate);
+    final chev = Paint()
+      ..color = Colors.white.withValues(alpha: 0.55)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = math.max(1.5, s * 0.07)
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round;
+    for (final dir in const [-1.0, 1.0]) {
+      for (var k = 0; k < 2; k++) {
+        final tip = st + Offset(dir * s * (0.72 + k * 0.26), 0);
+        final back = Offset(-dir * s * 0.12, 0);
+        final arrow = Path()
+          ..moveTo(tip.dx + back.dx, tip.dy - s * 0.13)
+          ..lineTo(tip.dx, tip.dy)
+          ..lineTo(tip.dx + back.dx, tip.dy + s * 0.13);
+        c.drawPath(arrow, chev);
+      }
+    }
     c.drawCircle(st, s * 0.46, Paint()..color = Pal.ink);
     c.drawCircle(st, s * 0.42, Paint()..color = th.seaBottom);
     c.drawCircle(st, s * 0.3, Paint()..color = th.seaTop);
