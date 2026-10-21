@@ -1576,11 +1576,11 @@ alk(a){var s=!1
 if($.aQ().gbY()===B.aq||$.aQ().gbY()===B.br)if(a!=null)s=a===".SF Pro Text"||a===".SF Pro Display"||a===".SF UI Text"||a===".SF UI Display"
 return s},
 aro(){if(A.asz())return B.nS
-if($.aQ().gbY()===B.aq||$.aQ().gbY()===B.br)return B.Kk
+if($.aQ().gbY()===B.aq||$.aQ().gbY()===B.br)return B.Kl
 throw A.i(A.aK("Should only be called on Mac or iOS."))},
 aEn(){if(A.asz())return B.nS
 if($.aQ().gbY()===B.aq||$.aQ().gbY()===B.br)return A.aro()
-return B.Ki},
+return B.Kj},
 asb(a,b){var s,r,q,p,o=new A.cs("")
 A.arS(a,o)
 if(!A.all(a)&&!A.alk(a)){s=b==null
@@ -10367,8 +10367,8 @@ break
 case 4:s=l.a
 s===$&&A.a()
 s=A.b8(s,200)
-r=A.b8(A.UA(l,B.nX,B.Km),24)
-q=A.b8(A.UA(l,B.nX,B.L6),32)
+r=A.b8(A.UA(l,B.nX,B.Kn),24)
+q=A.b8(A.UA(l,B.nX,B.L5),32)
 p=A.b8(l.a,10)
 o=A.b8(l.a,12)
 l.d===$&&A.a()
@@ -10378,8 +10378,8 @@ break
 case 5:s=l.a
 s===$&&A.a()
 s=A.b8(A.wu(s+240),40)
-r=A.b8(A.UA(l,B.nZ,B.M2),24)
-q=A.b8(A.UA(l,B.nZ,B.M3),32)
+r=A.b8(A.UA(l,B.nZ,B.M1),24)
+q=A.b8(A.UA(l,B.nZ,B.M2),32)
 p=A.b8(l.a+15,8)
 o=A.b8(l.a+15,12)
 l.d===$&&A.a()
@@ -17086,7 +17086,7 @@ r.toString
 A.ho(r)
 q=a.i(0,"swipeEdge")
 q.toString
-return new A.lo(s,r,B.KM[A.eR(q)])},
+return new A.lo(s,r,B.KN[A.eR(q)])},
 yF:function yF(a,b){this.a=a
 this.b=b},
 lo:function lo(a,b,c){this.a=a
@@ -18569,7 +18569,7 @@ if(a.as!==q)return q?-1:1
 return 0},
 axy(a,b){var s=A.Y(b).h("ab<1,d_>")
 s=A.U(new A.ab(b,new A.UJ(),s),s.h("at.E"))
-return A.awV(!0,s,a,B.Lq,!0,B.FP,null)},
+return A.awV(!0,s,a,B.Lp,!0,B.FP,null)},
 ajs(a){var s
 try{a.dc()}catch(s){a.HP()}a.w=B.ZL
 try{a.bt(A.aFE())}catch(s){}},
@@ -19072,7 +19072,7 @@ _.as=!0
 _.at=!1
 _.$ti=d},
 aod(a,b){var s
-if(a===b)return new A.DQ(B.Lr)
+if(a===b)return new A.DQ(B.Lq)
 s=A.b([],t.fJ)
 A.ct()
 a.mb(new A.XF(b,A.aq(t.u),s))
@@ -22008,7 +22008,7 @@ break
 case"merge":for(r=[0,4,7,12],m=0;m<4;++m)A.cu(440*Math.pow(2,(r[m]+5+B.c.aD(b)*2)/12),0.35,0,0.005,k,k,l,0.12)
 A.cu(440*Math.pow(2,(17+B.c.aD(b)*2)/12),0.25,0.12,0.005,k,k,i,0.12)
 break
-case"mythic":for(p=0;p<8;++p)A.cu(440*Math.pow(2,B.Kc[p]/12),0.2,p*0.07,0.005,k,k,j,0.12)
+case"mythic":for(p=0;p<8;++p)A.cu(440*Math.pow(2,B.Kd[p]/12),0.2,p*0.07,0.005,k,k,j,0.12)
 A.cu(440*Math.pow(2,-1),1,0.5,0.005,k,k,l,0.25)
 A.Rh(0.8,0.5,6000,h,0.12)
 break
@@ -22028,7 +22028,7 @@ case"boss":A.cu(73,1.6,0,0.15,k,k,j,0.22)
 A.cu(73.6,1.6,0,0.15,k,k,j,0.18)
 A.cu(55,1.2,1.4,0.1,k,k,i,0.12)
 break
-case"win":for(p=0;p<7;++p)A.cu(440*Math.pow(2,(B.Kz[p]-5)/12),0.4,p*0.11,0.005,k,k,l,0.18)
+case"win":for(p=0;p<7;++p)A.cu(440*Math.pow(2,(B.KA[p]-5)/12),0.4,p*0.11,0.005,k,k,l,0.18)
 break
 case"lose":for(p=0;p<4;++p){r=p*2
 A.cu(440*Math.pow(2,(-5-r)/12),0.45,p*0.3,0.005,k,440*Math.pow(2,(-6-r)/12),l,0.18)}break
@@ -22075,7 +22075,7 @@ i.toString
 o=i
 A.cu(440*Math.pow(2,J.ku(q,0)/12),s*0.9,p,0.005,o,e,d,0.22)
 for(n=1;n<3;++n)for(i=J.avR(q,1),h=i.length,g=0;g<i.length;i.length===h||(0,A.m)(i),++g){m=i[g]
-A.cu(440*Math.pow(2,m/12),s*0.5,p+n*s,0.005,o,e,"square",0.025)}l=B.Ky[r]
+A.cu(440*Math.pow(2,m/12),s*0.5,p+n*s,0.005,o,e,"square",0.025)}l=B.Kz[r]
 for(k=0;k<3;++k){j=B.f.ai(B.f.bO($.agE,8),2)===1&&J.d(k,2)?1:0
 A.cu(440*Math.pow(2,(J.ku(l,k)-12+j)/12),s*0.85,p+k*s,0.005,o,e,"sine",0.06)
 A.cu(440*Math.pow(2,(J.ku(l,k)+j)/12)*1.003,s*0.85,p+k*s,0.005,o,e,d,0.035)}if($.als)A.Rh(0.05,p,6000,"highpass",0.04)
@@ -22112,9 +22112,9 @@ if(q!=="drip"&&a>=r.b)s.push(q)}return s},
 aGq(a,b){var s,r,q
 for(s=B.k1.i(0,B.f.ai(b-1,6)+1).gdS(),s=s.gR(s),r=a>1;s.p();){q=s.gH()
 if(q.b===a&&q.a!=="drip"&&r)return q.a}return null},
-e2(a){var s=a-1,r=B.f.ai(s,6),q=B.f.bO(s,6),p=B.KS[r]
+e2(a){var s=a-1,r=B.f.ai(s,6),q=B.f.bO(s,6),p=B.Ma[r]
 if(q===0)return p
-return new A.iv(p.a+" "+B.Kr[B.f.aY(q+1-1,0,9)],p.b,p.c,p.d*A.aEp(1.6,q)*1.5,p.e,p.f,p.r)},
+return new A.iv(p.a+" "+B.Ks[B.f.aY(q+1-1,0,9)],p.b,p.c,p.d*A.aEp(1.6,q)*1.5,p.e,p.f,p.r)},
 aEp(a,b){var s,r
 for(s=1,r=0;r<b;++r)s*=a
 return s},
@@ -22861,7 +22861,7 @@ if(B.yj.v(0,h)){if(j>=2)continue;++j}if(b.cK()<0.7||k.length<2)k.push(h)}if(k.le
 k.push(e)
 o=0
 if(B.f.ai(a2,4)===2){c=t.ew
-g=A.U(new A.a2(B.Kv,new A.adp(a0),c),c.h("t.E"))
+g=A.U(new A.a2(B.Kw,new A.adp(a0),c),c.h("t.E"))
 c=g.length
 if(c!==0)for(c=J.b6(g[b.hd(c)]);c.p();){l=c.gH()
 s.push(l)
@@ -22921,7 +22921,7 @@ a9.p3=-1
 a9.as=s?6:5
 a8.cV(a7.b,"I. Will. Not. Be. Moved.")}a8.p4=B.b.cq(a8.N,new A.adj())
 break
-case 8:if(a8.ry==null&&a9.a_<=2){s=B.LU[a8.b.hd(3)]
+case 8:if(a8.ry==null&&a9.a_<=2){s=B.LT[a8.b.hd(3)]
 a8.ry=s
 a8.kL("Next act: "+s,4288356902,2,1,r.a,r.b)
 a8.cV(a7.b,"And now... the "+A.n(a8.ry)+"!")}if(a9.a_<=0){a7=a9.id
@@ -22972,7 +22972,7 @@ for(s=a9.rx,a2=0,j=1;j<3;++j)if(s[j]>s[a2])a2=j
 a9.fy=B.b.cI(s,new A.adl())?-1:a2
 B.b.v4(s,0,3,0)
 s=a9.fy
-if(s>=0)a8.kL("The Shadow Keeper adapts to "+B.LB[s],a6,1.5,1,r.a,r.b)}if(a9.aR===0&&a9.x2/a9.xr<0.5){a9.aR=1
+if(s>=0)a8.kL("The Shadow Keeper adapts to "+B.LA[s],a6,1.5,1,r.a,r.b)}if(a9.aR===0&&a9.x2/a9.xr<0.5){a9.aR=1
 A.aCh(a8,3,5)
 a8.cV(a7.b,"Let the dark keep your best ones a while.")}break
 case 13:for(s=a8.e,q=s.length,m=0.15*b0,p=0;p<q;++p){a3=s[p]
@@ -24150,7 +24150,7 @@ a6c(){var s=0,r=A.R(t.H),q,p,o
 var $async$a6c=A.S(function(a,b){if(a===1)return A.O(b,r)
 for(;;)switch(s){case 0:o=A.b([],t.s)
 for(q=0;q<38;++q)o.push("u_"+B.da[q].a)
-for(q=0;q<40;++q)o.push("e_"+B.jG[q].a)
+for(q=0;q<40;++q)o.push("e_"+B.jH[q].a)
 for(p=$.kt(),p=new A.dt(p,p.r,p.e);p.p();)o.push("b_"+p.d)
 s=2
 return A.M(A.kQ(new A.ab(o,new A.a6d(),t.u6),t.P),$async$a6c)
@@ -24727,7 +24727,7 @@ X5(a){var s=a/100
 return(s<=0.0031308?s*12.92:1.055*Math.pow(s,0.4166666666666667)-0.055)*255},
 ajH(a){var s=Math.pow(Math.abs(a),0.42)
 return A.np(a)*400*s/(s+27.13)},
-ajI(a){var s=A.ak_(a,B.M1),r=A.ajH(s[0]),q=A.ajH(s[1]),p=A.ajH(s[2])
+ajI(a){var s=A.ak_(a,B.M0),r=A.ajH(s[0]),q=A.ajH(s[1]),p=A.ajH(s[2])
 return Math.atan2((r+q-2*p)/9,(11*r+-12*q+p)/11)},
 ayf(a,b){var s,r,q,p,o,n=B.f.ai(b,4)<=1?0:100,m=(b&1)===0?0:100
 if(b<4){s=(a-n*0.7152-m*0.0722)/0.2126
@@ -25773,7 +25773,7 @@ rd(){var s=this.as
 s===$&&A.a()
 return s},
 re(a,b,c,d){var s,r,q,p
-if(a<0||b<0)return B.Lw
+if(a<0||b<0)return B.Lv
 s=this.a
 s===$&&A.a()
 s=s.a
@@ -25792,7 +25792,7 @@ l.push(new A.er(n[0],n[1],n[2],n[3],B.jF[m]))}return l},
 d6(a){var s,r,q=this.a
 q===$&&A.a()
 s=q.a.getGlyphPositionAtCoordinate(a.a,a.b)
-r=B.KN[J.a1(s.affinity.value)]
+r=B.KO[J.a1(s.affinity.value)]
 return new A.ai(J.a1(s.pos),r)},
 Er(a){var s=this.a
 s===$&&A.a()
@@ -26033,7 +26033,7 @@ if(b==null)return!1
 if(!(b instanceof A.kM))return!1
 return b.d===s.d&&J.d(b.a,s.a)&&b.b==s.b&&A.fX(b.c,s.c)},
 gq(a){var s=this,r=s.c
-return A.K(s.d,s.a,s.b,A.bj(r==null?B.Lp:r),B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a)},
+return A.K(s.d,s.a,s.b,A.bj(r==null?B.Lo:r),B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a)},
 $ihH:1}
 A.uf.prototype={
 Ml(a,b){var s=this.Hq(a),r=A.aD(new A.ST(this,b,s))
@@ -26574,7 +26574,7 @@ p.toString
 p=p>0}else p=!1
 if(p)return q}o=this.Zu(a,b)
 if(o.length===1)return B.b.gI(o)
-for(r=0;r<7;++r){q=A.anT(o,new A.Vy(B.Kt[r]))
+for(r=0;r<7;++r){q=A.anT(o,new A.Vy(B.Ku[r]))
 if(q!=null)return q}return B.b.gI(o)},
 a_9(a){var s,r,q
 if(B.hb.a3(a)){s=B.hb.i(0,a)
@@ -26583,7 +26583,7 @@ return s}r=B.e.kB(a,"-")
 if(r!==-1){q=B.e.aq(a,0,r)
 if(B.hb.a3(q)){s=B.hb.i(0,q)
 s.toString
-return s}}return B.jI},
+return s}}return B.jJ},
 Zu(a,b){var s,r,q,p,o,n=A.b([],t.Qg)
 for(s=a.length,r=-1,q=0;q<a.length;a.length===s||(0,A.m)(a),++q){p=a[q]
 o=b.i(0,p)
@@ -28248,7 +28248,7 @@ if(e.b){q=t.f
 d=q.a(q.a(B.bH.ed(a2)).i(0,"data"))
 c=A.cE(d.i(0,"message"))
 if(c!=null&&c.length!==0){b=A.ajR(d,"assertiveness")
-e.a.MB(c,B.Kj[b==null?0:b])}}a.dA(a3,B.bH.be(!0))
+e.a.MB(c,B.Kk[b==null?0:b])}}a.dA(a3,B.bH.be(!0))
 return
 case"flutter/navigation":q=a.gbU().b
 p=t.e8
@@ -31244,7 +31244,7 @@ if(m.f!==B.nw){m.f=B.nw
 m.Js()}}return m.d.a.SB(a)},
 Js(){var s,r
 for(s=this.w,r=0;r<s.length;++r)s[r].$1(this.f)},
-SA(a){if(B.b.v(B.Le,a))return this.f===B.fQ
+SA(a){if(B.b.v(B.Ld,a))return this.f===B.fQ
 return!1}}
 A.Vh.prototype={
 $0(){return new A.ij(Date.now(),0,!1)},
@@ -32825,7 +32825,7 @@ o=A.eR(s.i(0,"textAlignIndex"))
 n=A.eR(s.i(0,"textDirectionIndex"))
 m=A.tm(s.i(0,"fontWeightIndex"))
 l=m!=null?A.asp(m):"normal"
-p=new A.a72(new A.UF(A.Y1(s,"fontSize"),l,A.cE(s.i(0,"fontFamily")),B.Kg[o],B.jF[n],A.Y1(s,"letterSpacing"),A.Y1(s,"wordSpacing"),A.Y1(s,"lineHeight")))
+p=new A.a72(new A.UF(A.Y1(s,"fontSize"),l,A.cE(s.i(0,"fontFamily")),B.Kh[o],B.jF[n],A.Y1(s,"letterSpacing"),A.Y1(s,"wordSpacing"),A.Y1(s,"lineHeight")))
 break
 case"TextInput.clearClient":p=B.C5
 break
@@ -37875,7 +37875,7 @@ if(o>0)return s
 return null}}
 A.a8T.prototype={
 D(a,b){this.Hn(b,0,b.length,!1)},
-bp(){this.Hn(B.Lm,0,0,!0)}}
+bp(){this.Hn(B.Ll,0,0,!0)}}
 A.agb.prototype={
 Hn(a,b,c,d){var s=this.b.a9D(a,b,c,d)
 if(s!=null)this.a.lf(s,0,s.length,d)}}
@@ -38704,7 +38704,7 @@ n=o.w=s.charCodeAt(0)==0?s:s}return n},
 gw_(){var s,r,q=this,p=q.x
 if(p===$){s=q.e
 if(s.length!==0&&s.charCodeAt(0)===47)s=B.e.cO(s,1)
-r=s.length===0?B.jI:A.Gl(new A.ab(A.b(s.split("/"),t.s),A.aF9(),t.Gf),t.N)
+r=s.length===0?B.jJ:A.Gl(new A.ab(A.b(s.split("/"),t.s),A.aF9(),t.Gf),t.N)
 q.x!==$&&A.aN()
 p=q.x=r}return p},
 gq(a){var s,r=this,q=r.y
@@ -38870,7 +38870,7 @@ gib(){var s=this.r,r=this.a
 return s<r.length?B.e.cO(r,s+1):""},
 gw_(){var s,r,q=this.e,p=this.f,o=this.a
 if(B.e.co(o,"/",q))++q
-if(q===p)return B.jI
+if(q===p)return B.jJ
 s=A.b([],t.s)
 for(r=q;r<p;++r)if(o.charCodeAt(r)===47){s.push(B.e.aq(o,q,r))
 q=r+1}s.push(B.e.aq(o,q,p))
@@ -48879,7 +48879,7 @@ Rx(a){var s=this.b,r=s.a.c.Er(a.a8(0,s.gfz()))
 if(r==null||s.gfz().j(0,B.j))return r
 return new A.kR(r.a.cu(s.gfz()),r.b,r.c)},
 uj(){var s,r,q=this.b,p=q.gfz()
-if(!isFinite(p.a)||!isFinite(p.b))return B.Lo
+if(!isFinite(p.a)||!isFinite(p.b))return B.Ln
 s=q.f
 if(s==null){s=q.a.c.uj()
 q.f=s}if(p.j(0,B.j))r=s
@@ -56952,7 +56952,7 @@ break
 case 1:return A.P(q,r)}})
 return A.Q($async$yQ,r)},
 ZM(a,b){var s,r,q,p
-if(a===b)return B.Lt
+if(a===b)return B.Ls
 s=A.b([],t.QP)
 if(a==null)s.push(b)
 else{r=B.b.kB(B.ed,a)
@@ -58207,7 +58207,7 @@ A.lp.prototype={}
 A.Hn.prototype={
 jd(a,b){var s,r,q,p,o,n=$.ad.ao$.d.c
 if(n==null||n.e==null)return!1
-for(s=t.r,r=0;r<2;++r){q=B.Lf[r]
+for(s=t.r,r=0;r<2;++r){q=B.Le[r]
 p=n.e
 p.toString
 o=A.aiZ(p,q,s)
@@ -58403,7 +58403,7 @@ r=m.ga1A()
 q=m.a
 q=q.ch
 q.toString
-k.a=A.ay_(!0,A.aoU(B.m,r,s,q,A.asE(),m.ga2E(),l,m.ga2U(),B.Lu,!0,"nav",B.XJ),"Navigator Scope",!0,l,l,l,l)}else m.a.toString
+k.a=A.ay_(!0,A.aoU(B.m,r,s,q,A.asE(),m.ga2E(),l,m.ga2U(),B.Lt,!0,"nav",B.XJ),"Navigator Scope",!0,l,l,l,l)}else m.a.toString
 k.b=null
 s=m.a
 s.toString
@@ -61703,7 +61703,7 @@ j(a,b){var s=this
 if(b==null)return!1
 if(J.L(b)!==A.w(s))return!1
 return b instanceof A.cI&&b.a===s.a&&b.b==s.b&&b.d===s.d&&A.cZ(null,null)},
-gq(a){return A.K(this.a,this.b,null,this.d,A.bj(B.Lv),B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a)},
+gq(a){return A.K(this.a,this.b,null,this.d,A.bj(B.Lu),B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a)},
 k(a){return"IconData(U+"+B.e.qO(B.f.kM(this.a,16).toUpperCase(),5,"0")+")"}}
 A.vN.prototype={
 bN(a){return!this.w.j(0,a.w)},
@@ -62615,7 +62615,7 @@ b=r?a1:a3.fr
 if(b==null)b=a2.b.c.z
 a3=r?a1:a3.fx
 if(a3==null)a3=a2.b.c.Q
-a=new A.wx(a4,s,q,p,m,o,n,a5,g===!0,a6,a7,i,h,l,k,j,f,new A.uW(a1),B.Ln,e===!0,d,c,b,a3,A.ayR(a2))
+a=new A.wx(a4,s,q,p,m,o,n,a5,g===!0,a6,a7,i,h,l,k,j,f,new A.uW(a1),B.Lm,e===!0,d,c,b,a3,A.ayR(a2))
 if(!a.j(0,a0.e))a0.a9(new A.adI(a0,a))},
 uG(){if(this.d==null)this.mV()},
 NJ(){this.mV()},
@@ -68428,7 +68428,7 @@ gpP(){return A.aGn()},
 a0U(){if(this.x)return
 this.tL()},
 RQ(){var s,r,q,p,o,n,m,l,k,j,i,h,g,f,e,d,c=this,b=null,a=c.c
-if(a===-1||c.d===-1||c.b.length===0)return new A.lA(b,b,B.ce,B.jJ,c.b.length!==0)
+if(a===-1||c.d===-1||c.b.length===0)return new A.lA(b,b,B.ce,B.jK,c.b.length!==0)
 if(!c.as){a=c.Gn(c.d,a)
 c.d=a
 c.c=c.Gn(c.c,a)}s=c.b[c.d].gn()
@@ -68587,7 +68587,7 @@ r.tL()
 return s.b1()},
 l(){var s,r,q,p,o=this
 for(s=o.b,r=s.length,q=o.gyS(),p=0;p<s.length;s.length===r||(0,A.m)(s),++p)s[p].M(q)
-o.b=B.Ls
+o.b=B.Lr
 o.y=!1
 o.ev()},
 cZ(a,b){return a.kj(b)},
@@ -71044,7 +71044,7 @@ r.e-=a
 s=r.f-=a
 if(s<=0){s=r.a
 r.f=38+s.b.cK()*30
-s.cV("Brenda",B.KG[B.f.ai(r.r++,8)])}if(r.e>0)return
+s.cV("Brenda",B.KH[B.f.ai(r.r++,8)])}if(r.e>0)return
 r.e=r.c
 r.a6R()},
 a6R(){var s,r,q,p,o,n,m,l,k,j,i,h,g,f,e,d,c,b=this
@@ -71220,7 +71220,7 @@ d.cx=d.CW=0
 d.cy=!1;++d.z}s=a.ax===B.cn||a.ch
 r=a.a
 q=r.b.a
-p=B.Li[q]
+p=B.Lh[q]
 o=B.f.aY(a.y-d.CW,0,1048576)+5*B.f.aY(a.CW-d.cx,0,1048576)
 if(s&&!d.cy){o+=25;++d.Q}n=a.y
 m=d.CW
@@ -72503,7 +72503,7 @@ l=Math.sin(n.d*8)
 o=new A.y(0,0,0+b.a,0+b.b)
 $.N()
 r=A.a_()
-r.soq(new A.jK(B.M,0.5,B.aj,null,0,A.b([B.a7,B.dW.aP(0.45*(m*(0.5+0.5*l)))],t.W),B.Ks,null).ux(o))
+r.soq(new A.jK(B.M,0.5,B.aj,null,0,A.b([B.a7,B.dW.aP(0.45*(m*(0.5+0.5*l)))],t.W),B.Kt,null).ux(o))
 a.de(o,r)}},
 a3i(f7,f8,f9){var s,r,q,p,o,n,m,l,k,j,i,h,g,f,e,d,c,b,a,a0,a1,a2,a3,a4,a5,a6,a7,a8,a9,b0,b1,b2,b3,b4,b5,b6,b7,b8,b9,c0,c1,c2,c3,c4,c5,c6,c7,c8,c9,d0,d1,d2,d3,d4,d5,d6,d7,d8,d9,e0,e1,e2,e3,e4,e5,e6,e7,e8,e9,f0,f1,f2,f3,f4,f5=null,f6=f9.c
 f6===$&&A.a()
@@ -72659,7 +72659,7 @@ o=f6*0.07
 d8.c=Math.max(1.5,o)
 d8.d=B.eU
 d8.e=B.yN
-for(a3=f6*0.13,a4=d7.a,a6=d7.b+0,a7=a6-a3,a8=a6+a3,c4=0;c4<2;++c4){d9=B.LM[c4]
+for(a3=f6*0.13,a4=d7.a,a6=d7.b+0,a7=a6-a3,a8=a6+a3,c4=0;c4<2;++c4){d9=B.LL[c4]
 for(a9=d9*f6,b2=-d9*f6*0.12,b9=0;b9<2;++b9){b6=a4+a9*(0.72+b9*0.26)
 e0=$.N()
 e1=A.b([],a0)
@@ -73170,7 +73170,7 @@ if(f>0.1)f=0.1
 g.x+=f
 s=!1
 if(!g.z){r=g.fr
-if(!(r>=0&&r<6&&B.jM[r].c==="next")){r=g.d
+if(!(r>=0&&r<6&&B.jG[r].c==="next")){r=g.d
 r===$&&A.a()
 r=r.ax===B.bM
 s=r}}if(s){q=f*g.y
@@ -73360,7 +73360,7 @@ r=q.d
 r===$&&A.a()
 s.fw("Selected. "+A.asc(r,a,!1)+" Merge, sell, shake and give are just under it.")}},
 gLv(){var s=this.fr,r=!1
-if(s>=0)if(s<6){s=B.jM[s].c
+if(s>=0)if(s<6){s=B.jG[s].c
 if(s!=="next")s=s==="summon"&&this.fx>=3
 else s=!0}else s=r
 else s=r
@@ -73449,7 +73449,7 @@ d=new A.ay(4,4)
 c=A.b([new A.pP(g,B.M,A.bo(a,a,B.m,a,a,B.AZ,a,a,a,a,a,a,a),a)],l)
 if(!h.ab&&h.ae>0)c.push(new A.pP(B.c.aY(h.ae/h.xr,0,1),B.M,A.bo(a,a,B.m,B.CC,a,a,a,a,a,a,a,a,a),a))
 i.push(new A.mQ(1,B.e7,A.bo(a,new A.uw(new A.ck(d,d,d,d),new A.oa(B.aQ,B.aJ,B.Z,c,a),a),B.m,a,a,new A.b3(B.J,a,new A.cG(e,e,e,e),new A.ck(f,f,f,f),a,a,B.B),a,12,a,a,a,a,a),a))
-B.b.K(a0,i)}return A.bG(a,A.bo(a,A.bP(A.b([new A.dv("b_"+m,40,!1,a),B.aE,A.bR(A.bJ(A.b([k,B.kQ,A.bP(a0,B.u,B.n,B.v),B.cI,A.ak(n.c,1,B.bf,A.by(a,a,B.fv,a,a,a,a,a,"Nunito",a,a,10,a,a,B.H,a,1.25,!0,a,a,a,a,a,a,a,a),a)],l),B.ae,B.n,B.a8),1)],l),B.u,B.n,B.v),B.m,a,a,new A.b3(a,a,o,p,B.Kw,B.J9,B.B),a,a,B.GP,B.GH,a,a,a),!0,a,a,!0,!1,a,a,a,a,a,a,r,a,a,a,a,a,a,a,a,a,a,a,a,a,a)},
+B.b.K(a0,i)}return A.bG(a,A.bo(a,A.bP(A.b([new A.dv("b_"+m,40,!1,a),B.aE,A.bR(A.bJ(A.b([k,B.kQ,A.bP(a0,B.u,B.n,B.v),B.cI,A.ak(n.c,1,B.bf,A.by(a,a,B.fv,a,a,a,a,a,"Nunito",a,a,10,a,a,B.H,a,1.25,!0,a,a,a,a,a,a,a,a),a)],l),B.ae,B.n,B.a8),1)],l),B.u,B.n,B.v),B.m,a,a,new A.b3(a,a,o,p,B.Kx,B.J9,B.B),a,a,B.GP,B.GH,a,a,a),!0,a,a,!0,!1,a,a,a,a,a,a,r,a,a,a,a,a,a,a,a,a,a,a,a,a,a)},
 Zi(){return A.Ge(new A.abh(this))},
 GN(a,b){var s,r,q,p=this.d
 p===$&&A.a()
@@ -73522,7 +73522,7 @@ m="Shake into another "+q+", "+m
 q=m}q=A.b([s,B.kP,p,B.kP,a0.Jq(e,B.I3,q,new A.abH(a0,a3),B.cK)],a)
 if(a0.d.gis()!=null)B.b.K(q,A.b([B.kP,a0.a2k(B.Ic,"Give one to Brenda",new A.abI(a0,a3,r),B.bD)],a))
 b.push(A.bP(q,B.u,B.n,B.v))
-return A.iH(a1,A.bo(a1,A.bJ(b,B.u,B.n,B.a8),B.m,a1,a1,new A.b3(a1,a1,k,l,B.KL,B.nP,B.B),a1,a1,a1,B.GQ,a1,a1,a1),a1,a1,i,a1,h,248)},
+return A.iH(a1,A.bo(a1,A.bJ(b,B.u,B.n,B.a8),B.m,a1,a1,new A.b3(a1,a1,k,l,B.KM,B.nP,B.B),a1,a1,a1,B.GQ,a1,a1,a1),a1,a1,i,a1,h,248)},
 Jq(a,b,c,d,e){var s=a?d:null
 return A.JC(A.f_(A.ajL(b,B.h,null,B.fY,20),a,52,null,s,B.aH,12,c,e,40),c)},
 a2k(a,b,c,d){return this.Jq(!0,a,b,c,d)},
@@ -73567,8 +73567,8 @@ r.kJ(new A.wB(new A.abL(this,a,b,c),q,!0,0.5625,B.a7,0,i,i,B.ia,B.iI,!0,!0,i,i,i
 ZJ(){var s,r,q,p,o,n,m,l,k=null,j=this.d
 j===$&&A.a()
 s=j.d[0]
-j=A.b([A.ak("You have "+s.d+" tea leaves. Madame Vex's cup decides.",k,k,A.by(k,k,B.ad,k,k,k,k,k,"Nunito",k,k,12.5,k,k,B.H,k,1.25,!0,k,k,k,k,k,k,k,k),B.a6),B.bW],t.p)
-for(r=0;r<3;++r){q=B.LT[r]
+j=A.b([A.ak("You have "+s.d+" tea leaves. Madame Fissure's cup decides.",k,k,A.by(k,k,B.ad,k,k,k,k,k,"Nunito",k,k,12.5,k,k,B.H,k,1.25,!0,k,k,k,k,k,k,k,k),B.a6),B.bW],t.p)
+for(r=0;r<3;++r){q=B.LS[r]
 p=q.a.a
 o=B.aM[p]
 n=B.c.aD(q.c*100)
@@ -73630,7 +73630,7 @@ h=s.ur(i)>0?"\u2713":"\u2022"
 g=o.i(0,i).b
 i=s.ur(i)>0?B.ft:A.av(B.bl[o.i(0,i).c.a]).aP(0.8)
 k.push(A.ak(h+" "+g,f,f,new A.o(!0,i,f,"Nunito",f,f,11,B.H,f,f,f,f,1.25,f,f,f,f,f,f,f,f,f,f,f,f,f),f))}r.push(new A.bE(B.iV,new A.zk(A.bP(A.b([new A.rj(m,44,!1,f),B.bV,new A.mQ(1,B.e7,A.bJ(A.b([l,B.cI,A.rs(B.bF,k,2,4)],e),B.ae,B.n,B.v),f),new A.Dj("BUILD","",this.d.u9(s,n),new A.abq(this,s,p),B.cK,76,f)],e),B.u,B.n,B.v),B.nb,f),f))}return A.bJ(r,B.aV,B.n,B.v)},
-a5H(){var s,r=this,q=null,p=r.fr,o=B.jM[p],n=A.bA(10),m=A.cH(B.q,2),l=t.p
+a5H(){var s,r=this,q=null,p=r.fr,o=B.jG[p],n=A.bA(10),m=A.cH(B.q,2),l=t.p
 n=A.bP(A.b([A.bo(q,A.ak(""+(p+1)+"/6",q,q,A.bc(13,B.h,0.5,B.mQ,1.2),q),B.m,q,q,new A.b3(B.mG,q,m,n,q,q,B.B),q,q,q,B.GN,q,q,q),B.bV,A.bR(A.ak(o.a,q,q,A.bc(19,B.h,0.5,B.q,1.8),q),1)],l),B.u,B.n,B.v)
 m=A.ak(o.b,q,q,A.by(q,q,B.fz,q,q,q,q,q,"Nunito",q,q,13.5,q,q,B.H,q,1.35,!0,q,q,q,q,q,q,q,q),q)
 p=A.b([new A.vq(1,B.HD,A.aq0(A.ak("Skip tutorial",q,B.bf,A.by(q,q,B.ad,q,q,q,q,q,"Nunito",q,q,13,q,q,B.H,q,1.25,!0,q,q,q,q,q,q,q,q),q),new A.abR(r)),q),B.yM],l)
@@ -73665,7 +73665,7 @@ q=a3.d[0].y
 p=a3.a.x
 o=a3.ch&&a3.y>50
 if(s)n="THE RIFT IS SEALED"
-else n=o?"OFF SEASON OVER":"THE RIFT BROKE THROUGH"
+else n=o?"THE RIFT SWALLOWED YOU":"THE RIFT BROKE THROUGH"
 m=s||o?B.aP:B.dx
 l=s&&r!=null&&B.b.cq(r.d,new A.ab5(p))
 a3=B.k.aP(0.72)
@@ -74166,7 +74166,7 @@ case 2:if(q.c!=null)q.a9(new A.aca(q))
 return A.P(null,r)}})
 return A.Q($async$tu,r)},
 J(a){var s=null
-return A.akg(B.fy,new A.qI(A.e5(new A.dQ(B.ia,A.Ge(new A.aco(this,new A.a2(B.jH,new A.acp(this),t.IQ).gE(0),new A.a2(B.da,this.a.c.gN8(),t.qR).gE(0))),s),s,s),s))},
+return A.akg(B.fy,new A.qI(A.e5(new A.dQ(B.ia,A.Ge(new A.aco(this,new A.a2(B.jI,new A.acp(this),t.IQ).gE(0),new A.a2(B.da,this.a.c.gN8(),t.qR).gE(0))),s),s,s),s))},
 a1U(){var s,r,q,p,o,n,m,l,k,j,i,h,g,f,e,d=this,c=null,b=A.e2(d.gfj()),a=$.kt().i(0,b.c)
 a.toString
 s=d.a.c.AH(d.gfj())
@@ -74305,7 +74305,7 @@ A.ace.prototype={
 $0(){return this.a.a.c.y=this.b.a},
 $S:0}
 A.MD.prototype={
-J(a){var s=null,r=A.aq8(-0.035,A.ak("VOIDED",s,s,A.bc(this.c,B.aU,3,B.DD,5).a8O(1,B.Ma),s)),q=B.q.aP(0.75),p=A.bA(12)
+J(a){var s=null,r=A.aq8(-0.035,A.ak("VOIDED",s,s,A.bc(this.c,B.aU,3,B.DD,5).a8O(1,B.M9),s)),q=B.q.aP(0.75),p=A.bA(12)
 return A.bG(s,A.bJ(A.b([r,B.dv,A.bo(s,A.ak("Hold the line till the Rift closes",s,s,A.by(s,s,B.EU,s,s,s,s,s,"Nunito",s,s,12.5,s,s,B.H,s,1.25,!0,s,s,s,s,s,s,s,s),s),B.m,s,s,new A.b3(q,s,s,p,s,s,B.B),s,s,s,B.Gl,s,s,s)],t.p),B.u,B.n,B.v),!1,s,s,!0,!1,s,s,!0,s,s,s,"Voided. A tower defence at the Rift.",s,s,s,s,s,s,s,s,s,s,s,s,s,s)}}
 A.BG.prototype={
 ar(){return new A.Pf()},
@@ -74368,7 +74368,7 @@ q=l.a
 p=B.ec[q]
 o=i.a.c
 k=o.w
-j=q<=k?B.Kp[q]:"Clear a level on "+B.ec[B.cs[q-1].a]+" to unlock."
+j=q<=k?B.Kq[q]:"Clear a level on "+B.ec[B.cs[q-1].a]+" to unlock."
 k=B.cs[B.f.aY(o.y,0,k)]
 f.push(i.XT(q>i.a.c.w,k===l,new A.ae_(i,l),j,p))}return new A.m2("Pick your shift",g,A.Yx(f,B.Gp),new A.bE(B.Gt,s,h),h)}}
 A.adT.prototype={
@@ -74413,7 +74413,7 @@ e3(){return this.d.$0()}}
 A.Kt.prototype={
 J(a){var s,r=null,q=this.a.c,p=t.p
 p=A.b([A.zl(A.bP(A.b([B.SF,B.cH,A.bR(A.ak("Madge keeps the good stuff behind the counter. Rift glass buys things that last from one night to the next.",r,r,A.by(r,r,B.ad,r,r,r,r,r,"Nunito",r,r,12.5,r,r,B.H,r,1.3,!0,r,r,r,r,r,r,r,r),r),1)],p),B.u,B.n,B.v),B.e5),B.ZY],p)
-for(s=0;s<4;++s)p.push(this.a4T(q,B.jH[s]))
+for(s=0;s<4;++s)p.push(this.a4T(q,B.jI[s]))
 return new A.m2("The Back Room",q,A.Yx(p,B.iX),r,r)},
 a4T(a,b){var s,r,q,p,o,n,m,l,k,j=null,i=b.a,h=a.ij(i),g=b.d,f=a.ij(i)>=g,e=f?0:b.e+b.f*a.ij(i),d=!f&&a.a>=e
 i=B.NY.i(0,i)
@@ -74545,7 +74545,7 @@ A.Kw.prototype={
 J(a){var s,r,q,p=this,o=new A.a9_(p),n=p.a.c,m=t.p,l=A.bP(A.b([o.$3("RIFTLINGS",!p.d,new A.a8Y(p)),B.bV,o.$3("BOSSES",p.d,new A.a8Z(p))],m),B.u,B.n,B.v)
 if(p.d){s=A.b([],m)
 for(r=$.kt(),r=new A.cq(r,r.r,r.e);r.p();)s.push(p.Xd(r.d))}else{s=A.b([],m)
-for(q=0;q<40;++q)s.push(p.Z9(B.jG[q]))}return new A.m2("Riftlings",n,A.bJ(A.b([new A.bE(B.Go,l,null),A.bR(A.Yx(s,B.iX),1)],m),B.u,B.n,B.v),null,null)},
+for(q=0;q<40;++q)s.push(p.Z9(B.jH[q]))}return new A.m2("Riftlings",n,A.bJ(A.b([new A.bE(B.Go,l,null),A.bR(A.Yx(s,B.iX),1)],m),B.u,B.n,B.v),null,null)},
 a1V(a){var s,r,q,p,o,n=A.b([],t.t)
 for(s=t.s,r=1;r<=6;++r){q=A.b([],s)
 for(p=[3,12,25,40],o=0;o<4;++o)B.b.K(q,A.alF(p[o],r))
@@ -74576,7 +74576,7 @@ n=t.p
 m=A.b([],n)
 if(k.length!==0)m.push(new A.hm("Final boss \xb7 Level "+B.b.aN(k,", "),B.aP,l))
 else m.push(new A.hm("Turns up on the tens",B.dx,l))
-return new A.bE(B.iU,A.bo(l,A.bP(A.b([new A.dv("b_"+s,82,!1,l),B.cH,A.bR(A.bJ(A.b([A.rs(B.bF,m,4,4),B.dv,A.ak(a.b,l,l,A.bc(19,B.h,0.5,B.iK,1.8),l),A.ak(a.c,l,l,A.by(l,l,B.fv,l,l,l,l,l,"Nunito",l,l,12,l,l,B.H,l,1.25,!0,l,l,l,l,l,l,l,l),l),B.dv,A.ak(a.z,l,l,A.by(l,l,B.h,l,l,l,l,l,"Nunito",l,l,12,l,l,B.H,l,1.3,!0,l,l,l,l,l,l,l,l),l)],n),B.ae,B.n,B.v),1)],n),B.ae,B.n,B.v),B.m,l,l,new A.b3(l,l,o,q,B.Kx,B.Jc,B.B),l,l,l,B.e5,l,l,l),l)}}
+return new A.bE(B.iU,A.bo(l,A.bP(A.b([new A.dv("b_"+s,82,!1,l),B.cH,A.bR(A.bJ(A.b([A.rs(B.bF,m,4,4),B.dv,A.ak(a.b,l,l,A.bc(19,B.h,0.5,B.iK,1.8),l),A.ak(a.c,l,l,A.by(l,l,B.fv,l,l,l,l,l,"Nunito",l,l,12,l,l,B.H,l,1.25,!0,l,l,l,l,l,l,l,l),l),B.dv,A.ak(a.z,l,l,A.by(l,l,B.h,l,l,l,l,l,"Nunito",l,l,12,l,l,B.H,l,1.3,!0,l,l,l,l,l,l,l,l),l)],n),B.ae,B.n,B.v),1)],n),B.ae,B.n,B.v),B.m,l,l,new A.b3(l,l,o,q,B.Ky,B.Jc,B.B),l,l,l,B.e5,l,l,l),l)}}
 A.a9_.prototype={
 $3(a,b,c){var s=null,r=b?B.bD:B.af,q=b?", selected":""
 return A.bR(A.f_(A.ak(a,s,s,A.bc(16,B.h,0.5,(b?B.bD:B.af).e,1.5),s),!0,44,s,new A.a90(this.a,c),B.fL,14,a+q,r,s),1)},
@@ -74721,7 +74721,7 @@ return A.bo(r,A.Ti(o,A.fg(B.aQ,A.b([n,A.e5(A.ak(m,r,r,A.bc(12,B.h,0.5,B.q,1.4),r
 $S:497}
 A.Jb.prototype={
 J(a){var s=null,r=A.bA(16),q=A.cH(B.q,2.5)
-return A.e5(A.bo(s,A.a3m(s,s,s,B.eW,s,s,!0,s,A.lJ(A.b([A.lJ(s,s,s,s,s,s,s,s,s,B.TO,this.c+"  "),A.lJ(s,s,s,s,s,s,s,s,s,A.by(s,s,B.q,s,s,s,s,s,"Nunito",s,s,13,s,s,B.H,s,1.25,!0,s,s,s,s,s,s,s,s),this.d)],t.VO),s,s,s,s,s,s,s,s,s,s),B.a6,s,s,B.cf,B.bA),B.m,s,B.ia,new A.b3(B.CN,s,q,r,B.M7,s,B.B),s,s,s,B.Gv,s,s,s),s,s)}}
+return A.e5(A.bo(s,A.a3m(s,s,s,B.eW,s,s,!0,s,A.lJ(A.b([A.lJ(s,s,s,s,s,s,s,s,s,B.TO,this.c+"  "),A.lJ(s,s,s,s,s,s,s,s,s,A.by(s,s,B.q,s,s,s,s,s,"Nunito",s,s,13,s,s,B.H,s,1.25,!0,s,s,s,s,s,s,s,s),this.d)],t.VO),s,s,s,s,s,s,s,s,s,s),B.a6,s,s,B.cf,B.bA),B.m,s,B.ia,new A.b3(B.CN,s,q,r,B.M6,s,B.B),s,s,s,B.Gv,s,s,s),s,s)}}
 A.DC.prototype={
 J(a){var s,r,q=null,p=this.e,o=B.c.aY(p,0,0.4)
 p=B.c.aY(1+Math.max(0,p-2)*0.5,1,1.3)
@@ -74736,7 +74736,7 @@ A.Dj.prototype={
 J(a){var s=this,r=s.c,q=s.d,p=s.f,o=q.length===0?"":", "+q,n=p?"":", not available",m=p?s.r:null
 return A.um(r,p,50,m,r+o+n,16,q,s.w,s.x)}}
 A.Jn.prototype={
-J(a){var s=this,r=null,q=A.bA(20),p=s.e?B.Ko:r,o=s.d,n=o?B.aP:B.af,m=""+s.c,l=o?"":", not available now",k=A.ak("SUMMON",r,r,A.bc(24,B.h,1,(o?B.aP:B.af).e,2.4),r),j=A.bA(12),i=t.p
+J(a){var s=this,r=null,q=A.bA(20),p=s.e?B.Kp:r,o=s.d,n=o?B.aP:B.af,m=""+s.c,l=o?"":", not available now",k=A.ak("SUMMON",r,r,A.bc(24,B.h,1,(o?B.aP:B.af).e,2.4),r),j=A.bA(12),i=t.p
 return A.mN(A.f_(A.vo(B.M,A.bJ(A.b([k,B.cI,A.bo(r,A.bP(A.b([B.SG,B.yI,A.ak(m,r,r,A.bc(15,B.h,0.5,B.q,1.4),r)],i),B.u,B.n,B.a8),B.m,r,r,new A.b3(B.e_,r,r,j,r,r,B.B),r,r,r,B.GB,r,r,r)],i),B.u,B.n,B.a8),B.cV),!0,74,r,s.f,B.n9,20,"Summon a figurine, "+m+" pennies"+l,n,r),new A.b3(r,r,r,q,p,r,B.B),B.c9)}}
 A.J7.prototype={
 J(a){return A.Ge(new A.a67(this))}}
@@ -77428,8 +77428,8 @@ B.An=new A.ck(B.xT,B.xT,B.K,B.K)
 B.aj=new A.JA(0,"clamp")
 B.mP=new A.h(1,0.2784313725490196,0.2,0.12156862745098039,B.d)
 B.cl=new A.h(1,0.13333333333333333,0.10196078431372549,0.06666666666666667,B.d)
-B.M4=s([B.mP,B.cl],t.W)
-B.Ja=new A.dE(B.bg,B.b_,B.aj,B.M4,null,null)
+B.M3=s([B.mP,B.cl],t.W)
+B.Ja=new A.dE(B.bg,B.b_,B.aj,B.M3,null,null)
 B.AY=new A.b3(null,null,B.As,B.An,null,B.Ja,B.B)
 B.mF=new A.h(1,1,0.5176470588235295,0.45098039215686275,B.d)
 B.Dj=new A.h(1,0.7607843137254902,0.16862745098039217,0.22745098039215686,B.d)
@@ -77445,9 +77445,9 @@ B.nP=new A.dE(B.bg,B.b_,B.aj,B.nU,null,null)
 B.B_=new A.b3(null,null,B.Ar,B.Aq,null,B.nP,B.B)
 B.F7=new A.h(0.2,0.043137254901960784,0.03529411764705882,0.027450980392156862,B.d)
 B.Dv=new A.h(0.7019607843137254,0.043137254901960784,0.03529411764705882,0.027450980392156862,B.d)
-B.LF=s([B.F7,B.Dv],t.W)
+B.LE=s([B.F7,B.Dv],t.W)
 B.L_=s([0.45,1],t.n)
-B.Qj=new A.jK(B.M,1.05,B.aj,null,0,B.LF,B.L_,null)
+B.Qj=new A.jK(B.M,1.05,B.aj,null,0,B.LE,B.L_,null)
 B.B0=new A.b3(null,null,null,null,null,B.Qj,B.B)
 B.ic=new A.u9(1,"contain")
 B.cV=new A.u9(6,"scaleDown")
@@ -77721,7 +77721,7 @@ B.Cf=new A.a7L()
 B.ac=new A.a7M()
 B.cY=new A.a7O()
 B.dA=new A.JS(0,0,0,0)
-B.Ln=s([],A.a6("u<Uf>"))
+B.Lm=s([],A.a6("u<Uf>"))
 B.a_Z=new A.a7T()
 B.fm=new A.Kb()
 B.bj=new A.Kc()
@@ -78301,8 +78301,8 @@ B.nN=new A.wf(0,"opportunity")
 B.jD=new A.wf(2,"mandatory")
 B.nO=new A.wf(3,"endOfText")
 B.Mj=s([B.h,B.h,B.a7],t.W)
-B.Lj=s([0,0.62,1],t.n)
-B.J7=new A.dE(B.bg,B.b_,B.aj,B.Mj,B.Lj,null)
+B.Li=s([0,0.62,1],t.n)
+B.J7=new A.dE(B.bg,B.b_,B.aj,B.Mj,B.Li,null)
 B.Ep=new A.h(1,0.35294117647058826,0.08627450980392157,0.18823529411764706,B.d)
 B.DU=new A.h(1,0.16470588235294117,0.058823529411764705,0.13333333333333333,B.d)
 B.nT=s([B.Ep,B.DU],t.W)
@@ -78310,34 +78310,34 @@ B.J9=new A.dE(B.dH,B.i2,B.aj,B.nT,null,null)
 B.Et=new A.h(1,0.47843137254901963,0.3568627450980392,0.24313725490196078,B.d)
 B.DK=new A.h(1,0.2901960784313726,0.20392156862745098,0.12941176470588237,B.d)
 B.Dm=new A.h(1,0.1803921568627451,0.12549019607843137,0.0784313725490196,B.d)
-B.LE=s([B.Et,B.DK,B.Dm],t.W)
-B.Jb=new A.dE(B.dH,B.i2,B.aj,B.LE,null,null)
+B.LD=s([B.Et,B.DK,B.Dm],t.W)
+B.Jb=new A.dE(B.dH,B.i2,B.aj,B.LD,null,null)
 B.Aa=new A.d7(1,1)
 B.Jc=new A.dE(B.lv,B.Aa,B.aj,B.nT,null,null)
 B.Jd=new A.wh(null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null)
 B.Jf=s([0,6,12,18],t.t)
-B.L5=s([1373.2198709594231,-1100.4251190754821,-7.278681089101213],t.n)
-B.KJ=s([-271.815969077903,559.6580465940733,-32.46047482791194],t.n)
+B.L4=s([1373.2198709594231,-1100.4251190754821,-7.278681089101213],t.n)
+B.KK=s([-271.815969077903,559.6580465940733,-32.46047482791194],t.n)
 B.Mm=s([1.9622899599665666,-57.173814538844006,308.7233197812385],t.n)
-B.Jo=s([B.L5,B.KJ,B.Mm],t.zg)
+B.Jo=s([B.L4,B.KK,B.Mm],t.zg)
 B.OX=new A.j(0,5)
 B.B1=new A.dP(0,B.aL,B.mg,B.OX,0)
 B.Js=s([B.B1],t.V)
 B.JO=s([4,9,14,19],t.t)
-B.LW=s([137,80,78,71,13,10,26,10],t.Z)
+B.LV=s([137,80,78,71,13,10,26,10],t.Z)
 B.Iu=new A.kT(0,"png")
 B.IC=new A.iq(B.Iu,!1,0,"png")
-B.Is=new A.ju(B.LW,B.IC,0,"png")
-B.LX=s([71,73,70,56,55,97],t.Z)
-B.Ir=new A.ju(B.LX,B.fT,1,"gif87a")
+B.Is=new A.ju(B.LV,B.IC,0,"png")
+B.LW=s([71,73,70,56,55,97],t.Z)
+B.Ir=new A.ju(B.LW,B.fT,1,"gif87a")
 B.KY=s([71,73,70,56,57,97],t.Z)
 B.Iq=new A.ju(B.KY,B.fT,2,"gif89a")
 B.Jp=s([255,216,255],t.Z)
 B.Iv=new A.kT(2,"jpeg")
 B.IG=new A.iq(B.Iv,!1,3,"jpeg")
 B.It=new A.ju(B.Jp,B.IG,3,"jpeg")
-B.Ke=s([82,73,70,70,null,null,null,null,87,69,66,80],t.Z)
-B.Ip=new A.ju(B.Ke,B.nE,4,"webp")
+B.Kf=s([82,73,70,70,null,null,null,null,87,69,66,80],t.Z)
+B.Ip=new A.ju(B.Kf,B.nE,4,"webp")
 B.K3=s([66,77],t.Z)
 B.Iw=new A.kT(4,"bmp")
 B.IE=new A.iq(B.Iw,!1,6,"bmp")
@@ -78346,25 +78346,37 @@ B.JQ=s([B.Is,B.Ir,B.Iq,B.It,B.Ip,B.Io],A.a6("u<ju>"))
 B.li=new A.Bk(0,"named")
 B.zJ=new A.Bk(1,"anonymous")
 B.JZ=s([B.li,B.zJ],A.a6("u<Bk>"))
-B.KK=s([0.41233895,0.35762064,0.18051042],t.n)
-B.Kn=s([0.2126,0.7152,0.0722],t.n)
+B.KL=s([0.41233895,0.35762064,0.18051042],t.n)
+B.Ko=s([0.2126,0.7152,0.0722],t.n)
 B.Mb=s([0.01932141,0.11916382,0.95034478],t.n)
-B.K0=s([B.KK,B.Kn,B.Mb],t.zg)
+B.K0=s([B.KL,B.Ko,B.Mb],t.zg)
 B.nQ=s([0,4,12,1,5,13,3,7,15],t.t)
 B.AL=new A.e4(6,"prizeclaw")
-B.Az=new A.dO("prizeclaw","The Prize Claw","Everybody Wins (Nobody Wins)",B.AL,9.5,0.55,0.1,4289773253,"Insert coin. Insert coin. INSERT COIN.","Game... over...","A crosshair sits on a cell for 2s, then the claw lifts its top figurine (never a Mythic). It comes back when the Claw loses 15% health or after 12s. Drag it away from the crosshair.","drip")
-B.AE=new A.dO("limpet","Lady Limpet","She Will Not Be Moved",B.fa,9.5,0.5,0.15,4285356410,"I have clung to this crack since before your grandmother.","Unclamping... with dignity...","Every 10s she clamps on: stops with 70% armour for 5s while everything else moves 30% faster. Burst her while she moves.","barnacle")
+B.Ay=new A.dO("prizeclaw","The Prize Claw","Everybody Wins (Nobody Wins)",B.AL,9.5,0.55,0.1,4289773253,"Insert coin. Insert coin. INSERT COIN.","Game... over...","A crosshair sits on a cell for 2s, then the claw lifts its top figurine (never a Mythic). It comes back when the Claw loses 15% health or after 12s. Drag it away from the crosshair.","drip")
+B.AD=new A.dO("limpet","Lady Limpet","She Will Not Be Moved",B.fa,9.5,0.5,0.15,4285356410,"I have clung to this crack since before your grandmother.","Unclamping... with dignity...","Every 10s she clamps on: stops with 70% armour for 5s while everything else moves 30% faster. Burst her while she moves.","barnacle")
 B.AM=new A.e4(8,"ringmaster")
-B.AA=new A.dO("ringmaster","The Ringmaster","Roll Up, Roll Up",B.AM,9.5,0.55,0.1,4288356902,"Ladies and gentlemen, the main event: YOUR DOWNFALL.","The show... must... stop...","Every 12s calls an act, named 2s before: Clowns (six fast adds), Lion (an armoured brute) or Knife Thrower (his next 5 hits miss).","drip")
+B.Az=new A.dO("ringmaster","The Ringmaster","Roll Up, Roll Up",B.AM,9.5,0.55,0.1,4288356902,"Ladies and gentlemen, the main event: YOUR DOWNFALL.","The show... must... stop...","Every 12s calls an act, named 2s before: Clowns (six fast adds), Lion (an armoured brute) or Knife Thrower (his next 5 hits miss).","drip")
 B.AN=new A.e4(9,"wrecker")
-B.AG=new A.dO("wrecker","The Wrecker","False Light on the Rocks",B.AN,9.5,0.55,0.1,4282994775,"Follow the light, little ships. Follow it right onto the rocks.","The light... goes out...","Every 9s lights a false lantern. For 3s single-target figurines shoot it until it breaks after 8 hits. Area and multi-target ignore it.","drip")
+B.AF=new A.dO("wrecker","The Wrecker","False Light on the Rocks",B.AN,9.5,0.55,0.1,4282994775,"Follow the light, little ships. Follow it right onto the rocks.","The light... goes out...","Every 9s lights a false lantern. For 3s single-target figurines shoot it until it breaks after 8 hits. Area and multi-target ignore it.","drip")
 B.AI=new A.e4(10,"redactor")
-B.AD=new A.dO("redactor","The Redactor","[REDACTED]",B.AI,10,0.55,0.15,4280362281,"Your unions have been reviewed. Several are now \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588.","This defeat... did not... happen...","Every 12s crosses out one of your active union rules for 8s (struck through 2s before). Don't lean on one union.","drip")
-B.Aw=new A.dO("ghosttrain","The Ghost Train","Last Departure",B.dJ,12,0.55,0.1,4279976754,"WHOOOOO. All aboard. There is no getting off.","Terminus...","An engine and five carriages. Only the rear carriage can be hit; each one destroyed makes it 10% faster and drops a passenger. Every 15s it whistles and hides in a tunnel for 2s.","drip")
-B.Av=new A.dO("shadowkeeper","The Shadow Keeper","What the Light Left Behind",B.lE,12.5,0.5,0.1,4280549446,"I kept the lamp for forty years. Now I keep the dark.","Someone... light... the lamp...","Every 10s adapts to what hurt him most (single-target, area or status) and takes 50% less from it. At 50% his shadow silences three cells for 5s.","drip")
-B.K5=s([B.Az,B.AE,B.AA,B.AG,B.AD,B.Aw,B.Av],t.Hq)
+B.AC=new A.dO("redactor","The Redactor","[REDACTED]",B.AI,10,0.55,0.15,4280362281,"Your unions have been reviewed. Several are now \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588.","This defeat... did not... happen...","Every 12s crosses out one of your active union rules for 8s (struck through 2s before). Don't lean on one union.","drip")
+B.Av=new A.dO("ghosttrain","The Ghost Train","Last Departure",B.dJ,12,0.55,0.1,4279976754,"WHOOOOO. All aboard. There is no getting off.","Terminus...","An engine and five carriages. Only the rear carriage can be hit; each one destroyed makes it 10% faster and drops a passenger. Every 15s it whistles and hides in a tunnel for 2s.","drip")
+B.Au=new A.dO("shadowkeeper","The Shadow Keeper","What the Light Left Behind",B.lE,12.5,0.5,0.1,4280549446,"I kept the lamp for forty years. Now I keep the dark.","Someone... light... the lamp...","Every 10s adapts to what hurt him most (single-target, area or status) and takes 50% less from it. At 50% his shadow silences three cells for 5s.","drip")
+B.K5=s([B.Ay,B.AD,B.Az,B.AF,B.AC,B.Av,B.Au],t.Hq)
 B.K6=s([70,24,5,1],t.n)
-B.Kc=s([0,4,7,12,7,12,16,19],t.t)
+B.AH=new A.e4(0,"brood")
+B.AE=new A.dO("brine","Mother Brine","She Who Puddles",B.AH,7,0.55,0,4281312107,"My babies. Go and play by the nice Rift.","Mind... the... wet... floor...","Spawns three Seeps every 6 seconds.","drip")
+B.AG=new A.dO("inspector","The Rift Inspector","Department of Rifts",B.i7,9.5,0.6,0.15,4287535791,"Right. Nobody move. This is an inspection.","I will be... filing a... complaint...","Every 7s condemns your strongest cell for 4s. Immune to stun and slow.","drip")
+B.lF=new A.e4(2,"undertow")
+B.Aw=new A.dO("undertow","The Undertow","The Pull Beneath",B.lF,9.5,0.65,0,4279979890,"...come... down... with... us...","the... tide... always... turns...","Every 9s dives for 2.5s: untargetable, heals 4%, then surges.","drip")
+B.Ax=new A.dO("landlord","The Landlord","Owner of Everything",B.lG,9,0.5,0.2,4285214044,"Lovely little Rift. Shame about the rent.","You can keep the Rift. It is falling into itself anyway.","Takes 15% of your pennies each lap. Shields and calls Bailiffs at 66% and 33%.","drip")
+B.AJ=new A.e4(4,"cuttle")
+B.AA=new A.dO("cuttle","Captain Cuttle","Terror of the Arcade",B.AJ,11,0.6,0.1,4292444715,"Arr. This Rift be mine now. All of it. Even the toilets.","Abandon... Rift...","Ink Column: every 10s inks one column of your board, halving its range for 4s. Plunder: at 66% and 33% four Token Thieves join him.","drip")
+B.AK=new A.e4(5,"kingcrab")
+B.AB=new A.dO("kingcrab","King Crabbington","Lord of the Cove",B.AK,12,0.5,0.3,4290787627,"Kneel. Or at least shuffle sideways respectfully.","Long live... me...","Molting: at 66% and 33% he sheds his shell. The Shell Husk walks on with his armour (counts as 10) while he runs bare and 40% faster for 8s. Pinchies escort him.","drip")
+B.At=new A.dO("void","The Void","What Came Through the Rift",B.i8,13,0.5,0.15,4285153241,"...","...oh.","Event Horizon pulls things close; inside its ring only area and Lamp hits land. At 66% it replays every earlier final. At 25% the lane limit drops to 80.","voidling")
+B.K7=s([B.AE,B.AG,B.Aw,B.Ax,B.AA,B.AB,B.At],t.Hq)
+B.Kd=s([0,4,7,12,7,12,16,19],t.t)
 B.DI=new A.h(1,0.1843137254901961,0.7176470588235294,0.8666666666666667,B.d)
 B.CY=new A.h(1,0.0784313725490196,0.4745098039215686,0.7215686274509804,B.d)
 B.DG=new A.h(0.5333333333333333,0.4392156862745098,0.9019607843137255,0.9137254901960784,B.d)
@@ -78399,8 +78411,8 @@ B.F5=new A.h(1,0.24313725490196078,0.14901960784313725,0.3137254901960784,B.d)
 B.EO=new A.h(1,0.8980392156862745,0.3254901960784314,0.6039215686274509,B.d)
 B.DV=new A.h(1,1,0.5607843137254902,0.8470588235294118,B.d)
 B.F6=new A.h(1,0.5607843137254902,1,0.8784313725490196,B.d)
-B.KH=s([B.DV,B.F6,B.iz],t.W)
-B.a_M=new A.m6(B.DF,B.Fn,B.Ez,B.h,B.Fj,B.CK,B.DM,B.DY,B.CF,B.Dd,B.Dh,B.D2,B.DT,B.F5,B.EO,B.KH,0.08)
+B.KI=s([B.DV,B.F6,B.iz],t.W)
+B.a_M=new A.m6(B.DF,B.Fn,B.Ez,B.h,B.Fj,B.CK,B.DM,B.DY,B.CF,B.Dd,B.Dh,B.D2,B.DT,B.F5,B.EO,B.KI,0.08)
 B.Ed=new A.h(1,0.24705882352941178,0.8784313725490196,0.8470588235294118,B.d)
 B.EY=new A.h(1,0.08627450980392157,0.611764705882353,0.7215686274509804,B.d)
 B.Fd=new A.h(0.6666666666666666,0.9647058823529412,0.8862745098039215,0.6588235294117647,B.d)
@@ -78416,8 +78428,8 @@ B.DS=new A.h(1,0.8862745098039215,0.9411764705882353,0.9647058823529412,B.d)
 B.EL=new A.h(1,0.4196078431372549,0.26666666666666666,0.13725490196078433,B.d)
 B.Fo=new A.h(1,0.8862745098039215,0.26666666666666666,0.23529411764705882,B.d)
 B.DW=new A.h(1,1,0.47843137254901963,0.4196078431372549,B.d)
-B.LA=s([B.iz,B.DW,B.h],t.W)
-B.a_O=new A.m6(B.Ed,B.EY,B.Fd,B.h,B.EC,B.F1,B.Dl,B.Fb,B.Fc,B.ES,B.CM,B.Dy,B.DS,B.EL,B.Fo,B.LA,0)
+B.Lz=s([B.iz,B.DW,B.h],t.W)
+B.a_O=new A.m6(B.Ed,B.EY,B.Fd,B.h,B.EC,B.F1,B.Dl,B.Fb,B.Fc,B.ES,B.CM,B.Dy,B.DS,B.EL,B.Fo,B.Lz,0)
 B.DA=new A.h(1,0.22745098039215686,0.12156862745098039,0.45098039215686275,B.d)
 B.Eq=new A.h(1,0.07058823529411765,0.0392156862745098,0.2,B.d)
 B.Ej=new A.h(0.4,0.49411764705882355,0.3607843137254902,1,B.d)
@@ -78435,46 +78447,46 @@ B.E2=new A.h(1,0.5450980392156862,0.3215686274509804,0.8901960784313725,B.d)
 B.DP=new A.h(1,0.788235294117647,0.6274509803921569,1,B.d)
 B.KV=s([B.iC,B.DP,B.h],t.W)
 B.a_L=new A.m6(B.DA,B.Eq,B.Ej,B.D5,B.De,B.mJ,B.DC,B.DH,B.E_,B.mJ,B.DE,B.E3,B.EX,B.EB,B.E2,B.KV,0.05)
-B.Kf=s([B.a_N,B.a_M,B.a_O,B.a_L],t.gi)
+B.Kg=s([B.a_N,B.a_M,B.a_O,B.a_L],t.gi)
 B.bX=new A.jZ(0,"left")
 B.dw=new A.jZ(1,"right")
 B.a6=new A.jZ(2,"center")
 B.eV=new A.jZ(3,"justify")
 B.be=new A.jZ(4,"start")
 B.hH=new A.jZ(5,"end")
-B.Kg=s([B.bX,B.dw,B.a6,B.eV,B.be,B.hH],A.a6("u<jZ>"))
+B.Kh=s([B.bX,B.dw,B.a6,B.eV,B.be,B.hH],A.a6("u<jZ>"))
 B.nR=s([5,8,12,20,30],t.t)
-B.Ki=s(["Arial"],t.s)
-B.Kj=s([B.i4,B.i5],A.a6("u<tX>"))
-B.Kk=s(["-apple-system","BlinkMacSystemFont"],t.s)
+B.Kj=s(["Arial"],t.s)
+B.Kk=s([B.i4,B.i5],A.a6("u<tX>"))
+B.Kl=s(["-apple-system","BlinkMacSystemFont"],t.s)
 B.nS=s(["BlinkMacSystemFont"],t.s)
-B.Km=s([18,15,10,12,15,18,15,12,12],t.n)
+B.Kn=s([18,15,10,12,15,18,15,12,12],t.n)
 B.Fk=new A.h(0.8,1,0.8823529411764706,0.35294117647058826,B.d)
 B.j=new A.j(0,0)
 B.B6=new A.dP(2,B.aL,B.Fk,B.j,18)
-B.Ko=s([B.B6],t.V)
-B.Kp=s(["Only a hairline crack so far. Should be quiet.","The tide is in a mood. Enemies have 45% more health.","The Rift is wide open. You are still here. +95% enemy health."],t.s)
-B.Kr=s(["I","II","III","IV","V","VI","VII","VIII","IX","X"],t.s)
-B.Ks=s([0.6,1],t.n)
-B.Kt=s(["Noto Color Emoji","Noto Sans Symbols","Noto Sans SC","Noto Sans TC","Noto Sans HK","Noto Sans JP","Noto Sans KR"],t.s)
+B.Kp=s([B.B6],t.V)
+B.Kq=s(["Only a hairline crack so far. Should be quiet.","The tide is in a mood. Enemies have 45% more health.","The Rift is wide open. You are still here. +95% enemy health."],t.s)
+B.Ks=s(["I","II","III","IV","V","VI","VII","VIII","IX","X"],t.s)
+B.Kt=s([0.6,1],t.n)
+B.Ku=s(["Noto Color Emoji","Noto Sans Symbols","Noto Sans SC","Noto Sans TC","Noto Sans HK","Noto Sans JP","Noto Sans KR"],t.s)
 B.nV=s([B.b8,B.bk],A.a6("u<jq>"))
-B.LY=s(["pinchy","pinchy","pinchy","nanny"],t.s)
-B.Kq=s(["wibble","wibble","wibble","wibble","wibble","wibble","wibble","wibble","wibble","wibble","wibble","wibble"],t.s)
-B.M8=s(["drip","drip","ghost","drip","ghost"],t.s)
-B.LZ=s(["pony","pony","pony","pony"],t.s)
-B.M6=s(["star","star"],t.s)
-B.LS=s(["moth","moth","moth"],t.s)
-B.Lz=s(["hermit","hermit","nanny"],t.s)
-B.LR=s(["mirror","mirror","octo"],t.s)
-B.LV=s(["null","echo","null"],t.s)
-B.Ld=s(["clam","clam","eel","eel"],t.s)
-B.Kv=s([B.LY,B.Kq,B.M8,B.LZ,B.M6,B.LS,B.Lz,B.LR,B.LV,B.Ld],A.a6("u<W<z>>"))
+B.LX=s(["pinchy","pinchy","pinchy","nanny"],t.s)
+B.Kr=s(["wibble","wibble","wibble","wibble","wibble","wibble","wibble","wibble","wibble","wibble","wibble","wibble"],t.s)
+B.M7=s(["drip","drip","ghost","drip","ghost"],t.s)
+B.LY=s(["pony","pony","pony","pony"],t.s)
+B.M5=s(["star","star"],t.s)
+B.LR=s(["moth","moth","moth"],t.s)
+B.Ly=s(["hermit","hermit","nanny"],t.s)
+B.LQ=s(["mirror","mirror","octo"],t.s)
+B.LU=s(["null","echo","null"],t.s)
+B.Lc=s(["clam","clam","eel","eel"],t.s)
+B.Kw=s([B.LX,B.Kr,B.M7,B.LY,B.M5,B.LR,B.Ly,B.LQ,B.LU,B.Lc],A.a6("u<W<z>>"))
 B.kb=new A.j(0,3)
 B.B5=new A.dP(0,B.aL,B.iK,B.kb,0)
-B.Kw=s([B.B5],t.V)
+B.Kx=s([B.B5],t.V)
 B.hd=new A.j(0,4)
 B.B7=new A.dP(0,B.aL,B.q,B.hd,0)
-B.Kx=s([B.B7],t.V)
+B.Ky=s([B.B7],t.V)
 B.Mn=new A.nl("en",null,"US")
 B.nW=s([B.Mn],t.ss)
 B.nX=s([0,41,61,101,131,181,251,301,360],t.n)
@@ -78485,8 +78497,8 @@ B.Jh=s([11,8,4],t.t)
 B.Jj=s([12,9,12],t.t)
 B.Jn=s([17,16,14],t.t)
 B.Jk=s([14,12,10],t.t)
-B.Kd=s([8,11,14],t.t)
-B.Ky=s([B.Ji,B.Jl,B.Jm,B.Jh,B.Jj,B.Jn,B.Jk,B.Kd],t.Zb)
+B.Ke=s([8,11,14],t.t)
+B.Kz=s([B.Ji,B.Jl,B.Jm,B.Jh,B.Jj,B.Jn,B.Jk,B.Ke],t.Zb)
 B.ZM=new A.kb(0,0)
 B.ZR=new A.kb(1,0.05)
 B.ZP=new A.kb(3,0.08)
@@ -78494,37 +78506,27 @@ B.ZQ=new A.kb(6,0.11)
 B.ZO=new A.kb(8,0.12)
 B.ZN=new A.kb(12,0.14)
 B.nY=s([B.ZM,B.ZR,B.ZP,B.ZQ,B.ZO,B.ZN],A.a6("u<kb>"))
-B.Kz=s([0,4,7,12,16,19,24],t.t)
-B.KG=s(["I have worked this front for twenty years and I have never seen a crab come out of the Rift that angry.","Feed the machine, love. The machine is hungry.","If we survive this I am asking for a raise. A small one. A biscuit.","Three of the same? Squash 'em. That is what my mother did.","Do not look the Inspector in the eye. He feeds on eye contact.","I put a penny in for you. Do not tell the manager.","They keep going round. Like my ex-husband.","That one is wearing a tiny hat. Shoot the hat."],t.s)
+B.KA=s([0,4,7,12,16,19,24],t.t)
+B.KH=s(["I have worked this front for twenty years and I have never seen a crab come out of the Rift that angry.","Feed the machine, love. The machine is hungry.","If we survive this I am asking for a raise. A small one. A biscuit.","Three of the same? Squash 'em. That is what my mother did.","Do not look the Inspector in the eye. He feeds on eye contact.","I put a penny in for you. Do not tell the manager.","They keep going round. Like my ex-husband.","That one is wearing a tiny hat. Shoot the hat."],t.s)
 B.nZ=s([0,21,51,121,151,191,271,321,360],t.n)
 B.B4=new A.dP(0,B.aL,B.q,B.kb,0)
 B.o_=s([B.B4],t.V)
-B.KI=s([-1,0,0,1,0,0,-1,0,1,0,0,0,-1,1,0,1,1,1,1,0],t.n)
+B.KJ=s([-1,0,0,1,0,0,-1,0,1,0,0,0,-1,1,0,1,1,1,1,0],t.n)
 B.Ea=new A.h(0.5333333333333333,0,0,0,B.d)
 B.B2=new A.dP(0,B.aL,B.Ea,B.hd,10)
-B.KL=s([B.B2],t.V)
+B.KM=s([B.B2],t.V)
 B.yQ=new A.yF(0,"left")
 B.yR=new A.yF(1,"right")
-B.KM=s([B.yQ,B.yR],A.a6("u<yF>"))
+B.KN=s([B.yQ,B.yR],A.a6("u<yF>"))
 B.ai=new A.yL(0,"upstream")
 B.p=new A.yL(1,"downstream")
-B.KN=s([B.ai,B.p],A.a6("u<yL>"))
+B.KO=s([B.ai,B.p],A.a6("u<yL>"))
 B.ax=new A.yP(0,"rtl")
 B.Y=new A.yP(1,"ltr")
 B.jF=s([B.ax,B.Y],A.a6("u<yP>"))
 B.aM=s(["Common","Rare","Epic","Legendary","Mythic"],t.s)
 B.bl=s([4290364620,4283417591,4291263999,4294953293,4294925950],t.t)
 B.o1=s([8,20,0,0,0],t.t)
-B.J4=new A.l4(0,"none")
-B.IZ=new A.iv("The Breach","The Rift tore open on the last night of the season. Something is climbing out.","landlord",1,B.J4,"brine","inspector")
-B.J2=new A.iv("The Fogbound Arcade","The Rift breathes fog, and a drowned pirate rode it in.","cuttle",1.1,B.nK,"prizeclaw","undertow")
-B.J3=new A.iv("Shattered Cove","The Rift split the cove. Shells, claws and a crab who thinks he is royalty.","kingcrab",1.2,B.nL,"limpet","inspector")
-B.J5=new A.l4(3,"rides")
-B.J_=new A.iv("The Rift Fair","The rides are still running. Nobody is operating them.","ghosttrain",1.3,B.J5,"ringmaster","limpet")
-B.J6=new A.l4(4,"beam")
-B.J0=new A.iv("The Dark Lamp","The lamp still turns. The keeper does not.","shadowkeeper",1.4,B.J6,"wrecker","ringmaster")
-B.J1=new A.iv("The Rift's Edge","The edge of the world is not where it used to be.","void",1.5,B.nM,"redactor","prizeclaw")
-B.KS=s([B.IZ,B.J2,B.J3,B.J_,B.J0,B.J1],A.a6("u<iv>"))
 B.Cq=new A.pa(0,"auto")
 B.Cr=new A.pa(1,"full")
 B.Cs=new A.pa(2,"chromium")
@@ -78533,6 +78535,80 @@ B.KX=s([1,1.45,1.95],t.n)
 B.bt=new A.k0(0,"common")
 B.a9=new A.k0(4,"mythic")
 B.d9=s([B.bt,B.bB,B.aW,B.bu,B.a9],A.a6("u<k0>"))
+B.XN=new A.k2("Welcome to the Rift","The Rift has torn the town in two, and things are climbing out of it. They walk the path round and round. If 100 get loose at once, it's over.","next")
+B.XM=new A.k2("Feed the machine","Tap SUMMON. Every penny in the Oracle-O-Matic gives you a random figurine, and they fight for you. Summon three.","summon")
+B.XL=new A.k2("Three of a kind","Same figurines stack, three to a cell. Tap a full stack and press MERGE, right under it, to squash them into one random figurine from the next tier up. Merging is how you get strong.","next")
+B.XP=new A.k2("Move them about","Drag a figurine onto another cell to swap them. Cells next to the path see the most action, so put your best ones there.","next")
+B.XO=new A.k2("Luck and grease","Tea leaves come every fifth wave and from bosses. GAMBLE them for rare figurines. UPGRADE makes a whole tier hit harder. MYTHICS shows the recipes for the four legends of the Rift.","next")
+B.XQ=new A.k2("Bosses","Every 10th wave a boss turns up, and you have 60 seconds to get rid of it. Wave 50 brings the level's final boss. Beat it and the Rift drags you somewhere deeper. Good luck, love.","next")
+B.jG=s([B.XN,B.XM,B.XL,B.XP,B.XO,B.XQ],A.a6("u<k2>"))
+B.ea=s(["Birds"],t.s)
+B.eK=new A.iO(5,"triangle")
+B.ab=new A.d6(0,"none")
+B.YE=new A.bk("gull","Riftgull",B.bt,B.ea,4293455602,B.eK,"Gu",6,0.6,2.6,"Fast pecks at one target, straight through the crack.","Flew into the Rift once. Came back angrier. Chips. Now.",B.ab,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,!1,1,0,null,0,0,0,0,0,0,0,0,0)
+B.cr=s(["Staff"],t.s)
+B.hw=new A.iO(1,"square")
+B.YC=new A.bk("dave","Driftwood Dave",B.bt,B.cr,4284196070,B.hw,"Dv",14,1.6,1.9,"Swings a splintered deckchair. Small splash.","Folding this since 1987. No crack in the sky is unfolding me.",B.ab,0,0,0,0.8,0,0,0,0,0,1,0,0,0,0,0,0,1,!1,1,0,null,0,0,0,0,0,0,0,0,0)
+B.d8=s(["Sweets"],t.s)
+B.ky=new A.iO(2,"diamond")
+B.YR=new A.bk("rock","Rift Rock Kid",B.bt,B.d8,4294938552,B.ky,"Rk",8,0.9,2.6,"Sticky rock with a purple seam. Slows 20%.","It says RIFT all the way through. Like me.",B.ab,0,0,0,0,0.2,1,0,0,0,1,0,0,0,0,0,0,1,!1,1,0,null,0,0,0,0,0,0,0,0,0)
+B.cb=s(["Arcade"],t.s)
+B.eJ=new A.iO(3,"hexagon")
+B.YZ=new A.bk("carl","Shard-Pusher Carl",B.bt,B.cb,4292126794,B.eJ,"Cp",7,0.9,2.4,"Weak, but every kill pays 1 penny.","Nearly. Nearly. It is right on the edge. NEARLY.",B.ab,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,!1,1,1,null,0,0,0,0,0,0,0,0,0)
+B.eI=new A.iO(0,"circle")
+B.YA=new A.bk("thwack","Mister Crack",B.bB,B.cb,4293019709,B.eI,"Th",30,1,2.1,"Puppet with a split stick. 15% chance to stun.","That is NOT how you close a Rift.",B.ab,0,0,0,0,0,0,0.15,0.8,0,1,0,0,0,0,0,0,1,!1,1,0,null,0,0,0,0,0,0,0,0,0)
+B.dt=new A.iO(6,"drop")
+B.YS=new A.bk("floss","Voidfloss Nan",B.bB,B.d8,4294947809,B.dt,"Nn",18,1,2.6,"Sticky violet splash. Slows 35%.","You look thin. Have some floss, love. It is only a bit purple.",B.ab,0,0,0,1,0.35,1.5,0,0,0,1,0,0,0,0,0,0,1,!1,1,0,null,0,0,0,0,0,0,0,0,0)
+B.eL=new A.iO(7,"shield")
+B.Yw=new A.bk("lou","Riftguard Lou",B.bB,B.cr,4294929226,B.eL,"Lo",16,0.9,3,"Whistle blast chains to 3 targets.","NO. CLIMBING. OUT. OF. THE. RIFT.",B.ab,0,0,0,0,0,0,0,0,2,1,0,0,0,0,0,0,1,!1,1,0,null,0,0,0,0,0,0,0,0,0)
+B.cG=new A.iO(4,"star")
+B.YV=new A.bk("admiral","Admiral Ashbeak",B.bB,B.ea,4288325556,B.cG,"Ad",20,0.7,2.6,"Birds within 2 cells attack 25% faster.","Formation! FORMATION! Oh, they have flown into the crack.",B.ab,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,!1,1,0,"Birds",0.25,2.2,0,0,0,0,0,0,0)
+B.YO=new A.bk("claw","The Rift Claw",B.aW,B.cb,4286209279,B.hw,"Cl",70,1.4,2.8,"Every 4th grab drags a target back down the lane.","It is rigged. The Rift is rigged too. I checked.",B.ab,0,0,0,0,0,0,0,0,0,1,0,0,0,0,4,0,1,!1,1,0,null,0,0,0,0,0,0,0,0,0)
+B.Z4=new A.bk("sal","Big Sal the Scorcher",B.aW,B.cr,4294944299,B.eJ,"Sa",40,1.5,2.4,"Flings hot oil: splash plus a 3s burn.","Salt and vinegar? Void and vinegar? You are getting both.",B.ab,0,0,0,1,0,0,0,0,0,1,45,3,0,0,0,0,1,!1,1,0,null,0,0,0,0,0,0,0,0,0)
+B.d7=s(["Sea"],t.s)
+B.Yy=new A.bk("morag","Riftwife Morag",B.aW,B.d7,4285518792,B.dt,"Mo",50,1,3,"Curses 2 targets: they take 25% more damage, armour ignored.","The Rift told me your name. It mispronounced it.",B.ab,0,0,0,0,0,0,0,0,0,2,0,0,0.25,4,0,0,1,!1,1,0,null,0,0,0,0,0,0,0,0,0)
+B.Z2=new A.bk("squall","The Rift Squall",B.aW,B.ea,4294111986,B.cG,"Sq",30,0.8,2.8,"Hits 4 targets at once.","MINE MINE MINE MINE. The crack is MINE.",B.ab,0,0,0,0,0,0,0,0,0,4,0,0,0,0,0,0,1,!1,1,0,null,0,0,0,0,0,0,0,0,0)
+B.Yx=new A.bk("vex","Madame Fissure",B.bu,B.cb,4289743871,B.eI,"Vx",200,1,3.2,"25% to crit for 3x. Kills pay 2 pennies.","I foresee... a crack in everything. And a significant loss of pennies. Yours.",B.ab,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0.25,3,!1,1,2,null,0,0,0,0,0,0,0,0,0)
+B.YG=new A.bk("bertie","Broken Wheel Bertie",B.bu,B.cb,4294922138,B.eJ,"Bw",170,2,3.4,"Every 2s hits everything in range.","Round and round the Rift. Nobody ever gets off.",B.ab,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,!0,1,0,null,0,0,0,0,0,0,0,0,0)
+B.YK=new A.bk("keeper","The Dark Lamp Keeper",B.bu,B.d7,4294959206,B.eK,"LK",420,1.2,5,"Huge range beam. Double damage to bosses.","I keep the light on the Rift. The light keeps nothing.",B.ab,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,!1,2,0,null,0,0,0,0,0,0,0,0,0)
+B.YX=new A.bk("albatross","The Void Albatross",B.bu,B.ea,4287607769,B.cG,"Al",150,0.9,3.6,"Hangs over 2 targets at once. They take 15% more damage.","I am not a bad omen. I am what came through after the bad omen.",B.ab,0,0,0,0,0,0,0,0,0,2,0,0,0.15,3,0,0,1,!1,1,0,null,0,0,0,0,0,0,0,0,0)
+B.Yv=new A.bk("tide","Old Mother Rift",B.a9,B.d7,4281255167,B.dt,"MT",520,1,3.5,"Every 8s the Rift holds its breath: everything freezes 1.5s and takes 650.","Everything falls back into me, dear. Everything.",B.ab,0,0,0,1.2,0,0,0,0,0,1,0,0,0,0,0,0,1,!1,1,0,null,0,0,8,1.5,650,0,0,0,0)
+B.Z0=new A.bk("jackpot","The Rift Jackpot",B.a9,B.cb,4294956800,B.cG,"JP",300,0.9,3.2,"Hits harder the more pennies you hold. Every 10th pull: JACKPOT.","Three cherries. Three cracks. THREE CHERRIES.",B.ab,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,!1,1,0,null,0,0,0,0,0,10,0,0,2)
+B.Z3=new A.bk("velvet","Velvet, the Last Act",B.a9,B.cr,4292227948,B.eL,"Ve",420,0.8,3.2,"Every figurine attacks 30% faster. Finishes non-bosses under 12%.","Thirty-one years at the edge of the Rift, darling. I AM the edge.",B.ab,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,!1,1,0,"all",0.3,99,0,0,0,0,0.12,0,0)
+B.YL=new A.bk("gullivan","Saint Riftwing",B.a9,B.ea,4294967295,B.eK,"SG",160,0.25,3,"Machine-gun pecks. +6% damage for every bird on your board.","Blessed are the chip-takers, for they shall fly through the crack.",B.ab,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,!1,1,0,null,0,0,0,0,0,0,0,0.06,0)
+B.eb=s(["Lamp"],t.s)
+B.YJ=new A.bk("lil","Riftwick Lil",B.bt,B.eb,4294955642,B.dt,"Li",7,0.9,2.6,"A small lantern. Shows hidden things in range so everyone can hit them. Lamp hits never miss.","I am not scared of the dark. The Rift is scared of me. Mostly.",B.lo,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,!1,1,0,null,0,0,0,0,0,0,0,0,0)
+B.zQ=new A.d6(2,"band")
+B.Yz=new A.bk("bandsman","The Rift Bandsman",B.bB,B.cr,4291319101,B.eJ,"Bb",18,1,2.4,"Every 6s the band strikes up: cells next to him can't be silenced, condemned, locked or grabbed for 3s.","Oom-pah. OOM-PAH. Louder than the Rift.",B.zQ,6,0,3,0.6,0,0,0,0,0,1,0,0,0,0,0,0,1,!1,1,0,null,0,0,0,0,0,0,0,0,0)
+B.zR=new A.d6(3,"sticky")
+B.YI=new A.bk("mouse","Sugar Riftmouse",B.bB,B.d8,4294418884,B.eI,"Sm",16,0.8,2.5,"Sticky hits: for 2s the target can't blink, dive, ram or teleport.",'Squeak. That means "you are stuck on this side now".',B.zR,0,0,2,0,0.15,1,0,0,0,1,0,0,0,0,0,0,1,!1,1,0,null,0,0,0,0,0,0,0,0,0)
+B.zS=new A.d6(4,"shatter")
+B.YN=new A.bk("tess","Shatter Hammer Tess",B.aW,B.d8,4290077981,B.hw,"Te",62,1.2,2.2,"Every 5th hit shatters shields and shells outright, and slows. Hollow Hermits, Rift Clams and the Landlord hate her.","Hard toffee. Harder hammer. The Rift is just a big crack.",B.zS,5,0,0,0,0.3,1.5,0,0,0,1,0,0,0,0,0,0,1,!1,1,0,null,0,0,0,0,0,0,0,0,0)
+B.YY=new A.bk("lamplighter","The Riftlighter",B.aW,B.eb,4294947655,B.eK,"Ll",46,1,3,"Lights the lane in range. Enemies there can't dodge or hide and take 10% more damage.","Every lamp along the Rift, lit by hand. Every one.",B.lr,0,0.1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,!1,1,0,null,0,0,0,0,0,0,0,0,0)
+B.zT=new A.d6(6,"horn")
+B.YB=new A.bk("hale","Riftmaster Hale",B.aW,B.d7,4282210944,B.eL,"Ha",56,1.1,2.8,"Every 4s his horn pushes everything in range back 0.6 cells (bosses 0.2).","Back. BACK. This is a Rift, not a holiday.",B.zT,4,0.6,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,!1,1,0,null,0,0,0,0,0,0,0,0,0)
+B.zU=new A.d6(7,"chime")
+B.YM=new A.bk("icecream","The Void Ice Cream Man",B.bu,B.d8,4290633982,B.cG,"Ic",165,1,3,"Every 6s his chime freezes a patch of lane solid for 1s.","Greensleeves, played slightly wrong, from the far side of the crack, forever.",B.zU,6,0,1,0,0.3,1.5,0,0,0,1,0,0,0,0,0,0,1,!1,1,0,null,0,0,0,0,0,0,0,0,0)
+B.YP=new A.bk("elmo","Saint Riftfire",B.bu,B.eb,4288336373,B.ky,"El",105,0.5,3.4,"A beam that ignores dodging, hiding and Null, and burns 15% hotter for every second on the same target.","Sailors used to pray for me. Now they just point at the crack.",B.i_,0,0.15,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,!1,1,0,null,0,0,0,0,0,0,0,0,0)
+B.zV=new A.d6(9,"watch")
+B.Z5=new A.bk("watchman","The Rift Watchman",B.bu,B.cr,4285298045,B.eL,"Wa",195,1,3,"His hits stop healing for 4s and mark the target to take 15% more damage.","Twelve o'clock, the Rift is open, and all is NOT well.",B.zV,0,0.15,4,0,0,0,0,0,0,1,0,0,0,0,0,0,1,!1,1,0,null,0,0,0,0,0,0,0,0,0)
+B.Z_=new A.bk("diver","The Rift Diver",B.bu,B.d7,4289760599,B.eI,"Pd",150,1.1,3.2,"Hits diving, inked, tunnelled and submerged things. The Undertow, the Ghost Train's tunnel and Wrecker's Ghosts.","Holding my breath since 1952. The Rift goes deeper than the sea.",B.lp,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,1,!1,1,0,null,0,0,0,0,0,0,0,0,0)
+B.zK=new A.d6(11,"caramel")
+B.YD=new A.bk("confectioner","The Void Confectioner",B.a9,B.d8,4294944299,B.cG,"Cf",400,0.9,3.2,"Every 10s the lane caramelises: everything is stuck for 2s, sticky, and loses its shell.","Boiling point. Hard crack. Rift crack. Everybody stay still.",B.zK,10,0,2,1,0.35,2,0,0,0,1,0,0,0,0,0,0,1,!1,1,0,null,0,0,0,0,0,0,0,0,0)
+B.YH=new A.bk("beacon","The Rift Beacon",B.a9,B.eb,4294959206,B.cG,"Be",380,0.9,3.6,"Lights the whole lane so nothing can hide or dodge. Figurines in its light deal 20% more damage.","Lights on. Everyone. Look at me, not the crack.",B.hZ,0,0.2,0,0,0,0,0,0,0,2,0,0,0,0,0,0,1,!1,1,0,null,0,0,0,0,0,0,0,0,0)
+B.zL=new A.d6(13,"evict")
+B.YW=new A.bk("freeholder","The Rift Freeholder",B.a9,B.cb,4287513773,B.ky,"Fh",420,0.9,3.2,"Every 12s evicts the three front non-boss enemies back to the start of the lane.","I own the Rift now. And you are all trespassing.",B.zL,12,3,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,!1,1,2,null,0,0,0,0,0,0,0,0,0)
+B.zM=new A.d6(14,"ink")
+B.YF=new A.bk("cannon","Cuttle's Rift Cannon",B.a9,B.d7,4281221207,B.eJ,"Cc",430,1,3.4,"Every 9s a heavy ink shot splashes and blinds: no healing or dodging for 3s.","The Captain sends his regards. And his ink, by way of the Rift.",B.zM,9,6,3,1,0,0,0,0,0,1,0,0,0,0,0,0,1,!1,1,0,null,0,0,0,0,0,0,0,0,0)
+B.YT=new A.bk("crown","The Cracked Crown",B.a9,B.cr,4292225064,B.eL,"Cr",470,0.9,3,"Neighbouring cells can't be silenced, locked or condemned. Its pinches strip 30% armour.","Kneel. Sideways is fine. The crack goes sideways too.",B.lq,0,0.3,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,!1,1,0,null,0,0,0,0,0,0,0,0,0)
+B.zN=new A.d6(16,"train")
+B.Z1=new A.bk("lasttrain","The Last Train Through",B.a9,B.cb,4283611016,B.hw,"Lt",300,0.8,3.2,"Every 10s a phantom train comes out of the Rift, laps the lane and hits everything once, one carriage per active union.","All aboard. No, really, all of you. Next stop: the other side.",B.zN,10,2,0,0,0,0,0,0,2,1,0,0,0,0,0,0,1,!1,1,0,null,0,0,0,0,0,0,0,0,0)
+B.zO=new A.d6(17,"shadow")
+B.YU=new A.bk("kshadow","The Lamp Keeper's Shadow",B.a9,B.eb,4281994403,B.eK,"Ks",340,0.9,3.4,"Copies the attack of the strongest neighbouring non-Mythic at 150%.","He kept the light on the Rift. I kept everything else.",B.zO,0,1.5,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,!1,1,0,null,0,0,0,0,0,0,0,0,0)
+B.L8=s(["Birds","Staff","Sweets","Arcade","Sea","Lamp"],t.s)
+B.zP=new A.d6(18,"erase")
+B.YQ=new A.bk("nothing","The Nothing",B.a9,B.L8,4286262463,B.eI,"\u2205",380,1,3.4,"Counts toward every union. Every 15s erases the healthiest non-boss thing in range, or takes 8% of a boss's health.","...",B.zP,15,0.08,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,!1,1,0,null,0,0,0,0,0,0,0,0,0)
+B.da=s([B.YE,B.YC,B.YR,B.YZ,B.YA,B.YS,B.Yw,B.YV,B.YO,B.Z4,B.Yy,B.Z2,B.Yx,B.YG,B.YK,B.YX,B.Yv,B.Z0,B.Z3,B.YL,B.YJ,B.Yz,B.YI,B.YN,B.YY,B.YB,B.YM,B.YP,B.Z5,B.Z_,B.YD,B.YH,B.YW,B.YF,B.YT,B.Z1,B.YU,B.YQ],A.a6("u<bk>"))
 B.aK=new A.bI(0,"none")
 B.GZ=new A.bm("drip","Seep",1,1,0,0,0,null,0,4283413126,0,0.32,"A puddle with ambitions.",B.aK,0,1,1)
 B.hK=new A.bI(1,"armor")
@@ -78606,7 +78682,7 @@ B.Ha=new A.bm("lion","Rift Lion",4,0.8,0.45,0,0,null,0,4292910910,1,0.42,"A Ring
 B.XF=new A.bI(32,"husk")
 B.Hr=new A.bm("husk","Shell Husk",6,0.45,0.5,0,0,null,0,4290529097,1,0.5,"King Crabbington's empty shell. Counts as 10 toward the limit. Curse it.",B.XF,0,10,0)
 B.Hd=new A.bm("carriage","Ghost Carriage",1,1,0,0,0,null,0,4281166415,1,0.4,"Part of the Ghost Train.",B.aK,0,1,0)
-B.jG=s([B.GZ,B.H1,B.H_,B.Hm,B.Hc,B.H0,B.H5,B.Hw,B.GX,B.Hk,B.Hs,B.GV,B.GW,B.Hf,B.Ho,B.Hx,B.Hg,B.Hn,B.Hj,B.GY,B.Hh,B.Ht,B.Hv,B.Hl,B.H4,B.Hu,B.H2,B.Hp,B.Hi,B.H8,B.He,B.H3,B.H6,B.H9,B.H7,B.Hb,B.Hq,B.Ha,B.Hr,B.Hd],A.a6("u<bm>"))
+B.jH=s([B.GZ,B.H1,B.H_,B.Hm,B.Hc,B.H0,B.H5,B.Hw,B.GX,B.Hk,B.Hs,B.GV,B.GW,B.Hf,B.Ho,B.Hx,B.Hg,B.Hn,B.Hj,B.GY,B.Hh,B.Ht,B.Hv,B.Hl,B.H4,B.Hu,B.H2,B.Hp,B.Hi,B.H8,B.He,B.H3,B.H6,B.H9,B.H7,B.Hb,B.Hq,B.Ha,B.Hr,B.Hd],A.a6("u<bm>"))
 B.bs=new A.eq(1,"fuchsia")
 B.L0=s([B.aF,B.bs,B.ar,B.bb,B.bc,B.bd],A.a6("u<eq>"))
 B.zn=new A.rz(0,"topLeft")
@@ -78620,130 +78696,51 @@ B.ZJ=new A.ka(B.zp,B.zo)
 B.L1=s([B.ZH,B.ZK,B.ZI,B.ZJ],A.a6("u<ka>"))
 B.L2=s([-4,2,1.5,0.5],t.n)
 B.ec=s(["Hairline","Widening","Full Breach"],t.s)
-B.jK=s([-24,-12,-9,-5],t.t)
+B.jL=s([-24,-12,-9,-5],t.t)
 B.o7=s([-31,-19,-15,-12],t.t)
-B.LO=s([-28,-16,-13,-9],t.t)
-B.LP=s([-29,-17,-14,-10],t.t)
-B.LN=s([-28,-16,-12,-9],t.t)
-B.L3=s([B.jK,B.jK,B.o7,B.LO,B.jK,B.LP,B.o7,B.LN],t.Zb)
-B.AH=new A.e4(0,"brood")
-B.AF=new A.dO("brine","Mother Brine","She Who Puddles",B.AH,7,0.55,0,4281312107,"My babies. Go and play by the nice Rift.","Mind... the... wet... floor...","Spawns three Seeps every 6 seconds.","drip")
-B.At=new A.dO("inspector","The Rift Inspector","Grimley Borough Council",B.i7,9.5,0.6,0.15,4287535791,"Right. Nobody move. This is an inspection.","I will be... filing a... complaint...","Every 7s condemns your strongest cell for 4s. Immune to stun and slow.","drip")
-B.lF=new A.e4(2,"undertow")
-B.Ax=new A.dO("undertow","The Undertow","The Pull Beneath",B.lF,9.5,0.65,0,4279979890,"...come... down... with... us...","the... tide... always... turns...","Every 9s dives for 2.5s: untargetable, heals 4%, then surges.","drip")
-B.Ay=new A.dO("landlord","The Landlord","Owner of Everything",B.lG,9,0.5,0.2,4285214044,"Lovely little Rift. Shame about the rent.","You can keep the Rift. It is falling into itself anyway.","Takes 15% of your pennies each lap. Shields and calls Bailiffs at 66% and 33%.","drip")
-B.AJ=new A.e4(4,"cuttle")
-B.AB=new A.dO("cuttle","Captain Cuttle","Terror of the Arcade",B.AJ,11,0.6,0.1,4292444715,"Arr. This Rift be mine now. All of it. Even the toilets.","Abandon... Rift...","Ink Column: every 10s inks one column of your board, halving its range for 4s. Plunder: at 66% and 33% four Token Thieves join him.","drip")
-B.AK=new A.e4(5,"kingcrab")
-B.AC=new A.dO("kingcrab","King Crabbington","Lord of the Cove",B.AK,12,0.5,0.3,4290787627,"Kneel. Or at least shuffle sideways respectfully.","Long live... me...","Molting: at 66% and 33% he sheds his shell. The Shell Husk walks on with his armour (counts as 10) while he runs bare and 40% faster for 8s. Pinchies escort him.","drip")
-B.Au=new A.dO("void","The Void","What Came Through the Rift",B.i8,13,0.5,0.15,4285153241,"...","...oh.","Event Horizon pulls things close; inside its ring only area and Lamp hits land. At 66% it replays every earlier final. At 25% the lane limit drops to 80.","voidling")
-B.L4=s([B.AF,B.At,B.Ax,B.Ay,B.AB,B.AC,B.Au],t.Hq)
-B.L6=s([35,30,20,25,30,35,30,25,25],t.n)
+B.LN=s([-28,-16,-13,-9],t.t)
+B.LO=s([-29,-17,-14,-10],t.t)
+B.LM=s([-28,-16,-12,-9],t.t)
+B.L3=s([B.jL,B.jL,B.o7,B.LN,B.jL,B.LO,B.o7,B.LM],t.Zb)
+B.L5=s([35,30,20,25,30,35,30,25,25],t.n)
 B.o2=s([0.5,0.75,0.9],t.n)
-B.ea=s(["Birds"],t.s)
-B.eK=new A.iO(5,"triangle")
-B.ab=new A.d6(0,"none")
-B.YC=new A.bk("gull","Gull With A Grudge",B.bt,B.ea,4293455602,B.eK,"Gu",6,0.6,2.6,"Fast pecks at one target.","Chips. Now. Or else.",B.ab,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,!1,1,0,null,0,0,0,0,0,0,0,0,0)
-B.cr=s(["Staff"],t.s)
-B.hw=new A.iO(1,"square")
-B.YJ=new A.bk("dave","Deckchair Dave",B.bt,B.cr,4284196070,B.hw,"Dv",14,1.6,1.9,"Swings a deckchair. Small splash.","I have been folding this since 1987.",B.ab,0,0,0,0.8,0,0,0,0,0,1,0,0,0,0,0,0,1,!1,1,0,null,0,0,0,0,0,0,0,0,0)
-B.d8=s(["Sweets"],t.s)
-B.ky=new A.iO(2,"diamond")
-B.YM=new A.bk("rock","Rock Candy Kid",B.bt,B.d8,4294938552,B.ky,"Rk",8,0.9,2.6,"Sticky rock. Slows 20%.","It says GRIMLEY all the way through. Like me.",B.ab,0,0,0,0,0.2,1,0,0,0,1,0,0,0,0,0,0,1,!1,1,0,null,0,0,0,0,0,0,0,0,0)
-B.cb=s(["Arcade"],t.s)
-B.eJ=new A.iO(3,"hexagon")
-B.YK=new A.bk("carl","Coin-Pusher Carl",B.bt,B.cb,4292126794,B.eJ,"Cp",7,0.9,2.4,"Weak, but every kill pays 1 penny.","Nearly. Nearly. NEARLY.",B.ab,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,!1,1,1,null,0,0,0,0,0,0,0,0,0)
-B.eI=new A.iO(0,"circle")
-B.YX=new A.bk("thwack","Mister Thwack",B.bB,B.cb,4293019709,B.eI,"Th",30,1,2.1,"Puppet with a stick. 15% chance to stun.","That is NOT how you do it.",B.ab,0,0,0,0,0,0,0.15,0.8,0,1,0,0,0,0,0,0,1,!1,1,0,null,0,0,0,0,0,0,0,0,0)
-B.dt=new A.iO(6,"drop")
-B.YQ=new A.bk("floss","Candyfloss Nan",B.bB,B.d8,4294947809,B.dt,"Nn",18,1,2.6,"Sticky splash. Slows 35%.","You look thin. Have some floss, love.",B.ab,0,0,0,1,0.35,1.5,0,0,0,1,0,0,0,0,0,0,1,!1,1,0,null,0,0,0,0,0,0,0,0,0)
-B.eL=new A.iO(7,"shield")
-B.Z5=new A.bk("lou","Lifeguard Lou",B.bB,B.cr,4294929226,B.eL,"Lo",16,0.9,3,"Whistle blast chains to 3 targets.","NO. RUNNING. ON. THE. PIER.",B.ab,0,0,0,0,0,0,0,0,2,1,0,0,0,0,0,0,1,!1,1,0,null,0,0,0,0,0,0,0,0,0)
-B.cG=new A.iO(4,"star")
-B.YW=new A.bk("admiral","Admiral Tinbeak",B.bB,B.ea,4288325556,B.cG,"Ad",20,0.7,2.6,"Birds within 2 cells attack 25% faster.","Formation! FORMATION! Oh, they have gone.",B.ab,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,!1,1,0,"Birds",0.25,2.2,0,0,0,0,0,0,0)
-B.YE=new A.bk("claw","The Claw",B.aW,B.cb,4286209279,B.hw,"Cl",70,1.4,2.8,"Every 4th grab drags a target back down the lane.","It is rigged. It has always been rigged.",B.ab,0,0,0,0,0,0,0,0,0,1,0,0,0,0,4,0,1,!1,1,0,null,0,0,0,0,0,0,0,0,0)
-B.Z0=new A.bk("sal","Big Sal the Fryer",B.aW,B.cr,4294944299,B.eJ,"Sa",40,1.5,2.4,"Flings hot oil: splash plus a 3s burn.","Salt and vinegar? You are getting both.",B.ab,0,0,0,1,0,0,0,0,0,1,45,3,0,0,0,0,1,!1,1,0,null,0,0,0,0,0,0,0,0,0)
-B.d7=s(["Sea"],t.s)
-B.YZ=new A.bk("morag","Fogwife Morag",B.aW,B.d7,4285518792,B.dt,"Mo",50,1,3,"Curses 2 targets: they take 25% more damage, armour ignored.","The sea told me your name. It mispronounced it.",B.ab,0,0,0,0,0,0,0,0,0,2,0,0,0.25,4,0,0,1,!1,1,0,null,0,0,0,0,0,0,0,0,0)
-B.YN=new A.bk("squall","Squall of Gulls",B.aW,B.ea,4294111986,B.cG,"Sq",30,0.8,2.8,"Hits 4 targets at once.","MINE MINE MINE MINE MINE.",B.ab,0,0,0,0,0,0,0,0,0,4,0,0,0,0,0,0,1,!1,1,0,null,0,0,0,0,0,0,0,0,0)
-B.YF=new A.bk("vex","Madame Vex",B.bu,B.cb,4289743871,B.eI,"Vx",200,1,3.2,"25% to crit for 3x. Kills pay 2 pennies.","I foresee... a significant loss of pennies. Yours.",B.ab,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0.25,3,!1,1,2,null,0,0,0,0,0,0,0,0,0)
-B.Yy=new A.bk("bertie","Big Wheel Bertie",B.bu,B.cb,4294922138,B.eJ,"Bw",170,2,3.4,"Every 2s hits everything in range.","Round and round. Nobody ever gets off.",B.ab,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,!0,1,0,null,0,0,0,0,0,0,0,0,0)
-B.Yx=new A.bk("keeper","The Lighthouse Keeper",B.bu,B.d7,4294959206,B.eK,"LK",420,1.2,5,"Huge range beam. Double damage to bosses.","I keep the light. The light keeps nothing.",B.ab,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,!1,2,0,null,0,0,0,0,0,0,0,0,0)
-B.Z2=new A.bk("albatross","The Albatross",B.bu,B.ea,4287607769,B.cG,"Al",150,0.9,3.6,"Hangs over 2 targets at once. They take 15% more damage.","I am not a bad omen. I am a VERY bad omen.",B.ab,0,0,0,0,0,0,0,0,0,2,0,0,0.15,3,0,0,1,!1,1,0,null,0,0,0,0,0,0,0,0,0)
-B.YY=new A.bk("tide","Old Mother Tide",B.a9,B.d7,4281255167,B.dt,"MT",520,1,3.5,"Every 8s the tide stops: everything freezes 1.5s and takes 650.","Everything comes back to me, dear. Everything.",B.ab,0,0,0,1.2,0,0,0,0,0,1,0,0,0,0,0,0,1,!1,1,0,null,0,0,8,1.5,650,0,0,0,0)
-B.YI=new A.bk("jackpot","The Jackpot",B.a9,B.cb,4294956800,B.cG,"JP",300,0.9,3.2,"Hits harder the more pennies you hold. Every 10th pull: JACKPOT.","Three cherries. Three cherries. THREE CHERRIES.",B.ab,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,!1,1,0,null,0,0,0,0,0,10,0,0,2)
-B.YD=new A.bk("velvet","Velvet, the Headliner",B.a9,B.cr,4292227948,B.eL,"Ve",420,0.8,3.2,"Every figurine attacks 30% faster. Finishes non-bosses under 12%.","Thirty-one years at the edge of the Rift, darling. I AM the edge.",B.ab,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,!1,1,0,"all",0.3,99,0,0,0,0,0.12,0,0)
-B.YH=new A.bk("gullivan","Saint Gullivan",B.a9,B.ea,4294967295,B.eK,"SG",160,0.25,3,"Machine-gun pecks. +6% damage for every bird on your board.","Blessed are the chip-takers.",B.ab,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,!1,1,0,null,0,0,0,0,0,0,0,0.06,0)
-B.eb=s(["Lamp"],t.s)
-B.YB=new A.bk("lil","Lampwick Lil",B.bt,B.eb,4294955642,B.dt,"Li",7,0.9,2.6,"A small lantern. Shows hidden things in range so everyone can hit them. Lamp hits never miss.","I am not scared of the dark. The dark is scared of me. Mostly.",B.lo,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,!1,1,0,null,0,0,0,0,0,0,0,0,0)
-B.zQ=new A.d6(2,"band")
-B.Z4=new A.bk("bandsman","Brass Bandsman",B.bB,B.cr,4291319101,B.eJ,"Bb",18,1,2.4,"Every 6s the band strikes up: cells next to him can't be silenced, condemned, locked or grabbed for 3s.","Oom-pah. OOM-PAH.",B.zQ,6,0,3,0.6,0,0,0,0,0,1,0,0,0,0,0,0,1,!1,1,0,null,0,0,0,0,0,0,0,0,0)
-B.zR=new A.d6(3,"sticky")
-B.YP=new A.bk("mouse","Sugar Mouse",B.bB,B.d8,4294418884,B.eI,"Sm",16,0.8,2.5,"Sticky hits: for 2s the target can't blink, dive, ram or teleport.",'Squeak. That means "you are stuck now".',B.zR,0,0,2,0,0.15,1,0,0,0,1,0,0,0,0,0,0,1,!1,1,0,null,0,0,0,0,0,0,0,0,0)
-B.zS=new A.d6(4,"shatter")
-B.YL=new A.bk("tess","Toffee Hammer Tess",B.aW,B.d8,4290077981,B.hw,"Te",62,1.2,2.2,"Every 5th hit shatters shields and shells outright, and slows. Tin Hermits, Razor Clams and the Landlord hate her.","Hard toffee. Harder hammer.",B.zS,5,0,0,0,0.3,1.5,0,0,0,1,0,0,0,0,0,0,1,!1,1,0,null,0,0,0,0,0,0,0,0,0)
-B.YR=new A.bk("lamplighter","The Lamplighter",B.aW,B.eb,4294947655,B.eK,"Ll",46,1,3,"Lights the lane in range. Enemies there can't dodge or hide and take 10% more damage.","Every lamp along the Rift, lit by hand. Every one.",B.lr,0,0.1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,!1,1,0,null,0,0,0,0,0,0,0,0,0)
-B.zT=new A.d6(6,"horn")
-B.Z1=new A.bk("hale","Harbourmaster Hale",B.aW,B.d7,4282210944,B.eL,"Ha",56,1.1,2.8,"Every 4s his horn pushes everything in range back 0.6 cells (bosses 0.2).","Back. BACK. This is a harbour, not a holiday.",B.zT,4,0.6,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,!1,1,0,null,0,0,0,0,0,0,0,0,0)
-B.zU=new A.d6(7,"chime")
-B.Z3=new A.bk("icecream","The Ice Cream Man",B.bu,B.d8,4290633982,B.cG,"Ic",165,1,3,"Every 6s his chime freezes a patch of lane solid for 1s.","Greensleeves, played slightly wrong, forever.",B.zU,6,0,1,0,0.3,1.5,0,0,0,1,0,0,0,0,0,0,1,!1,1,0,null,0,0,0,0,0,0,0,0,0)
-B.Yz=new A.bk("elmo","Saint Elmo",B.bu,B.eb,4288336373,B.ky,"El",105,0.5,3.4,"A beam that ignores dodging, hiding and Null, and burns 15% hotter for every second on the same target.","Sailors used to pray for me. Now they just point.",B.i_,0,0.15,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,!1,1,0,null,0,0,0,0,0,0,0,0,0)
-B.zV=new A.d6(9,"watch")
-B.YT=new A.bk("watchman","The Night Watchman",B.bu,B.cr,4285298045,B.eL,"Wa",195,1,3,"His hits stop healing for 4s and mark the target to take 15% more damage.","Twelve o'clock and all is NOT well.",B.zV,0,0.15,4,0,0,0,0,0,0,1,0,0,0,0,0,0,1,!1,1,0,null,0,0,0,0,0,0,0,0,0)
-B.YS=new A.bk("diver","Pearl Diver",B.bu,B.d7,4289760599,B.eI,"Pd",150,1.1,3.2,"Hits diving, inked, tunnelled and submerged things. The Undertow, the Ghost Train's tunnel and Wrecker's Ghosts.","Holding my breath since 1952.",B.lp,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,1,!1,1,0,null,0,0,0,0,0,0,0,0,0)
-B.zK=new A.d6(11,"caramel")
-B.YU=new A.bk("confectioner","The Confectioner",B.a9,B.d8,4294944299,B.cG,"Cf",400,0.9,3.2,"Every 10s the lane caramelises: everything is stuck for 2s, sticky, and loses its shell.","Boiling point. Hard crack. Everybody stay still.",B.zK,10,0,2,1,0.35,2,0,0,0,1,0,0,0,0,0,0,1,!1,1,0,null,0,0,0,0,0,0,0,0,0)
-B.Yw=new A.bk("beacon","The Beacon",B.a9,B.eb,4294959206,B.cG,"Be",380,0.9,3.6,"Lights the whole lane so nothing can hide or dodge. Figurines in its light deal 20% more damage.","Lights on. Everyone. Look at me.",B.hZ,0,0.2,0,0,0,0,0,0,0,2,0,0,0,0,0,0,1,!1,1,0,null,0,0,0,0,0,0,0,0,0)
-B.zL=new A.d6(13,"evict")
-B.YG=new A.bk("freeholder","The Freeholder",B.a9,B.cb,4287513773,B.ky,"Fh",420,0.9,3.2,"Every 12s evicts the three front non-boss enemies back to the start of the lane.","I own the Rift now. And you are all trespassing.",B.zL,12,3,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,!1,1,2,null,0,0,0,0,0,0,0,0,0)
-B.zM=new A.d6(14,"ink")
-B.YV=new A.bk("cannon","Cuttle's Cannon",B.a9,B.d7,4281221207,B.eJ,"Cc",430,1,3.4,"Every 9s a heavy ink shot splashes and blinds: no healing or dodging for 3s.","The Captain sends his regards. And his ink.",B.zM,9,6,3,1,0,0,0,0,0,1,0,0,0,0,0,0,1,!1,1,0,null,0,0,0,0,0,0,0,0,0)
-B.Yv=new A.bk("crown","The Crab Crown",B.a9,B.cr,4292225064,B.eL,"Cr",470,0.9,3,"Neighbouring cells can't be silenced, locked or condemned. Its pinches strip 30% armour.","Kneel. Sideways is fine.",B.lq,0,0.3,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,!1,1,0,null,0,0,0,0,0,0,0,0,0)
-B.zN=new A.d6(16,"train")
-B.YO=new A.bk("lasttrain","The Last Train",B.a9,B.cb,4283611016,B.hw,"Lt",300,0.8,3.2,"Every 10s a phantom train laps the lane and hits everything once, one carriage per active union.","All aboard. No, really, all of you.",B.zN,10,2,0,0,0,0,0,0,2,1,0,0,0,0,0,0,1,!1,1,0,null,0,0,0,0,0,0,0,0,0)
-B.zO=new A.d6(17,"shadow")
-B.Z_=new A.bk("kshadow","The Keeper's Shadow",B.a9,B.eb,4281994403,B.eK,"Ks",340,0.9,3.4,"Copies the attack of the strongest neighbouring non-Mythic at 150%.","He kept the light. I kept everything else.",B.zO,0,1.5,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,!1,1,0,null,0,0,0,0,0,0,0,0,0)
-B.L9=s(["Birds","Staff","Sweets","Arcade","Sea","Lamp"],t.s)
-B.zP=new A.d6(18,"erase")
-B.YA=new A.bk("nothing","Nothing",B.a9,B.L9,4286262463,B.eI,"\u2205",380,1,3.4,"Counts toward every union. Every 15s erases the healthiest non-boss thing in range, or takes 8% of a boss's health.","...",B.zP,15,0.08,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,!1,1,0,null,0,0,0,0,0,0,0,0,0)
-B.da=s([B.YC,B.YJ,B.YM,B.YK,B.YX,B.YQ,B.Z5,B.YW,B.YE,B.Z0,B.YZ,B.YN,B.YF,B.Yy,B.Yx,B.Z2,B.YY,B.YI,B.YD,B.YH,B.YB,B.Z4,B.YP,B.YL,B.YR,B.Z1,B.Z3,B.Yz,B.YT,B.YS,B.YU,B.Yw,B.YG,B.YV,B.Yv,B.YO,B.Z_,B.YA],A.a6("u<bk>"))
-B.Le=s(["click","scroll"],t.s)
+B.Ld=s(["click","scroll"],t.s)
 B.Bd=new A.oY()
 B.ko=new A.Iv(1,"page")
 B.kp=new A.fd(B.b1,B.ko)
-B.Lf=s([B.Bd,B.kp],A.a6("u<aP>"))
-B.Li=s([1,1.5,2],t.n)
+B.Le=s([B.Bd,B.kp],A.a6("u<aP>"))
+B.Lh=s([1,1.5,2],t.n)
 B.Ok=new A.hJ("float","Float in the Till","+15 starting pennies a level. Nobody counts it.",5,20,15)
 B.Oj=new A.hJ("clover","Pressed Clover","+1 starting leaf a level. Found in a lost-property sandwich.",3,40,30)
 B.Ol=new A.hJ("bentcoin","Bent Coin","Summons cost 1 penny less a level. The machine has stopped noticing.",5,30,20)
 B.Om=new A.hJ("grease","Elbow Grease","+4% damage on your board a level. Mostly grease.",5,35,25)
-B.jH=s([B.Ok,B.Oj,B.Ol,B.Om],A.a6("u<hJ>"))
-B.Lt=s([],t.QP)
+B.jI=s([B.Ok,B.Oj,B.Ol,B.Om],A.a6("u<hJ>"))
+B.Ls=s([],t.QP)
 B.o3=s([],A.a6("u<aGQ>"))
-B.Lq=s([],t.E)
-B.Lr=s([],t.fJ)
-B.Lo=s([],t.ER)
+B.Lp=s([],t.E)
+B.Lq=s([],t.fJ)
+B.Ln=s([],t.ER)
 B.o4=s([],t.tc)
 B.h_=s([],t.jl)
 B.o5=s([],t.wi)
-B.Lu=s([],A.a6("u<iE<@>>"))
-B.jJ=s([],t.AO)
-B.Ls=s([],t.D1)
+B.Lt=s([],A.a6("u<iE<@>>"))
+B.jK=s([],t.AO)
+B.Lr=s([],t.D1)
 B.fZ=s([],t.QF)
-B.jI=s([],t.s)
+B.jJ=s([],t.s)
 B.aB=s([],t.oU)
-B.Lw=s([],t.Lx)
+B.Lv=s([],t.Lx)
 B.a04=s([],t.p)
-B.Lp=s([],t.n)
-B.Lm=s([],t.t)
+B.Lo=s([],t.n)
+B.Ll=s([],t.t)
 B.o6=s([],t.ee)
-B.Lv=s([],t.XS)
-B.LB=s(["single-target","area","status"],t.s)
-B.LM=s([-1,1],t.n)
+B.Lu=s([],t.XS)
+B.LA=s(["single-target","area","status"],t.s)
+B.LL=s([-1,1],t.n)
 B.ed=s([B.cg,B.c5,B.f8,B.f9,B.i3],t.QP)
 B.o8=s(["Common & Rare","Epic","Legend & Mythic"],t.s)
-B.LT=s([B.nu,B.ns,B.nt],A.a6("u<pR>"))
-B.LU=s(["Clowns","Lion","Knife Thrower"],t.s)
+B.LS=s([B.nu,B.ns,B.nt],A.a6("u<pR>"))
+B.LT=s(["Clowns","Lion","Knife Thrower"],t.s)
 B.E7=new A.h(1,0.7607843137254902,0.7294117647058823,0.6666666666666666,B.d)
 B.EH=new A.h(1,0.5294117647058824,0.5019607843137255,0.4470588235294118,B.d)
 B.af=new A.hX(B.E7,B.EH,B.mx,6,"grey")
@@ -78759,14 +78756,14 @@ B.El=new A.h(1,0.8627450980392157,0.5411764705882353,0.4392156862745098,B.d)
 B.DR=new A.h(1,0.4,0.1607843137254902,0.11764705882352941,B.d)
 B.dx=new A.hX(B.El,B.mm,B.DR,3,"red")
 B.ee=s([B.af,B.aG,B.cK,B.aP,B.dx],A.a6("u<hX>"))
-B.K7=s([0.001200833568784504,0.002389694492170889,0.0002795742885861124],t.n)
-B.Lg=s([0.0005891086651375999,0.0029785502573438758,0.0003270666104008398],t.n)
-B.Kl=s([0.00010146692491640572,0.0005364214359186694,0.0032979401770712076],t.n)
-B.M1=s([B.K7,B.Lg,B.Kl],t.zg)
-B.M2=s([45,95,45,20,45,90,45,45,45],t.n)
-B.M3=s([120,120,20,45,20,15,20,120,120],t.n)
+B.K8=s([0.001200833568784504,0.002389694492170889,0.0002795742885861124],t.n)
+B.Lf=s([0.0005891086651375999,0.0029785502573438758,0.0003270666104008398],t.n)
+B.Km=s([0.00010146692491640572,0.0005364214359186694,0.0032979401770712076],t.n)
+B.M0=s([B.K8,B.Lf,B.Km],t.zg)
+B.M1=s([45,95,45,20,45,90,45,45,45],t.n)
+B.M2=s([120,120,20,45,20,15,20,120,120],t.n)
 B.B3=new A.dP(0,B.aL,B.e_,B.hd,0)
-B.M7=s([B.B3],t.V)
+B.M6=s([B.B3],t.V)
 B.dd=new A.fC(0,"controlModifier")
 B.de=new A.fC(1,"shiftModifier")
 B.df=new A.fC(2,"altModifier")
@@ -78777,22 +78774,25 @@ B.k6=new A.fC(6,"scrollLockModifier")
 B.k7=new A.fC(7,"functionModifier")
 B.ud=new A.fC(8,"symbolModifier")
 B.o9=s([B.dd,B.de,B.df,B.dg,B.k4,B.k5,B.k6,B.k7,B.ud],A.a6("u<fC>"))
-B.jL=s([!0,!1],t.HZ)
+B.jM=s([!0,!1],t.HZ)
 B.oa=s([0,0,1,3,0],t.t)
 B.Fg=new A.h(0.6666666666666666,0,0,0,B.d)
 B.OY=new A.j(0,6)
 B.Rt=new A.fM(B.Fg,B.OY,6)
-B.Ma=s([B.Rt],t.kO)
+B.M9=s([B.Rt],t.kO)
+B.J4=new A.l4(0,"none")
+B.J2=new A.iv("The Breach","The Rift has just torn open. Something is climbing out.","landlord",1,B.J4,"brine","inspector")
+B.J1=new A.iv("The Fogbound Arcade","The Rift breathes fog, and a drowned pirate rode it in.","cuttle",1.1,B.nK,"prizeclaw","undertow")
+B.J3=new A.iv("Shattered Cove","The Rift split the cove. Shells, claws and a crab who thinks he is royalty.","kingcrab",1.2,B.nL,"limpet","inspector")
+B.J5=new A.l4(3,"rides")
+B.IZ=new A.iv("The Rift Fair","The rides are still running. Nobody is operating them.","ghosttrain",1.3,B.J5,"ringmaster","limpet")
+B.J6=new A.l4(4,"beam")
+B.J_=new A.iv("The Dark Lamp","The lamp still turns. The keeper does not.","shadowkeeper",1.4,B.J6,"wrecker","ringmaster")
+B.J0=new A.iv("The Rift's Edge","The edge of the world is not where it used to be.","void",1.5,B.nM,"redactor","prizeclaw")
+B.Ma=s([B.J2,B.J1,B.J3,B.IZ,B.J_,B.J0],A.a6("u<iv>"))
 B.FR=new A.pz(1,"choppy")
 B.FS=new A.pz(2,"storm")
 B.cs=s([B.n_,B.FR,B.FS],A.a6("u<pz>"))
-B.XO=new A.k2("Welcome to the Rift","Last night of the season, the Rift tore open at the end of the pier, and things are climbing out of it. They walk the path round and round. If 100 get loose at once, it's over.","next")
-B.XM=new A.k2("Feed the machine","Tap SUMMON. Every penny in the Oracle-O-Matic gives you a random figurine, and they fight for you. Summon three.","summon")
-B.XL=new A.k2("Three of a kind","Same figurines stack, three to a cell. Tap a full stack and press MERGE, right under it, to squash them into one random figurine from the next tier up. Merging is how you get strong.","next")
-B.XP=new A.k2("Move them about","Drag a figurine onto another cell to swap them. Cells next to the path see the most action, so put your best ones there.","next")
-B.XN=new A.k2("Luck and grease","Tea leaves come every fifth wave and from bosses. GAMBLE them for rare figurines. UPGRADE makes a whole tier hit harder. MYTHICS shows the recipes for the four legends of the Rift.","next")
-B.XQ=new A.k2("Bosses","Every 10th wave a boss turns up, and you have 60 seconds to get rid of it. Wave 50 brings the level's final boss. Beat it and the Rift drags you somewhere deeper. Good luck, love.","next")
-B.jM=s([B.XO,B.XM,B.XL,B.XP,B.XN,B.XQ],A.a6("u<k2>"))
 B.Me=s(["pointerdown","pointermove","pointerleave","pointerup","pointercancel","touchstart","touchend","touchmove","touchcancel","mousedown","mousemove","mouseleave","mouseup","wheel"],t.s)
 B.Mf=s([0,4,7,12,16],t.t)
 B.jx=new A.f5(100)
@@ -79356,71 +79356,71 @@ B.JU=s([54,null,null,8589935158],t.Z)
 B.JV=s([55,null,null,8589935159],t.Z)
 B.JW=s([56,null,null,8589935160],t.Z)
 B.JY=s([57,null,null,8589935161],t.Z)
-B.KO=s([8589934852,8589934852,8589934853,null],t.Z)
+B.KP=s([8589934852,8589934852,8589934853,null],t.Z)
 B.Jv=s([4294967555,null,4294967555,null],t.Z)
 B.Jw=s([4294968065,null,null,8589935154],t.Z)
 B.Jx=s([4294968066,null,null,8589935156],t.Z)
 B.Jy=s([4294968067,null,null,8589935158],t.Z)
 B.Jz=s([4294968068,null,null,8589935160],t.Z)
 B.JE=s([4294968321,null,null,8589935157],t.Z)
-B.KP=s([8589934848,8589934848,8589934849,null],t.Z)
+B.KQ=s([8589934848,8589934848,8589934849,null],t.Z)
 B.Ju=s([4294967423,null,null,8589935150],t.Z)
 B.JA=s([4294968069,null,null,8589935153],t.Z)
 B.Jt=s([4294967309,null,null,8589935117],t.Z)
 B.JB=s([4294968070,null,null,8589935159],t.Z)
 B.JF=s([4294968327,null,null,8589935152],t.Z)
-B.KQ=s([8589934854,8589934854,8589934855,null],t.Z)
+B.KR=s([8589934854,8589934854,8589934855,null],t.Z)
 B.JC=s([4294968071,null,null,8589935155],t.Z)
 B.JD=s([4294968072,null,null,8589935161],t.Z)
-B.KR=s([8589934850,8589934850,8589934851,null],t.Z)
-B.u7=new A.cM(["*",B.JG,"+",B.JH,"-",B.JJ,".",B.JK,"/",B.JL,"0",B.JM,"1",B.JN,"2",B.JP,"3",B.JR,"4",B.JS,"5",B.JT,"6",B.JU,"7",B.JV,"8",B.JW,"9",B.JY,"Alt",B.KO,"AltGraph",B.Jv,"ArrowDown",B.Jw,"ArrowLeft",B.Jx,"ArrowRight",B.Jy,"ArrowUp",B.Jz,"Clear",B.JE,"Control",B.KP,"Delete",B.Ju,"End",B.JA,"Enter",B.Jt,"Home",B.JB,"Insert",B.JF,"Meta",B.KQ,"PageDown",B.JC,"PageUp",B.JD,"Shift",B.KR],A.a6("cM<z,W<k?>>"))
+B.KS=s([8589934850,8589934850,8589934851,null],t.Z)
+B.u7=new A.cM(["*",B.JG,"+",B.JH,"-",B.JJ,".",B.JK,"/",B.JL,"0",B.JM,"1",B.JN,"2",B.JP,"3",B.JR,"4",B.JS,"5",B.JT,"6",B.JU,"7",B.JV,"8",B.JW,"9",B.JY,"Alt",B.KP,"AltGraph",B.Jv,"ArrowDown",B.Jw,"ArrowLeft",B.Jx,"ArrowRight",B.Jy,"ArrowUp",B.Jz,"Clear",B.JE,"Control",B.KQ,"Delete",B.Ju,"End",B.JA,"Enter",B.Jt,"Home",B.JB,"Insert",B.JF,"Meta",B.KR,"PageDown",B.JC,"PageUp",B.JD,"Shift",B.KS],A.a6("cM<z,W<k?>>"))
 B.JX=s([B.og,null,null,B.tX],t.L)
-B.Lx=s([B.tJ,null,null,B.tY],t.L)
-B.Ku=s([B.tK,null,null,B.tZ],t.L)
+B.Lw=s([B.tJ,null,null,B.tY],t.L)
+B.Kv=s([B.tK,null,null,B.tZ],t.L)
 B.KU=s([B.tL,null,null,B.cv],t.L)
 B.Je=s([B.tM,null,null,B.u_],t.L)
-B.M_=s([B.tN,null,null,B.jY],t.L)
-B.LL=s([B.tO,null,null,B.ep],t.L)
+B.LZ=s([B.tN,null,null,B.jY],t.L)
+B.LK=s([B.tO,null,null,B.ep],t.L)
 B.K4=s([B.tP,null,null,B.cw],t.L)
-B.M9=s([B.tQ,null,null,B.eq],t.L)
-B.LK=s([B.tR,null,null,B.cx],t.L)
+B.M8=s([B.tQ,null,null,B.eq],t.L)
+B.LJ=s([B.tR,null,null,B.cx],t.L)
 B.K2=s([B.tS,null,null,B.jZ],t.L)
 B.Jq=s([B.tT,null,null,B.cy],t.L)
-B.Kh=s([B.tU,null,null,B.er],t.L)
-B.Ly=s([B.tV,null,null,B.cz],t.L)
-B.LC=s([B.tW,null,null,B.es],t.L)
-B.K8=s([B.en,B.en,B.h6,null],t.L)
-B.M0=s([B.h2,null,B.h2,null],t.L)
-B.KA=s([B.by,null,null,B.cw],t.L)
-B.KB=s([B.bm,null,null,B.cx],t.L)
-B.KC=s([B.bn,null,null,B.cy],t.L)
-B.M5=s([B.bz,null,null,B.cz],t.L)
-B.LI=s([B.jT,null,null,B.jZ],t.L)
-B.K9=s([B.el,B.el,B.h5,null],t.L)
-B.La=s([B.aD,null,null,B.cv],t.L)
-B.KD=s([B.ct,null,null,B.ep],t.L)
+B.Ki=s([B.tU,null,null,B.er],t.L)
+B.Lx=s([B.tV,null,null,B.cz],t.L)
+B.LB=s([B.tW,null,null,B.es],t.L)
+B.K9=s([B.en,B.en,B.h6,null],t.L)
+B.M_=s([B.h2,null,B.h2,null],t.L)
+B.KB=s([B.by,null,null,B.cw],t.L)
+B.KC=s([B.bm,null,null,B.cx],t.L)
+B.KD=s([B.bn,null,null,B.cy],t.L)
+B.M4=s([B.bz,null,null,B.cz],t.L)
+B.LH=s([B.jT,null,null,B.jZ],t.L)
+B.Ka=s([B.el,B.el,B.h5,null],t.L)
+B.L9=s([B.aD,null,null,B.cv],t.L)
+B.KE=s([B.ct,null,null,B.ep],t.L)
 B.K1=s([B.eg,null,null,B.h8],t.L)
-B.KE=s([B.cu,null,null,B.er],t.L)
-B.LJ=s([B.ek,null,null,B.jY],t.L)
-B.Ka=s([B.eo,B.eo,B.h7,null],t.L)
-B.KF=s([B.ei,null,null,B.eq],t.L)
-B.Ll=s([B.ej,null,null,B.es],t.L)
-B.Kb=s([B.dc,B.dc,B.em,null],t.L)
-B.O8=new A.cM(["*",B.JX,"+",B.Lx,"-",B.Ku,".",B.KU,"/",B.Je,"0",B.M_,"1",B.LL,"2",B.K4,"3",B.M9,"4",B.LK,"5",B.K2,"6",B.Jq,"7",B.Kh,"8",B.Ly,"9",B.LC,"Alt",B.K8,"AltGraph",B.M0,"ArrowDown",B.KA,"ArrowLeft",B.KB,"ArrowRight",B.KC,"ArrowUp",B.M5,"Clear",B.LI,"Control",B.K9,"Delete",B.La,"End",B.KD,"Enter",B.K1,"Home",B.KE,"Insert",B.LJ,"Meta",B.Ka,"PageDown",B.KF,"PageUp",B.Ll,"Shift",B.Kb],A.a6("cM<z,W<e?>>"))
+B.KF=s([B.cu,null,null,B.er],t.L)
+B.LI=s([B.ek,null,null,B.jY],t.L)
+B.Kb=s([B.eo,B.eo,B.h7,null],t.L)
+B.KG=s([B.ei,null,null,B.eq],t.L)
+B.Lk=s([B.ej,null,null,B.es],t.L)
+B.Kc=s([B.dc,B.dc,B.em,null],t.L)
+B.O8=new A.cM(["*",B.JX,"+",B.Lw,"-",B.Kv,".",B.KU,"/",B.Je,"0",B.LZ,"1",B.LK,"2",B.K4,"3",B.M8,"4",B.LJ,"5",B.K2,"6",B.Jq,"7",B.Ki,"8",B.Lx,"9",B.LB,"Alt",B.K9,"AltGraph",B.M_,"ArrowDown",B.KB,"ArrowLeft",B.KC,"ArrowRight",B.KD,"ArrowUp",B.M4,"Clear",B.LH,"Control",B.Ka,"Delete",B.L9,"End",B.KE,"Enter",B.K1,"Home",B.KF,"Insert",B.LI,"Meta",B.Kb,"PageDown",B.KG,"PageUp",B.Lk,"Shift",B.Kc],A.a6("cM<z,W<e?>>"))
 B.OB={tide:0,jackpot:1,velvet:2,gullivan:3,confectioner:4,beacon:5,freeholder:6,cannon:7,crown:8,lasttrain:9,kshadow:10,nothing:11}
-B.LH=s(["keeper","morag","lou"],t.s)
+B.LG=s(["keeper","morag","lou"],t.s)
 B.Mc=s(["vex","claw","carl"],t.s)
-B.Lc=s(["bertie","sal","floss"],t.s)
-B.L8=s(["albatross","squall","admiral"],t.s)
-B.LD=s(["icecream","tess","mouse"],t.s)
-B.Lk=s(["elmo","lamplighter","lil"],t.s)
-B.Lb=s(["bertie","claw","thwack"],t.s)
-B.Lh=s(["diver","hale","rock"],t.s)
+B.Lb=s(["bertie","sal","floss"],t.s)
+B.L7=s(["albatross","squall","admiral"],t.s)
+B.LC=s(["icecream","tess","mouse"],t.s)
+B.Lj=s(["elmo","lamplighter","lil"],t.s)
+B.La=s(["bertie","claw","thwack"],t.s)
+B.Lg=s(["diver","hale","rock"],t.s)
 B.Mh=s(["watchman","sal","bandsman"],t.s)
 B.Md=s(["vex","squall","lou"],t.s)
-B.LG=s(["keeper","lamplighter","admiral"],t.s)
-B.L7=s(["albatross","icecream","elmo"],t.s)
-B.cA=new A.bl(B.OB,[B.LH,B.Mc,B.Lc,B.L8,B.LD,B.Lk,B.Lb,B.Lh,B.Mh,B.Md,B.LG,B.L7],t.VJ)
+B.LF=s(["keeper","lamplighter","admiral"],t.s)
+B.L6=s(["albatross","icecream","elmo"],t.s)
+B.cA=new A.bl(B.OB,[B.LG,B.Mc,B.Lb,B.L7,B.LC,B.Lj,B.La,B.Lg,B.Mh,B.Md,B.LF,B.L6],t.VJ)
 B.ON={KeyA:0,KeyB:1,KeyC:2,KeyD:3,KeyE:4,KeyF:5,KeyG:6,KeyH:7,KeyI:8,KeyJ:9,KeyK:10,KeyL:11,KeyM:12,KeyN:13,KeyO:14,KeyP:15,KeyQ:16,KeyR:17,KeyS:18,KeyT:19,KeyU:20,KeyV:21,KeyW:22,KeyX:23,KeyY:24,KeyZ:25,Digit1:26,Digit2:27,Digit3:28,Digit4:29,Digit5:30,Digit6:31,Digit7:32,Digit8:33,Digit9:34,Digit0:35,Minus:36,Equal:37,BracketLeft:38,BracketRight:39,Backslash:40,Semicolon:41,Quote:42,Backquote:43,Comma:44,Period:45,Slash:46}
 B.u8=new A.bl(B.ON,["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","1","2","3","4","5","6","7","8","9","0","-","=","[","]","\\",";","'","`",",",".","/"],t.li)
 B.OL={"zh-Hant":0,"zh-TW":1,"zh-MO":2,"zh-HK":3,ja:4,ko:5,zh:6,"zh-Hans":7,"zh-CN":8}
@@ -79815,8 +79815,8 @@ B.Qh=new A.ln(null,2,6,null,null,null,B.Ig,null)
 B.Qi=new A.xg(null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null)
 B.Fa=new A.h(1,0.1803921568627451,0.4980392156862745,0.7215686274509804,B.d)
 B.Dp=new A.h(1,0.07058823529411765,0.23529411764705882,0.4,B.d)
-B.LQ=s([B.Fa,B.Dp],t.W)
-B.Qk=new A.jK(B.M,0.5,B.aj,null,0,B.LQ,null,null)
+B.LP=s([B.Fa,B.Dp],t.W)
+B.Qk=new A.jK(B.M,0.5,B.aj,null,0,B.LP,null,null)
 B.Ql=new A.xi(null,null,null,null,null,null,null,null,null)
 B.Qm=new A.ay(8,8)
 B.Qn=new A.ay(1.5,1.5)
@@ -79895,8 +79895,8 @@ B.kr=new A.qK(1,"nextLine")
 B.hm=new A.qK(2,"forward")
 B.hn=new A.qK(3,"backward")
 B.ce=new A.yf(2,"none")
-B.y6=new A.lA(null,null,B.ce,B.jJ,!0)
-B.y7=new A.lA(null,null,B.ce,B.jJ,!1)
+B.y6=new A.lA(null,null,B.ce,B.jK,!0)
+B.y7=new A.lA(null,null,B.ce,B.jK,!1)
 B.E=new A.lB(0,"next")
 B.I=new A.lB(1,"previous")
 B.L=new A.lB(2,"end")
@@ -80809,7 +80809,7 @@ s($,"aKD","avh",()=>{var q="TextBaseline"
 return A.b([A.B(A.B(A.a9(),q),"Alphabetic"),A.B(A.B(A.a9(),q),"Ideographic")],t.O)})
 r($,"aDS","auI",()=>A.aDo())
 r($,"aKn","av5",()=>A.cF().gOq()+"roboto/v32/KFOmCnqEu92Fr1Me4GZLCzYlKw.woff2")
-s($,"aJQ","auK",()=>A.az2(B.KI))
+s($,"aJQ","auK",()=>A.az2(B.KJ))
 s($,"aJP","aiK",()=>A.YC(A.aws($.auK())))
 s($,"aH8","cv",()=>{var q,p=A.B(A.B(A.mm(),"window"),"screen")
 p=p==null?null:A.B(p,"width")
@@ -81009,7 +81009,7 @@ s($,"aJh","auk",()=>new A.Nf())
 r($,"aJ2","aua",()=>{var q=A.a6("~(cc<aP>)")
 return A.aI([B.XZ,A.anE(!0),B.XR,A.anE(!1),B.Ye,new A.I2(A.wV(q)),B.Y9,new A.GO(A.wV(q)),B.Yc,new A.Hj(A.wV(q)),B.XY,new A.ET(A.wV(q)),B.zi,A.aAk(),B.Yd,new A.Hn(A.wV(q)),B.Yo,new A.JV(A.wV(q))],t.u,t.od)})
 s($,"aGV","aiB",()=>{var q,p,o,n=t.r,m=A.r(t.Y,n)
-for(q=A.a6("Z"),p=0;p<2;++p){o=B.jL[p]
+for(q=A.a6("Z"),p=0;p<2;++p){o=B.jM[p]
 m.K(0,A.aI([A.dX(B.aC,!1,!1,!1,o),B.lO,A.dX(B.aC,!1,!0,!1,o),B.lR,A.dX(B.aC,!0,!1,!1,o),B.lP,A.dX(B.aD,!1,!0,!1,o),B.fe,A.dX(B.aD,!0,!1,!1,o),B.lQ],q,n))}m.m(0,B.yq,B.fd)
 m.m(0,B.hB,B.ff)
 m.m(0,B.hC,B.fg)
@@ -81065,7 +81065,7 @@ q.m(0,B.kD,B.fh)
 q.m(0,B.kE,B.fi)
 return q})
 s($,"aH0","am5",()=>{var q,p,o,n=t.r,m=A.r(t.Y,n)
-for(q=A.a6("Z"),p=0;p<2;++p){o=B.jL[p]
+for(q=A.a6("Z"),p=0;p<2;++p){o=B.jM[p]
 m.K(0,A.aI([A.dX(B.aC,!1,!1,!1,o),B.lO,A.dX(B.aC,!0,!1,!1,o),B.lR,A.dX(B.aC,!1,!1,!0,o),B.lP,A.dX(B.aD,!1,!1,!1,o),B.fd,A.dX(B.aD,!0,!1,!1,o),B.fe,A.dX(B.aD,!1,!1,!0,o),B.lQ],q,n))}m.m(0,B.hB,B.ff)
 m.m(0,B.hC,B.fg)
 m.m(0,B.hD,B.dP)
@@ -81129,7 +81129,7 @@ q.m(0,B.kD,B.fh)
 q.m(0,B.kE,B.fi)
 return q})
 s($,"aH1","am6",()=>{var q,p,o,n=t.r,m=A.r(t.Y,n)
-for(q=A.a6("Z"),p=0;p<2;++p){o=B.jL[p]
+for(q=A.a6("Z"),p=0;p<2;++p){o=B.jM[p]
 m.K(0,A.aI([A.dX(B.aC,!1,!1,!1,o),B.o,A.dX(B.aD,!1,!1,!1,o),B.o,A.dX(B.aC,!0,!1,!1,o),B.o,A.dX(B.aD,!0,!1,!1,o),B.o,A.dX(B.aC,!1,!0,!1,o),B.o,A.dX(B.aD,!1,!0,!1,o),B.o,A.dX(B.aC,!1,!1,!0,o),B.o,A.dX(B.aD,!1,!1,!0,o),B.o],q,n))}m.K(0,B.u1)
 for(n=$.Rz().gbn().gR(0);n.p();)m.m(0,n.gH(),B.o)
 m.m(0,B.ym,B.o)
@@ -81266,20 +81266,20 @@ s($,"aL6","avx",()=>A.fV("48",null))
 s($,"aL3","avu",()=>A.fV("2",null))
 s($,"aL5","avw",()=>A.CQ("30"))
 s($,"aL_","amA",()=>{var q,p,o=A.r(t.N,A.a6("bm"))
-for(q=0;q<40;++q){p=B.jG[q]
+for(q=0;q<40;++q){p=B.jH[q]
 o.m(0,p.a,p)}return o})
 s($,"aKW","kt",()=>{var q,p,o,n=A.a6("dO"),m=A.r(t.N,n)
-for(n=A.ayG(B.L4,!0,n),B.b.K(n,B.K5),q=n.length,p=0;p<n.length;n.length===q||(0,A.m)(n),++p){o=n[p]
+for(n=A.ayG(B.K7,!0,n),B.b.K(n,B.K5),q=n.length,p=0;p<n.length;n.length===q||(0,A.m)(n),++p){o=n[p]
 m.m(0,o.a,o)}return m})
 s($,"aL0","amB",()=>{var q,p,o=A.r(t.N,A.a6("hJ"))
-for(q=0;q<4;++q){p=B.jH[q]
+for(q=0;q<4;++q){p=B.jI[q]
 o.m(0,p.a,p)}return o})
-s($,"aL2","aiO",()=>A.b([A.dd("boss1","Pest Control","Beat your first boss.",10,new A.ahR()),A.dd("wave25","Halfway Into the Rift","Reach wave 25.",15,new A.ahS()),A.dd("boss4","Regular Customers","Beat 4 bosses in one run.",25,new A.ahT()),A.dd("level1","Last Night of the Season","Clear Level 1: beat the Landlord on wave 50.",50,new A.ai3()),A.dd("solo_win","Skeleton Staff","Clear any level in Solo.",40,new A.ai5()),A.dd("coop_win","Brenda's Favourite","Clear any level with Brenda.",30,new A.ai6()),A.dd("level2","Fog Lifted","Clear Level 2, Fogbank Arcade.",80,new A.ai7()),A.dd("level3","Off With His Claws","Clear Level 3, Crab Cove.",120,new A.ai8()),A.dd("level4","Staring Back","Clear Level 4, the Rift Fair.",200,new A.ai9()),A.dd("mythic","Something in the Back","Craft a Mythic figurine.",25,new A.aia()),A.dd("mythic3","Full Back Room","Craft 3 Mythics in one run.",70,new A.aib()),A.dd("merges40","Three Into One","Merge 40 times in one run.",25,new A.ahU()),A.dd("merges80","Compactor","Merge 80 times in one run.",50,new A.ahV()),A.dd("gamble6","Feeling Lucky","Win 6 gambles in one run.",30,new A.ahW()),A.dd("summon150","Machine Feeder","Summon 150 times in one run.",30,new A.ahX()),A.dd("kills3k","Seafood Platter","Your board takes out 3,000 riftlings in one run.",35,new A.ahY()),A.dd("kills6k","All You Can Eat","Your board takes out 6,000 riftlings in one run.",60,new A.ahZ()),A.dd("upgrade20","Elbow Deep","Buy 20 Elbow Grease upgrades in one run.",30,new A.ai_()),A.dd("rich","Coin Pusher","Earn 6,000 pennies in one run.",35,new A.ai0()),A.dd("tidy","Tidy Rift","Clear a level without the lane going over 40.",90,new A.ai1()),A.dd("endless60","Off Season","Reach wave 60 in Endless.",50,new A.ai2()),A.dd("endless75","Nobody Goes Home","Reach wave 75 in Endless.",100,new A.ai4())],t.Dd))
+s($,"aL2","aiO",()=>A.b([A.dd("boss1","Pest Control","Beat your first boss.",10,new A.ahR()),A.dd("wave25","Halfway Into the Rift","Reach wave 25.",15,new A.ahS()),A.dd("boss4","Regular Customers","Beat 4 bosses in one run.",25,new A.ahT()),A.dd("level1","First Night at the Rift","Clear Level 1: beat the Landlord on wave 50.",50,new A.ai3()),A.dd("solo_win","Skeleton Staff","Clear any level in Solo.",40,new A.ai5()),A.dd("coop_win","Brenda's Favourite","Clear any level with Brenda.",30,new A.ai6()),A.dd("level2","Fog Lifted","Clear Level 2, Fogbank Arcade.",80,new A.ai7()),A.dd("level3","Off With His Claws","Clear Level 3, Crab Cove.",120,new A.ai8()),A.dd("level4","Staring Back","Clear Level 4, the Rift Fair.",200,new A.ai9()),A.dd("mythic","Something in the Back","Craft a Mythic figurine.",25,new A.aia()),A.dd("mythic3","Full Back Room","Craft 3 Mythics in one run.",70,new A.aib()),A.dd("merges40","Three Into One","Merge 40 times in one run.",25,new A.ahU()),A.dd("merges80","Compactor","Merge 80 times in one run.",50,new A.ahV()),A.dd("gamble6","Feeling Lucky","Win 6 gambles in one run.",30,new A.ahW()),A.dd("summon150","Machine Feeder","Summon 150 times in one run.",30,new A.ahX()),A.dd("kills3k","Seafood Platter","Your board takes out 3,000 riftlings in one run.",35,new A.ahY()),A.dd("kills6k","All You Can Eat","Your board takes out 6,000 riftlings in one run.",60,new A.ahZ()),A.dd("upgrade20","Elbow Deep","Buy 20 Elbow Grease upgrades in one run.",30,new A.ai_()),A.dd("rich","Coin Pusher","Earn 6,000 pennies in one run.",35,new A.ai0()),A.dd("tidy","Tidy Rift","Clear a level without the lane going over 40.",90,new A.ai1()),A.dd("endless60","Past the Edge","Reach wave 60 in Endless.",50,new A.ai2()),A.dd("endless75","Nobody Goes Home","Reach wave 75 in Endless.",100,new A.ai4())],t.Dd))
 s($,"aL1","avt",()=>{var q,p,o,n=A.r(t.N,t.wu)
 for(q=$.aiO(),p=0;p<22;++p){o=q[p]
 n.m(0,o.a,o)}return n})
 s($,"aJo","amm",()=>{var q,p=A.b([],t.gi)
-for(q=0;q<4;++q)p.push(B.Kf[q].a6M())
+for(q=0;q<4;++q)p.push(B.Kg[q].a6M())
 return p})
 s($,"aIG","atV",()=>A.aBv(0))
 s($,"aIc","aiF",()=>A.anO())
