@@ -15,7 +15,13 @@ class Bot {
   int _line = 0;
   final bool chatty;
 
-  Bot(this.g, this.p, {this.thinkEvery = 0.6, this.skill = 1.0, this.chatty = false});
+  Bot(
+    this.g,
+    this.p, {
+    this.thinkEvery = 0.6,
+    this.skill = 1.0,
+    this.chatty = false,
+  });
 
   void update(double dt) {
     _t -= dt;
@@ -50,7 +56,9 @@ class Bot {
     }
     // 3. Gamble tea leaves.
     while (p.leaves >= 1 && p.hasEmptyCell) {
-      final opt = p.leaves >= 2 && g.wave >= 25 ? kGambles[2] : (g.wave >= 12 ? kGambles[1] : kGambles[0]);
+      final opt = p.leaves >= 2 && g.wave >= 25
+          ? kGambles[2]
+          : (g.wave >= 12 ? kGambles[1] : kGambles[0]);
       if (p.leaves < opt.cost) break;
       g.gamble(p, opt);
       n++;
@@ -62,10 +70,17 @@ class Bot {
       final gi = _upgradeFocus();
       final upCost = upgradeCost(gi, p.upg[gi]);
       final groupDps = _groupDps(gi);
-      final upValue = p.upg[gi] >= kMaxUpgrade ? 0.0 : groupDps * kUpgradeStep / (1 + kUpgradeStep * p.upg[gi]) / upCost;
+      final upValue = p.upg[gi] >= kMaxUpgrade
+          ? 0.0
+          : groupDps * kUpgradeStep / (1 + kUpgradeStep * p.upg[gi]) / upCost;
       // A summon is worth its average figurine plus the merges it feeds.
-      final sumValue = (p.hasEmptyCell ? 26.0 * (1 + kUpgradeStep * p.upg[0]) : 0.0) / cost * (0.8 + 0.4 * skill);
-      if (p.luck < kMaxLuck && g.wave >= 8 + p.luck * 6 && p.pennies >= luckUpgradeCost(p.luck) + cost) {
+      final sumValue =
+          (p.hasEmptyCell ? 26.0 * (1 + kUpgradeStep * p.upg[0]) : 0.0) /
+          cost *
+          (0.8 + 0.4 * skill);
+      if (p.luck < kMaxLuck &&
+          g.wave >= 8 + p.luck * 6 &&
+          p.pennies >= luckUpgradeCost(p.luck) + cost) {
         g.upgradeLuck(p);
         n++;
         continue;

@@ -1,5 +1,5 @@
 name: pier_pressure
-description: "A new Flutter project."
+description: "Voided: a seaside merge tower defense."
 publish_to: 'none'
 version: 0.1.0+1
 
@@ -18,3 +18,18 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/sprites/
+    - assets/title.jpg
+  fonts:
+    - family: Lilita
+      fonts:
+        - asset: assets/fonts/LilitaOne-Regular.ttf
+    - family: Nunito
+      fonts:
+        - asset: assets/fonts/Nunito-700.ttf
+          weight: 700
+        - asset: assets/fonts/Nunito-800.ttf
+          weight: 800
+        - asset: assets/fonts/Nunito-900.ttf
+          weight: 900

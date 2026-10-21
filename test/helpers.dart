@@ -10,7 +10,7 @@ void advance(Game g, double secs) {
   }
 }
 
-/// Start the boss wave [wave] (10, 20, 30, 40) straight away.
+/// Start the boss wave [wave] (10, 20, 30, 40, 50) straight away.
 Game gameAtBoss(
   int wave, {
   GameMode mode = GameMode.coop,

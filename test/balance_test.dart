@@ -22,7 +22,7 @@ class Batch {
   final double winRate;
   final double medianWave;
   final double
-  finalBossLeft; // mean seconds left on the wave 40 boss timer, wins only
+  finalBossLeft; // mean seconds left on the final boss timer, wins only
   Batch(this.winRate, this.medianWave, this.finalBossLeft);
   @override
   String toString() =>
@@ -55,7 +55,7 @@ Batch play(
     final r = simulateRun(cfg, playerSkill: skill, playerThink: think);
     if (r.won) wins++;
     waves.add(r.wave);
-    if (r.bossTimeLeft[40] case final t?) left.add(t);
+    if (r.bossTimeLeft[kFinalWave] case final t?) left.add(t);
   }
   waves.sort();
   return Batch(

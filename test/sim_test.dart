@@ -235,7 +235,7 @@ void main() {
       }
       expect(baseHp(10) / baseHp(9), closeTo(1.15, 1e-9));
       expect(baseHp(25) / baseHp(24), closeTo(1.12, 1e-9));
-      expect(baseHp(35) / baseHp(34), closeTo(1.09, 1e-9));
+      expect(baseHp(35) / baseHp(34), closeTo(1.07, 1e-9));
     });
 
     test('more enemies and more kinds of enemy as waves go on', () {
@@ -248,26 +248,54 @@ void main() {
     });
 
     test('bosses every 10 waves, Big Drip on the fives, in boss order', () {
+      expect(kFinalWave, 50);
       expect(
         [
-          for (var w = 1; w <= 40; w++)
+          for (var w = 1; w <= kFinalWave; w++)
             if (isBossWave(w)) w,
         ],
-        [10, 20, 30, 40],
+        [10, 20, 30, 40, 50],
       );
       expect(
         [
-          for (var w = 1; w <= 40; w++)
+          for (var w = 1; w <= kFinalWave; w++)
             if (isMiniBossWave(w)) w,
         ],
-        [5, 15, 25, 35],
+        [5, 15, 25, 35, 45],
       );
       expect(
         [
-          for (final w in [10, 20, 30, 40]) bossForWave(w).id,
+          for (final w in [10, 20, 30, 40, 50]) bossForWave(w).id,
         ],
-        ['brine', 'inspector', 'undertow', 'landlord'],
+        ['brine', 'inspector', 'undertow', 'brine', 'landlord'],
       );
+    });
+
+    test('every level has its own final boss on wave $kFinalWave', () {
+      final finals = [
+        for (var l = 1; l <= kLevels.length; l++) bossForWave(kFinalWave, l).id,
+      ];
+      expect(finals, ['landlord', 'cuttle', 'kingcrab', 'void']);
+      expect(finals.toSet().length, kLevels.length);
+      for (var l = 1; l <= kLevels.length * 2; l++) {
+        expect(bossForWave(kFinalWave, l).id, levelDef(l).finalBoss);
+        for (final w in [10, 20, 30, 40]) {
+          // The final boss never turns up early on its own level.
+          expect(bossForWave(w, l).id, isNot(levelDef(l).finalBoss));
+        }
+      }
+      // Laps after the fourth level come round tougher.
+      expect(levelDef(5).hpMult, greaterThan(levelDef(4).hpMult));
+      expect(levelDef(5).finalBoss, levelDef(1).finalBoss);
+    });
+
+    test('a level run spawns that level\'s final boss and enemies', () {
+      final g = Game(const GameConfig(level: 4, seed: 3));
+      g.wave = kFinalWave - 1;
+      g.startNextWave();
+      expect(g.boss?.boss?.id, 'void');
+      expect(enemyPool(10, 4), contains('voidling'));
+      expect(enemyPool(10, 1), isNot(contains('voidling')));
     });
 
     test(
@@ -395,7 +423,7 @@ void main() {
     });
 
     test('the Landlord shields and calls four Bailiffs at 66% and 33%', () {
-      final g = gameAtBoss(40);
+      final g = gameAtBoss(kFinalWave);
       final b = g.boss!;
       b.hp = b.maxHp * 0.6;
       advance(g, 0.1);
@@ -409,7 +437,7 @@ void main() {
     });
 
     test('the Landlord takes 15% of everyone\'s pennies each lap', () {
-      final g = gameAtBoss(40);
+      final g = gameAtBoss(kFinalWave);
       g.you.pennies = 1000;
       g.boss!.traveled = g.field.lap - 0.001;
       advance(g, 0.1);
@@ -430,7 +458,7 @@ void main() {
         expect(g.you.leaves, greaterThanOrEqualTo(leaves + 3));
         expect(g.status, GameStatus.playing);
 
-        final last = gameAtBoss(40, mode: GameMode.solo);
+        final last = gameAtBoss(kFinalWave, mode: GameMode.solo);
         last.boss!
           ..hp = 0.0001
           ..phase = 2; // past both shield phases

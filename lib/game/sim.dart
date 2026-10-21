@@ -32,8 +32,14 @@ class Field {
       h = kBoardRows * 2 + 3.0;
       final mid = kBoardRows + 1.5;
       pts = [
-        const V2(0.5, 0.5), V2(a, 0.5), V2(a, mid), V2(0.5, mid),
-        V2(0.5, h - 0.5), V2(a, h - 0.5), V2(a, mid), V2(0.5, mid),
+        const V2(0.5, 0.5),
+        V2(a, 0.5),
+        V2(a, mid),
+        V2(0.5, mid),
+        V2(0.5, h - 0.5),
+        V2(a, h - 0.5),
+        V2(a, mid),
+        V2(0.5, mid),
       ];
     }
     _cum = [0];
@@ -81,7 +87,7 @@ class Field {
   late final List<List<int>> placeOrder = [
     for (var side = 0; side < (mode == GameMode.solo ? 1 : 2); side++)
       (List.generate(kBoardCols * kBoardRows, (i) => i)
-        ..sort((x, y) => coverage(side, y).compareTo(coverage(side, x))))
+        ..sort((x, y) => coverage(side, y).compareTo(coverage(side, x)))),
   ];
 }
 
@@ -100,18 +106,27 @@ class Cell {
   double disabled = 0;
   bool get isEmpty => units.isEmpty;
   UnitDef? get def => units.isEmpty ? null : units.first.def;
-  bool canTake(UnitDef d) => units.isEmpty || (units.first.def.id == d.id && units.length < kStackMax);
+  bool canTake(UnitDef d) =>
+      units.isEmpty || (units.first.def.id == d.id && units.length < kStackMax);
 }
 
 class SideStats {
-  int summons = 0, merges = 0, sold = 0, rerolls = 0, gambles = 0, gambleWins = 0;
+  int summons = 0,
+      merges = 0,
+      sold = 0,
+      rerolls = 0,
+      gambles = 0,
+      gambleWins = 0;
   int mythics = 0, kills = 0, upgrades = 0;
   int pennyEarned = 0;
 }
 
 class PlayerSide {
   final int index;
-  final List<Cell> cells = List.generate(kBoardCols * kBoardRows, (_) => Cell());
+  final List<Cell> cells = List.generate(
+    kBoardCols * kBoardRows,
+    (_) => Cell(),
+  );
   int pennies;
   int leaves;
   int summons = 0;
@@ -123,6 +138,9 @@ class PlayerSide {
 
   /// Every figurine id this side has had on its board (for the album).
   final Set<String> seen = {};
+
+  /// How many of each figurine this side has had on its board this run.
+  final Map<String, int> got = {};
   PlayerSide(this.index, this.pennies, this.leaves);
 
   int get unitCount => cells.fold(0, (a, c) => a + c.units.length);
@@ -143,7 +161,10 @@ class PlayerSide {
         (byTag[t] ??= <String>{}).add(u.def.id);
       }
     }
-    return {for (final e in byTag.entries) if (e.value.length >= 3) e.key};
+    return {
+      for (final e in byTag.entries)
+        if (e.value.length >= 3) e.key,
+    };
   }
 }
 
@@ -169,13 +190,40 @@ class Enemy {
   int phase = 0;
   double hitFlash = 0;
   bool dead = false;
-  Enemy(this.id, this.def, this.boss, this.maxHp, this.s, this.speed, this.armor, this.evade) : hp = maxHp;
+  Enemy(
+    this.id,
+    this.def,
+    this.boss,
+    this.maxHp,
+    this.s,
+    this.speed,
+    this.armor,
+    this.evade,
+  ) : hp = maxHp;
   bool get isBoss => boss != null;
   bool get submerged => diveT > 0;
   String get name => boss?.name ?? def!.name;
 }
 
-enum FxType { shot, hit, kill, summon, merge, mythic, boss, shake, text, jackpot, freeze, condemn, miss, gamble, sell, beam, pulse }
+enum FxType {
+  shot,
+  hit,
+  kill,
+  summon,
+  merge,
+  mythic,
+  boss,
+  shake,
+  text,
+  jackpot,
+  freeze,
+  condemn,
+  miss,
+  gamble,
+  sell,
+  beam,
+  pulse,
+}
 
 class Fx {
   final FxType type;
@@ -183,7 +231,16 @@ class Fx {
   final int color;
   final String text;
   final double size;
-  Fx(this.type, {this.x = 0, this.y = 0, this.x2 = 0, this.y2 = 0, this.color = 0xFFFFFFFF, this.text = '', this.size = 1});
+  Fx(
+    this.type, {
+    this.x = 0,
+    this.y = 0,
+    this.x2 = 0,
+    this.y2 = 0,
+    this.color = 0xFFFFFFFF,
+    this.text = '',
+    this.size = 1,
+  });
 }
 
 class ChatLine {
@@ -204,7 +261,12 @@ class GameConfig {
   final int summonDiscount;
   final double dmgBonus;
   final double hpScaleOverride; // tests / sims only; 0 = use mode default
+
+  /// Which level this run is, from 1. Sets the enemies, the bosses and how
+  /// tough everything is.
+  final int level;
   const GameConfig({
+    this.level = 1,
     this.mode = GameMode.coop,
     this.difficulty = Difficulty.calm,
     this.seed = 1,
@@ -267,16 +329,32 @@ class Game {
   /// Health multiplier from mode + difficulty. The solo factor lives in
   /// [kSoloHpMultiplier].
   double hpScale({bool boss = false}) {
-    if (cfg.hpScaleOverride > 0) return cfg.hpScaleOverride * cfg.difficulty.hpMult;
-    final m = cfg.mode == GameMode.solo ? kSoloHpMultiplier * (boss ? kSoloBossExtra : 1.0) : 1.0;
-    return m * cfg.difficulty.hpMult;
+    final lv = levelDef(cfg.level).hpMult;
+    if (cfg.hpScaleOverride > 0) {
+      return cfg.hpScaleOverride * cfg.difficulty.hpMult * lv;
+    }
+    final m = cfg.mode == GameMode.solo
+        ? kSoloHpMultiplier * (boss ? kSoloBossExtra : 1.0)
+        : 1.0;
+    return m * cfg.difficulty.hpMult * lv;
   }
 
-  double enemyHp(String id, int w) => baseHp(w) * kEnemyById[id]!.hpMult * hpScale();
-  double bossHp(int w) => baseHp(w) * bossForWave(w).hpMult * hpScale(boss: true) * _endlessBossMult(w);
-  double _endlessBossMult(int w) => w > kFinalWave ? 1 + (w - kFinalWave) * 0.04 : 1;
+  double enemyHp(String id, int w) =>
+      baseHp(w) * kEnemyById[id]!.hpMult * hpScale() * kCrowdHpMult;
+  double bossHp(int w) =>
+      baseHp(w) *
+      bossForWave(w, cfg.level).hpMult *
+      hpScale(boss: true) *
+      _endlessBossMult(w);
+  double _endlessBossMult(int w) =>
+      w > kFinalWave ? 1 + (w - kFinalWave) * 0.04 : 1;
 
-  int summonCost(PlayerSide p) => math.max(10, kSummonBaseCost + kSummonStep * p.summons - (p.index == 0 ? cfg.summonDiscount : 0));
+  int summonCost(PlayerSide p) => math.max(
+    10,
+    kSummonBaseCost +
+        kSummonStep * p.summons -
+        (p.index == 0 ? cfg.summonDiscount : 0),
+  );
 
   void say(String who, String text) {
     chat.add(ChatLine(who, text, time));
@@ -309,7 +387,12 @@ class Game {
     if (_brendaGift) {
       _brendaGift = false;
       final r = freeSummon(you);
-      if (r.ok) say(kPartnerName, 'Put a penny in for you, love. You got ${r.unit!.name}.');
+      if (r.ok) {
+        say(
+          kPartnerName,
+          'Put a penny in for you, love. You got ${r.unit!.name}.',
+        );
+      }
     }
     final lc = laneCount;
     if (lc > peakLane) peakLane = lc;
@@ -318,7 +401,9 @@ class Game {
     }
     if (boss != null && !boss!.dead) {
       bossTimer -= dt;
-      if (bossTimer <= 0) _lose('${boss!.name} outstayed the season. Boss timer ran out.');
+      if (bossTimer <= 0) {
+        _lose('${boss!.name} outstayed the season. Boss timer ran out.');
+      }
     }
   }
 
@@ -354,7 +439,7 @@ class Game {
       if (wave % 5 == 0) s.leaves += 1;
     }
     if (isBossWave(wave)) {
-      final b = bossForWave(wave);
+      final b = bossForWave(wave, cfg.level);
       final e = Enemy(_eid++, null, b, bossHp(wave), 0, b.speed, b.armor, 0);
       e.mechT = 4;
       enemies.add(e);
@@ -367,20 +452,31 @@ class Game {
       return;
     }
     waveTimer = kWaveSeconds;
-    final pool = enemyPool(wave);
+    final pool = enemyPool(wave, cfg.level);
     final n = spawnCount(wave);
     for (var i = 0; i < n; i++) {
       _spawnQueue.add(pool[rng.nextInt(pool.length)]);
     }
     if (isMiniBossWave(wave)) _spawnQueue.insert(0, 'bigdrip');
-    if (wave >= 4 && rng.nextDouble() < 0.12) _spawnQueue.insert(rng.nextInt(_spawnQueue.length), 'pollock');
+    if (wave >= 4 && rng.nextDouble() < 0.12) {
+      _spawnQueue.insert(rng.nextInt(_spawnQueue.length), 'pollock');
+    }
     _spawnT = 0;
   }
 
   Enemy _spawn(String id, {double s = 0, double? traveled}) {
     final d = kEnemyById[id]!;
     final hp = enemyHp(id, math.max(1, wave));
-    final e = Enemy(_eid++, d, null, hp, s, d.speed * (1 + wave * 0.004), d.armor, d.evade);
+    final e = Enemy(
+      _eid++,
+      d,
+      null,
+      hp,
+      s,
+      d.speed * (1 + wave * 0.004),
+      d.armor,
+      d.evade,
+    );
     if (traveled != null) e.traveled = traveled;
     _pending.add(e);
     return e;
@@ -408,7 +504,9 @@ class Game {
       if (e.def?.healAura case final h? when h > 0) {
         for (final o in enemies) {
           if (o == e || o.dead || o.isBoss) continue;
-          if ((o.s - e.s).abs() < 1.3) o.hp = math.min(o.maxHp, o.hp + o.maxHp * h * dt);
+          if ((o.s - e.s).abs() < 1.3) {
+            o.hp = math.min(o.maxHp, o.hp + o.maxHp * h * dt);
+          }
         }
       }
       if (e.isBoss) _bossMech(e, dt);
@@ -431,7 +529,16 @@ class Game {
           }
           say(e.name, 'Rent day. Fifteen percent, thank you.');
           final pp = field.posAt(e.s);
-          fx.add(Fx(FxType.text, x: pp.x, y: pp.y, text: 'RENT -15%', color: 0xFFFF5E7E, size: 1.4));
+          fx.add(
+            Fx(
+              FxType.text,
+              x: pp.x,
+              y: pp.y,
+              text: 'RENT -15%',
+              color: 0xFFFF5E7E,
+              size: 1.4,
+            ),
+          );
         }
       }
     }
@@ -446,9 +553,11 @@ class Game {
         if (e.mechT <= 0) {
           e.mechT = 6;
           for (var i = 0; i < 3; i++) {
-            _spawn('drip', s: e.s - 0.3 * i, traveled: e.traveled);
+            _spawn(b.spawn, s: e.s - 0.3 * i, traveled: e.traveled);
           }
-          fx.add(Fx(FxType.text, x: pos.x, y: pos.y, text: 'BLOOP', color: b.color));
+          fx.add(
+            Fx(FxType.text, x: pos.x, y: pos.y, text: 'BLOOP', color: b.color),
+          );
         }
       case BossMech.inspector:
         e.slowPct = 0;
@@ -462,7 +571,9 @@ class Game {
             if (c.disabled > 0) c.disabled -= dt;
           }
         }
-        condemned.removeWhere((side, cell) => sides[side].cells[cell].disabled <= 0);
+        condemned.removeWhere(
+          (side, cell) => sides[side].cells[cell].disabled <= 0,
+        );
       case BossMech.undertow:
         if (e.diveT > 0) {
           e.diveT -= dt;
@@ -482,11 +593,20 @@ class Game {
           e.phase++;
           e.shield = e.maxHp * 0.15;
           for (var i = 0; i < 4; i++) {
-            final bb = _spawn('bailiff', s: e.s - 0.4 * (i + 1), traveled: e.traveled);
+            final bb = _spawn(
+              'bailiff',
+              s: e.s - 0.4 * (i + 1),
+              traveled: e.traveled,
+            );
             bb.maxHp = baseHp(wave) * 1.5 * hpScale();
             bb.hp = bb.maxHp;
           }
-          say(b.name, e.phase == 1 ? 'Bailiffs! Escort these people off my property.' : 'Fine. FINE. Everybody out.');
+          say(
+            b.name,
+            e.phase == 1
+                ? 'Bailiffs! Escort these people off my property.'
+                : 'Fine. FINE. Everybody out.',
+          );
           fx.add(Fx(FxType.shake, size: 0.8));
         }
     }
@@ -540,7 +660,8 @@ class Game {
       if (a == null || a.auraTag == null || c.disabled > 0) continue;
       if (a.auraTag == 'all') {
         bestAll = math.max(bestAll, a.auraSpeed);
-      } else if (d.tags.contains(a.auraTag) && field.cellCenter(p.index, i).dist(me) <= a.auraRange) {
+      } else if (d.tags.contains(a.auraTag) &&
+          field.cellCenter(p.index, i).dist(me) <= a.auraRange) {
         bestTag = math.max(bestTag, a.auraSpeed);
       }
     }
@@ -557,7 +678,9 @@ class Game {
       final d = cell.def!;
       final sb = speedBonus(p, ci, unions);
       final pos = field.cellCenter(p.index, ci);
-      final range = d.range + (unions.contains('Sea') && d.tags.contains('Sea') ? 0.6 : 0);
+      final range =
+          d.range +
+          (unions.contains('Sea') && d.tags.contains('Sea') ? 0.6 : 0);
       for (final u in cell.units) {
         if (d.freezeEvery > 0) {
           u.special += dt;
@@ -591,11 +714,21 @@ class Game {
     return inRange.sublist(0, n);
   }
 
-  void _attack(PlayerSide p, UnitInst u, UnitDef d, V2 pos, List<Enemy> targets, Set<String> unions, int birds) {
+  void _attack(
+    PlayerSide p,
+    UnitInst u,
+    UnitDef d,
+    V2 pos,
+    List<Enemy> targets,
+    Set<String> unions,
+    int birds,
+  ) {
     var dmg = d.dmg * dmgMult(p, d);
     if (unions.contains('Staff') && d.tags.contains('Staff')) dmg *= 1.2;
     if (d.perBird > 0) dmg *= 1 + d.perBird * birds;
-    if (d.pennyScale > 0) dmg += d.pennyScale * math.min(p.pennies, 1500) * dmgMult(p, d);
+    if (d.pennyScale > 0) {
+      dmg += d.pennyScale * math.min(p.pennies, 1500) * dmgMult(p, d);
+    }
     final sweets = unions.contains('Sweets') && d.tags.contains('Sweets');
 
     if (d.jackpotEvery > 0 && u.attacks % d.jackpotEvery == 0) {
@@ -609,7 +742,9 @@ class Game {
       return;
     }
     if (d.pulse) {
-      fx.add(Fx(FxType.pulse, x: pos.x, y: pos.y, size: d.range, color: d.color));
+      fx.add(
+        Fx(FxType.pulse, x: pos.x, y: pos.y, size: d.range, color: d.color),
+      );
     }
 
     final hitList = <Enemy>[...targets];
@@ -639,8 +774,17 @@ class Game {
       final tp = field.posAt(t.s);
       if (!d.pulse) {
         final from = (d.chain > 0 && prev != null) ? prev : pos;
-        fx.add(Fx(d.tier.index >= 3 ? FxType.beam : FxType.shot,
-            x: from.x, y: from.y, x2: tp.x, y2: tp.y, color: d.color, size: 1.0 + d.tier.index * 0.3));
+        fx.add(
+          Fx(
+            d.tier.index >= 3 ? FxType.beam : FxType.shot,
+            x: from.x,
+            y: from.y,
+            x2: tp.x,
+            y2: tp.y,
+            color: d.color,
+            size: 1.0 + d.tier.index * 0.3,
+          ),
+        );
       }
       prev = tp;
       var hit = dmg;
@@ -655,9 +799,19 @@ class Game {
       if (d.splash > 0) {
         for (final o in enemies) {
           if (o == t || o.dead || o.submerged) continue;
-          if (field.posAt(o.s).dist(tp) <= d.splash) _damage(o, hit * 0.6, p, unit: d, canEvade: false, quiet: true);
-          if (d.burnDps > 0 && !o.dead && field.posAt(o.s).dist(tp) <= d.splash) _burn(o, p, d);
-          if (d.slowPct > 0 && !o.dead && field.posAt(o.s).dist(tp) <= d.splash) _slow(o, d, sweets);
+          if (field.posAt(o.s).dist(tp) <= d.splash) {
+            _damage(o, hit * 0.6, p, unit: d, canEvade: false, quiet: true);
+          }
+          if (d.burnDps > 0 &&
+              !o.dead &&
+              field.posAt(o.s).dist(tp) <= d.splash) {
+            _burn(o, p, d);
+          }
+          if (d.slowPct > 0 &&
+              !o.dead &&
+              field.posAt(o.s).dist(tp) <= d.splash) {
+            _slow(o, d, sweets);
+          }
         }
       }
       if (t.dead) continue;
@@ -668,15 +822,27 @@ class Game {
         t.curseT = d.curseDur;
       }
       if (d.stunChance > 0 && rng.nextDouble() < d.stunChance) {
-        if (t.boss?.mech != BossMech.inspector) t.stunT = t.isBoss ? d.stunDur * 0.3 : d.stunDur;
+        if (t.boss?.mech != BossMech.inspector) {
+          t.stunT = t.isBoss ? d.stunDur * 0.3 : d.stunDur;
+        }
       }
       if (d.grabEvery > 0 && u.attacks % d.grabEvery == 0 && !t.isBoss) {
         t.s -= 1.5;
         t.traveled = math.max(0, t.traveled - 1.5);
-        fx.add(Fx(FxType.text, x: tp.x, y: tp.y, text: 'YOINK', color: d.color));
+        fx.add(
+          Fx(FxType.text, x: tp.x, y: tp.y, text: 'YOINK', color: d.color),
+        );
       }
       if (d.executePct > 0 && !t.isBoss && t.hp / t.maxHp < d.executePct) {
-        _damage(t, t.hp + t.shield + 1, p, unit: d, canEvade: false, ignoreArmor: true, quiet: true);
+        _damage(
+          t,
+          t.hp + t.shield + 1,
+          p,
+          unit: d,
+          canEvade: false,
+          ignoreArmor: true,
+          quiet: true,
+        );
       }
     }
   }
@@ -691,7 +857,10 @@ class Game {
   }
 
   void _burn(Enemy e, PlayerSide p, UnitDef d) {
-    e.burnDps = math.max(e.burnT > 0 ? e.burnDps : 0, d.burnDps * dmgMult(p, d));
+    e.burnDps = math.max(
+      e.burnT > 0 ? e.burnDps : 0,
+      d.burnDps * dmgMult(p, d),
+    );
     e.burnT = d.burnDur;
   }
 
@@ -702,7 +871,14 @@ class Game {
       any = true;
       final dur = e.isBoss ? 0.5 : d.freezeDur;
       e.freezeT = math.max(e.freezeT, dur);
-      _damage(e, d.freezeDmg * dmgMult(p, d), p, unit: d, canEvade: false, quiet: true);
+      _damage(
+        e,
+        d.freezeDmg * dmgMult(p, d),
+        p,
+        unit: d,
+        canEvade: false,
+        quiet: true,
+      );
     }
     if (any) {
       fx.add(Fx(FxType.freeze, color: d.color));
@@ -711,8 +887,16 @@ class Game {
   }
 
   /// Returns false when the hit missed.
-  bool _damage(Enemy e, double amount, PlayerSide? src,
-      {UnitDef? unit, bool canEvade = true, bool ignoreArmor = false, bool crit = false, bool quiet = false}) {
+  bool _damage(
+    Enemy e,
+    double amount,
+    PlayerSide? src, {
+    UnitDef? unit,
+    bool canEvade = true,
+    bool ignoreArmor = false,
+    bool crit = false,
+    bool quiet = false,
+  }) {
     if (e.dead || e.submerged) return false;
     if (canEvade && e.evade > 0 && rng.nextDouble() < e.evade) {
       if (!quiet) {
@@ -737,7 +921,16 @@ class Game {
       e.hitFlash = 0.1;
       if (crit || (e.isBoss && rng.nextDouble() < 0.15)) {
         final p = field.posAt(e.s);
-        fx.add(Fx(FxType.hit, x: p.x, y: p.y, text: _fmt(a), color: crit ? 0xFFFFE066 : 0xFFFFFFFF, size: crit ? 1.3 : 0.9));
+        fx.add(
+          Fx(
+            FxType.hit,
+            x: p.x,
+            y: p.y,
+            text: _fmt(a),
+            color: crit ? 0xFFFFE066 : 0xFFFFFFFF,
+            size: crit ? 1.3 : 0.9,
+          ),
+        );
       }
     }
     if (e.hp <= 0) _kill(e, src, unit);
@@ -765,18 +958,37 @@ class Game {
         src.pennies += unit.killPennies;
         src.stats.pennyEarned += unit.killPennies;
       }
-      if (unit != null && unit.tags.contains('Arcade') && src.activeUnions().contains('Arcade')) {
+      if (unit != null &&
+          unit.tags.contains('Arcade') &&
+          src.activeUnions().contains('Arcade')) {
         src.arcadeKills++;
         if (src.arcadeKills % 8 == 0) src.pennies++;
       }
     }
-    fx.add(Fx(FxType.kill, x: pos.x, y: pos.y, color: e.boss?.color ?? e.def!.color, size: e.isBoss ? 3 : 1));
+    fx.add(
+      Fx(
+        FxType.kill,
+        x: pos.x,
+        y: pos.y,
+        color: e.boss?.color ?? e.def!.color,
+        size: e.isBoss ? 3 : 1,
+      ),
+    );
     if (e.def?.id == 'pollock' && e.traveled < field.lap) {
       for (final p in sides) {
         p.leaves += 1;
         p.pennies += 15;
       }
-      fx.add(Fx(FxType.text, x: pos.x, y: pos.y, text: '+1 LEAF', color: 0xFF9BE15D, size: 1.3));
+      fx.add(
+        Fx(
+          FxType.text,
+          x: pos.x,
+          y: pos.y,
+          text: '+1 LEAF',
+          color: 0xFF9BE15D,
+          size: 1.3,
+        ),
+      );
     }
     if (e.def?.splitInto case final sp?) {
       for (var i = 0; i < e.def!.splitCount; i++) {
@@ -802,7 +1014,8 @@ class Game {
     }
     if (wave >= kFinalWave && !endless) {
       status = GameStatus.won;
-      endReason = 'The Landlord is gone. The pier is yours. Probably.';
+      endReason =
+          '${bossForWave(kFinalWave, cfg.level).name} is gone. ${levelDef(cfg.level).name} is yours. Probably.';
       return;
     }
     // Brenda puts a penny in for you.
@@ -861,13 +1074,19 @@ class Game {
     if (best < 0) return -1;
     p.cells[best].units.add(UnitInst(d, newUid(), time));
     p.seen.add(d.id);
+    p.got[d.id] = (p.got[d.id] ?? 0) + 1;
     return best;
   }
 
   ActResult summon(PlayerSide p) {
     final cost = summonCost(p);
     if (p.pennies < cost) return ActResult(false, 'Need $cost pennies.');
-    if (!p.hasEmptyCell) return const ActResult(false, 'No room on the board. Merge or sell something.');
+    if (!p.hasEmptyCell) {
+      return const ActResult(
+        false,
+        'No room on the board. Merge or sell something.',
+      );
+    }
     p.pennies -= cost;
     p.summons++;
     p.stats.summons++;
@@ -891,17 +1110,29 @@ class Game {
     final d = randomOfTier(t);
     final cell = place(p, d);
     final c = field.cellCenter(p.index, cell);
-    fx.add(Fx(FxType.summon, x: c.x, y: c.y, color: t.color, size: t.index.toDouble(), text: d.id));
+    fx.add(
+      Fx(
+        FxType.summon,
+        x: c.x,
+        y: c.y,
+        color: t.color,
+        size: t.index.toDouble(),
+        text: d.id,
+      ),
+    );
     return ActResult(true, '', d);
   }
 
   bool canMerge(PlayerSide p, int cell) {
     final c = p.cells[cell];
-    return c.units.length == kStackMax && c.def!.tier.index < Tier.legendary.index;
+    return c.units.length == kStackMax &&
+        c.def!.tier.index < Tier.legendary.index;
   }
 
   ActResult merge(PlayerSide p, int cell) {
-    if (!canMerge(p, cell)) return const ActResult(false, 'Need three of the same (Epic or lower).');
+    if (!canMerge(p, cell)) {
+      return const ActResult(false, 'Need three of the same (Epic or lower).');
+    }
     final c = p.cells[cell];
     final next = Tier.values[c.def!.tier.index + 1];
     c.units.clear();
@@ -909,7 +1140,16 @@ class Game {
     final at = place(p, d, prefer: cell);
     p.stats.merges++;
     final cc = field.cellCenter(p.index, at);
-    fx.add(Fx(FxType.merge, x: cc.x, y: cc.y, color: next.color, size: next.index.toDouble(), text: d.id));
+    fx.add(
+      Fx(
+        FxType.merge,
+        x: cc.x,
+        y: cc.y,
+        color: next.color,
+        size: next.index.toDouble(),
+        text: d.id,
+      ),
+    );
     return ActResult(true, '', d);
   }
 
@@ -919,14 +1159,20 @@ class Game {
   }
 
   ActResult craft(PlayerSide p, String mythicId) {
-    if (!canCraft(p, mythicId)) return const ActResult(false, 'Missing ingredients.');
+    if (!canCraft(p, mythicId)) {
+      return const ActResult(false, 'Missing ingredients.');
+    }
     var freed = -1;
     for (final id in kRecipes[mythicId]!) {
       // take from the smallest stack
       var idx = -1;
       for (var i = 0; i < p.cells.length; i++) {
         final c = p.cells[i];
-        if (!c.isEmpty && c.def!.id == id && (idx < 0 || c.units.length < p.cells[idx].units.length)) idx = i;
+        if (!c.isEmpty &&
+            c.def!.id == id &&
+            (idx < 0 || c.units.length < p.cells[idx].units.length)) {
+          idx = i;
+        }
       }
       p.cells[idx].units.removeLast();
       if (p.cells[idx].isEmpty) freed = idx;
@@ -935,7 +1181,9 @@ class Game {
     final at = place(p, d, prefer: freed);
     p.stats.mythics++;
     final cc = field.cellCenter(p.index, at);
-    fx.add(Fx(FxType.mythic, x: cc.x, y: cc.y, color: d.color, size: 4, text: d.id));
+    fx.add(
+      Fx(FxType.mythic, x: cc.x, y: cc.y, color: d.color, size: 4, text: d.id),
+    );
     fx.add(Fx(FxType.shake, size: 0.8));
     say(d.name, d.quip);
     return ActResult(true, '', d);
@@ -945,7 +1193,9 @@ class Game {
     final c = p.cells[cell];
     if (c.isEmpty) return const ActResult(false);
     final d = c.def!;
-    if (d.tier == Tier.mythic) return const ActResult(false, 'Mythics are not for sale.');
+    if (d.tier == Tier.mythic) {
+      return const ActResult(false, 'Mythics are not for sale.');
+    }
     c.units.removeLast();
     p.pennies += sellPennies(d.tier);
     p.leaves += sellLeaves(d.tier);
@@ -957,19 +1207,26 @@ class Game {
 
   /// (pennies, leaves) to reroll one figurine of this tier.
   (int, int) rerollCost(Tier t) => switch (t) {
-        Tier.common || Tier.rare => (kRerollPennies, 0),
-        Tier.epic => (0, 1),
-        Tier.legendary => (0, 2),
-        Tier.mythic => (0, 99),
-      };
+    Tier.common || Tier.rare => (kRerollPennies, 0),
+    Tier.epic => (0, 1),
+    Tier.legendary => (0, 2),
+    Tier.mythic => (0, 99),
+  };
 
   ActResult reroll(PlayerSide p, int cell) {
     final c = p.cells[cell];
     if (c.isEmpty) return const ActResult(false);
     final d = c.def!;
-    if (d.tier == Tier.mythic) return const ActResult(false, 'Mythics cannot be shaken.');
+    if (d.tier == Tier.mythic) {
+      return const ActResult(false, 'Mythics cannot be shaken.');
+    }
     final (cp, cl) = rerollCost(d.tier);
-    if (p.pennies < cp || p.leaves < cl) return ActResult(false, cl > 0 ? 'Need $cl tea leaves.' : 'Need $cp pennies.');
+    if (p.pennies < cp || p.leaves < cl) {
+      return ActResult(
+        false,
+        cl > 0 ? 'Need $cl tea leaves.' : 'Need $cp pennies.',
+      );
+    }
     p.pennies -= cp;
     p.leaves -= cl;
     c.units.removeLast();
@@ -977,12 +1234,26 @@ class Game {
     final at = place(p, nd, prefer: cell);
     p.stats.rerolls++;
     final cc = field.cellCenter(p.index, at);
-    fx.add(Fx(FxType.summon, x: cc.x, y: cc.y, color: nd.tier.color, size: nd.tier.index.toDouble(), text: nd.id));
+    fx.add(
+      Fx(
+        FxType.summon,
+        x: cc.x,
+        y: cc.y,
+        color: nd.tier.color,
+        size: nd.tier.index.toDouble(),
+        text: nd.id,
+      ),
+    );
     return ActResult(true, '', nd);
   }
 
   ActResult gamble(PlayerSide p, GambleOption g) {
-    if (p.leaves < g.cost) return ActResult(false, 'Need ${g.cost} tea leaf${g.cost > 1 ? 'es' : ''}.');
+    if (p.leaves < g.cost) {
+      return ActResult(
+        false,
+        'Need ${g.cost} tea leaf${g.cost > 1 ? 'es' : ''}.',
+      );
+    }
     if (!p.hasEmptyCell) return const ActResult(false, 'No room on the board.');
     p.leaves -= g.cost;
     p.stats.gambles++;
@@ -1008,7 +1279,9 @@ class Game {
   }
 
   ActResult upgradeLuck(PlayerSide p) {
-    if (p.luck >= kMaxLuck) return const ActResult(false, 'As lucky as it gets.');
+    if (p.luck >= kMaxLuck) {
+      return const ActResult(false, 'As lucky as it gets.');
+    }
     final cost = luckUpgradeCost(p.luck);
     if (p.pennies < cost) return ActResult(false, 'Need $cost pennies.');
     p.pennies -= cost;
@@ -1048,5 +1321,6 @@ class Game {
   }
 
   /// Total damage-per-second of a side, before situational effects.
-  double sideDps(PlayerSide p) => p.allUnits.fold(0.0, (a, u) => a + u.def.dps * dmgMult(p, u.def));
+  double sideDps(PlayerSide p) =>
+      p.allUnits.fold(0.0, (a, u) => a + u.def.dps * dmgMult(p, u.def));
 }

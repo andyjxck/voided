@@ -67,18 +67,20 @@ class FieldPainter extends CustomPainter {
   static ui.Picture? _bg;
   static Size? _bgSize;
   static GameMode? _bgMode;
+  static int? _bgLevel;
 
   @override
   void paint(Canvas canvas, Size size) {
     final geo = FieldGeom(g.field, size);
     canvas.save();
     canvas.translate(shake.dx, shake.dy);
-    if (_bg == null || _bgSize != size || _bgMode != g.cfg.mode) {
+    if (_bg == null || _bgSize != size || _bgMode != g.cfg.mode || _bgLevel != g.cfg.level) {
       final rec = ui.PictureRecorder();
       _paintStatic(Canvas(rec), size, geo);
       _bg = rec.endRecording();
       _bgSize = size;
       _bgMode = g.cfg.mode;
+      _bgLevel = g.cfg.level;
     }
     canvas.drawPicture(_bg!);
     _paintWaves(canvas, size, geo);
@@ -103,105 +105,188 @@ class FieldPainter extends CustomPainter {
     }
   }
 
+  _Theme get _th => _Theme.of(g.cfg.level);
+
   void _paintStatic(Canvas c, Size size, FieldGeom geo) {
     final s = geo.scale;
+    final th = _th;
+    final f = g.field;
+    // Sea
     c.drawRect(
         Offset.zero & size,
         Paint()
-          ..shader = const LinearGradient(
-                  begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFF070E22), Pal.sea2])
+          ..shader = LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [th.seaTop, th.seaBottom])
               .createShader(Offset.zero & size));
-    // Pier legs peeking out under the deck
-    final legs = Paint()..color = const Color(0xFF2A1C14);
-    final f = g.field;
     final deckRect = Rect.fromPoints(geo.px(0, 0), geo.px(f.w, f.h));
-    for (var x = 0.4; x < f.w; x += 1.2) {
-      c.drawRect(Rect.fromLTWH(geo.px(x, 0).dx, deckRect.bottom - 2, s * 0.18, s * 0.45), legs);
+    // Shallow-water halo round the pier
+    c.drawRRect(RRect.fromRectAndRadius(deckRect.inflate(s * 0.55), Radius.circular(s * 0.8)),
+        Paint()
+          ..color = th.shallow
+          ..maskFilter = MaskFilter.blur(BlurStyle.normal, s * 0.35));
+    // Pier legs under the bottom edge
+    final legs = Paint()..color = th.legs;
+    for (var x = 0.5; x < f.w; x += 1.4) {
+      final lx = geo.px(x, 0).dx;
+      final r = Rect.fromLTWH(lx, deckRect.bottom, s * 0.22, s * 0.5);
+      c.drawRRect(RRect.fromRectAndRadius(r, Radius.circular(s * 0.05)), legs);
+      c.drawRect(Rect.fromLTWH(lx, deckRect.bottom + s * 0.36, s * 0.22, s * 0.05), Paint()..color = Colors.white.withValues(alpha: 0.35));
     }
-    // Deck under everything
-    c.drawRRect(RRect.fromRectAndRadius(deckRect.inflate(s * 0.04), Radius.circular(s * 0.25)), Paint()..color = Pal.deckDark);
-    // Lane planks
-    final lane = Paint()
-      ..color = Pal.plank
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = s * 0.9
-      ..strokeJoin = StrokeJoin.round
-      ..strokeCap = StrokeCap.square;
+    // Deck: outline, frame, then planks
+    final frame = RRect.fromRectAndRadius(deckRect.inflate(s * 0.08), Radius.circular(s * 0.22));
+    c.drawRRect(frame.shift(Offset(0, s * 0.1)), Paint()..color = const Color(0x55000000));
+    c.drawRRect(frame.inflate(2), Paint()..color = Pal.ink);
+    c.drawRRect(frame, Paint()..color = th.deckEdge);
+    final deck = RRect.fromRectAndRadius(deckRect.deflate(s * 0.04), Radius.circular(s * 0.16));
+    c.drawRRect(deck, Paint()..color = th.deck);
+    c.save();
+    c.clipRRect(deck);
+    final plankLine = Paint()
+      ..color = th.deckLine
+      ..strokeWidth = math.max(1, s * 0.025);
+    final rnd = math.Random(3);
+    for (var y = 0.0; y < f.h; y += 0.42) {
+      final py = geo.px(0, y).dy;
+      c.drawLine(Offset(deckRect.left, py), Offset(deckRect.right, py), plankLine);
+      for (var x = rnd.nextDouble() * 1.6; x < f.w; x += 1.4 + rnd.nextDouble()) {
+        final px = geo.px(x, 0).dx;
+        c.drawLine(Offset(px, py), Offset(px, py + s * 0.42), plankLine);
+      }
+      c.drawRect(Rect.fromLTWH(deckRect.left, py + 1, deckRect.width, s * 0.06), Paint()..color = Colors.white.withValues(alpha: 0.06));
+    }
+    c.restore();
+    // Lane: dark edge, boardwalk, seams, rope rails
     final path = Path();
     for (var i = 0; i <= f.pts.length; i++) {
       final p = geo.pv(f.pts[i % f.pts.length]);
       i == 0 ? path.moveTo(p.dx, p.dy) : path.lineTo(p.dx, p.dy);
     }
-    c.drawPath(path, lane);
+    Paint stroke(Color col, double w) => Paint()
+      ..color = col
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = w
+      ..strokeJoin = StrokeJoin.round
+      ..strokeCap = StrokeCap.round;
+    c.drawPath(path.shift(Offset(0, s * 0.06)), stroke(const Color(0x44000000), s * 0.92));
+    c.drawPath(path, stroke(Pal.ink, s * 0.9));
+    c.drawPath(path, stroke(th.laneEdge, s * 0.84));
+    c.drawPath(path, stroke(th.lane, s * 0.7));
     final seam = Paint()
-      ..color = const Color(0xFF5E4130)
+      ..color = th.laneEdge.withValues(alpha: 0.55)
       ..strokeWidth = math.max(1, s * 0.03);
-    for (var d = 0.0; d < f.lap; d += 0.34) {
+    for (var d = 0.0; d < f.lap; d += 0.3) {
       final a = f.posAt(d), b = f.posAt(d + 0.05);
       final dx = b.x - a.x, dy = b.y - a.y;
       final len = math.sqrt(dx * dx + dy * dy);
       if (len == 0) continue;
-      final nx = -dy / len * 0.42, ny = dx / len * 0.42;
+      final nx = -dy / len * 0.34, ny = dx / len * 0.34;
       c.drawLine(geo.px(a.x + nx, a.y + ny), geo.px(a.x - nx, a.y - ny), seam);
     }
-    // Start marker: the slipway the sea things climb up
+    // Slipway the sea things climb up
     final st = geo.pv(f.pts.first);
-    c.drawCircle(st, s * 0.42, Paint()..color = const Color(0xFF0E3B4A));
-    c.drawCircle(st, s * 0.3, Paint()..color = const Color(0xFF1B6A80));
-    // Boards
+    c.drawCircle(st, s * 0.46, Paint()..color = Pal.ink);
+    c.drawCircle(st, s * 0.42, Paint()..color = th.seaBottom);
+    c.drawCircle(st, s * 0.3, Paint()..color = th.seaTop);
+    // Boards: raised platform with tiles
     for (var side = 0; side < g.sides.length; side++) {
       final o = f.boardOrigin(side);
       final r = Rect.fromPoints(geo.px(o.x, o.y), geo.px(o.x + kBoardCols, o.y + kBoardRows));
-      c.drawRRect(RRect.fromRectAndRadius(r.inflate(s * 0.06), Radius.circular(s * 0.18)),
-          Paint()..color = side == 0 ? const Color(0xFF3A2A4D) : const Color(0xFF2B2F45));
+      final plat = RRect.fromRectAndRadius(r.inflate(s * 0.1), Radius.circular(s * 0.2));
+      c.drawRRect(plat.shift(Offset(0, s * 0.08)), Paint()..color = const Color(0x55000000));
+      c.drawRRect(plat.inflate(1.5), Paint()..color = Pal.ink);
+      c.drawRRect(plat, Paint()..color = side == 0 ? th.platform : th.platform2);
       for (var i = 0; i < kBoardCols * kBoardRows; i++) {
         final cc = geo.pv(f.cellCenter(side, i));
         final cr = Rect.fromCenter(center: cc, width: s * 0.9, height: s * 0.9);
-        c.drawRRect(RRect.fromRectAndRadius(cr, Radius.circular(s * 0.14)),
-            Paint()..color = side == 0 ? const Color(0xFF4A3763) : const Color(0xFF383D58));
+        final alt = ((i % kBoardCols) + (i ~/ kBoardCols)) % 2 == 0;
+        final base = side == 0 ? th.tile : th.tile2;
+        final tile = alt ? base : Color.lerp(base, Colors.black, 0.06)!;
+        c.drawRRect(RRect.fromRectAndRadius(cr.shift(Offset(0, s * 0.04)), Radius.circular(s * 0.14)),
+            Paint()..color = Color.lerp(tile, Colors.black, 0.28)!);
+        c.drawRRect(RRect.fromRectAndRadius(cr, Radius.circular(s * 0.14)), Paint()..color = tile);
         c.drawRRect(
-            RRect.fromRectAndRadius(cr.deflate(s * 0.08), Radius.circular(s * 0.1)),
-            Paint()
-              ..style = PaintingStyle.stroke
-              ..strokeWidth = 1
-              ..color = Colors.white.withValues(alpha: 0.05));
+            RRect.fromRectAndRadius(Rect.fromLTWH(cr.left + s * 0.08, cr.top + s * 0.05, cr.width - s * 0.16, s * 0.14), Radius.circular(s * 0.07)),
+            Paint()..color = Colors.white.withValues(alpha: 0.22));
       }
       if (g.cfg.mode == GameMode.coop) {
         final label = side == 0 ? 'YOU' : kPartnerName.toUpperCase();
-        final lp = tp(label, s * 0.22, Colors.white.withValues(alpha: 0.35));
-        lp.paint(c, Offset(r.right - lp.width - s * 0.08, side == 0 ? r.bottom + s * 0.02 : r.top - lp.height - s * 0.02));
+        final lp = tp(label, s * 0.22, Colors.white);
+        lp.paint(c, Offset(r.right - lp.width - s * 0.06, side == 0 ? r.bottom + s * 0.12 : r.top - lp.height - s * 0.12));
+      }
+    }
+    // Lamp posts along the long edges
+    for (final y in [0.0, f.h]) {
+      for (var x = 0.0; x <= f.w + 0.01; x += f.w / 6) {
+        final p = geo.px(x, y);
+        c.drawCircle(p, s * 0.13, Paint()..color = Pal.ink);
+        c.drawCircle(p, s * 0.1, Paint()..color = th.post);
       }
     }
   }
 
   void _paintWaves(Canvas c, Size size, FieldGeom geo) {
+    final th = _th;
+    final rect = Rect.fromPoints(geo.px(0, 0), geo.px(g.field.w, g.field.h)).inflate(geo.scale * 0.3);
     final p = Paint()
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.2
-      ..color = Colors.white.withValues(alpha: 0.05);
-    final rect = Rect.fromPoints(geo.px(0, 0), geo.px(g.field.w, g.field.h));
-    for (var y = 12.0; y < size.height; y += 26) {
-      if (y > rect.top - 4 && y < rect.bottom + 4 && rect.left < 30) continue;
-      final path = Path();
-      for (var x = 0.0; x <= size.width; x += 12) {
-        final yy = y + math.sin(x / 40 + t * 1.2 + y) * 3;
-        x == 0 ? path.moveTo(x, yy) : path.lineTo(x, yy);
+      ..strokeCap = StrokeCap.round
+      ..strokeWidth = 2.5;
+    final rnd = math.Random(11);
+    for (var i = 0; i < 46; i++) {
+      final x0 = rnd.nextDouble() * size.width;
+      final y0 = rnd.nextDouble() * size.height;
+      final ph = rnd.nextDouble() * math.pi * 2;
+      final x = (x0 + t * 8 * (0.5 + rnd.nextDouble())) % (size.width + 40) - 20;
+      final y = y0 + math.sin(t * 0.9 + ph) * 3;
+      if (rect.contains(Offset(x, y))) continue;
+      final a = 0.18 + 0.18 * math.sin(t * 1.3 + ph);
+      p.color = th.foam.withValues(alpha: a.clamp(0.0, 1.0));
+      final w = 10 + 14 * rnd.nextDouble();
+      c.drawArc(Rect.fromCenter(center: Offset(x, y), width: w, height: w * 0.45), math.pi * 1.1, math.pi * 0.8, false, p);
+    }
+    if (th.fog > 0) {
+      for (var i = 0; i < 4; i++) {
+        final x = ((t * 10 + i * size.width / 4) % (size.width * 1.4)) - size.width * 0.2;
+        c.drawOval(Rect.fromCenter(center: Offset(x, size.height * (0.2 + i * 0.2)), width: size.width * 0.6, height: size.height * 0.18),
+            Paint()
+              ..color = Colors.white.withValues(alpha: th.fog)
+              ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 30));
       }
-      c.drawPath(path, p);
     }
   }
 
   void _paintLights(Canvas c, FieldGeom geo) {
-    // Strings of bulbs round the outside of the pier.
+    // Festoon lights strung between the lamp posts. They breathe gently
+    // instead of blinking.
+    final th = _th;
     final f = g.field;
-    final r = geo.scale * 0.06;
-    var i = 0;
-    for (var x = 0.15; x < f.w; x += 0.55) {
-      for (final y in [0.06, f.h - 0.06]) {
-        final on = ((i + (t * 3).floor()) % 3) != 0;
-        final col = [Pal.neon, Pal.danger, const Color(0xFF7FDBFF)][i % 3];
-        c.drawCircle(geo.px(x, y), r * (on ? 1.3 : 1.0), Paint()..color = on ? col : col.withValues(alpha: 0.25));
-        i++;
+    final s = geo.scale;
+    final wire = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = math.max(1, s * 0.025)
+      ..color = const Color(0xCC1A1410);
+    var k = 0;
+    for (final y in [0.0, f.h]) {
+      final span = f.w / 6;
+      for (var x = 0.0; x < f.w - 0.01; x += span) {
+        final a = geo.px(x, y), b = geo.px(x + span, y);
+        final sag = s * 0.22;
+        final mid = Offset((a.dx + b.dx) / 2, a.dy + sag * 2);
+        c.drawPath(Path()
+          ..moveTo(a.dx, a.dy)
+          ..quadraticBezierTo(mid.dx, mid.dy, b.dx, b.dy), wire);
+        for (var j = 1; j < 6; j++) {
+          final u = j / 6;
+          final p = Offset(
+              (1 - u) * (1 - u) * a.dx + 2 * (1 - u) * u * mid.dx + u * u * b.dx, (1 - u) * (1 - u) * a.dy + 2 * (1 - u) * u * mid.dy + u * u * b.dy);
+          final col = th.bulbs[k % th.bulbs.length];
+          final glow = 0.55 + 0.25 * math.sin(t * 1.6 + k * 0.9);
+          c.drawCircle(p, s * 0.16,
+              Paint()
+                ..color = col.withValues(alpha: 0.28 * glow)
+                ..maskFilter = MaskFilter.blur(BlurStyle.normal, s * 0.1));
+          c.drawCircle(p, s * 0.055, Paint()..color = Color.lerp(col, Colors.white, 0.45 * glow)!);
+          k++;
+        }
       }
     }
   }
@@ -235,8 +320,8 @@ class FieldPainter extends CustomPainter {
               RRect.fromRectAndRadius(Rect.fromCenter(center: cc, width: s * 0.96, height: s * 0.96), Radius.circular(s * 0.16)),
               Paint()
                 ..style = PaintingStyle.stroke
-                ..strokeWidth = 2.5
-                ..color = Colors.white);
+                ..strokeWidth = 3.5
+                ..color = Pal.neon);
           // range ring
           final range = d.range + (p.activeUnions().contains('Sea') && d.tags.contains('Sea') ? 0.6 : 0);
           c.drawCircle(cc, range * s, Paint()..color = Colors.white.withValues(alpha: 0.06));
@@ -264,8 +349,9 @@ class FieldPainter extends CustomPainter {
         }
         if (n > 1) {
           final bp = cc + Offset(s * 0.3, -s * 0.32);
-          c.drawCircle(bp, s * 0.12, Paint()..color = Pal.ink);
-          drawText(c, '$n', bp, s * 0.16, canMerge ? Pal.neon : Colors.white);
+          c.drawCircle(bp, s * 0.14, Paint()..color = Pal.ink);
+          c.drawCircle(bp, s * 0.115, Paint()..color = canMerge ? const Color(0xFF3DB43A) : const Color(0xFF2E7CE3));
+          drawText(c, '$n', bp, s * 0.17, Colors.white);
         }
         if (disabled) _tape(c, cc, s);
       }
@@ -418,4 +504,109 @@ class FieldPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
+}
+
+/// Colours for each level's pier.
+class _Theme {
+  final Color seaTop, seaBottom, shallow, foam, deck, deckEdge, deckLine, lane, laneEdge, platform, platform2, tile, tile2, legs, post;
+  final List<Color> bulbs;
+  final double fog;
+  const _Theme({
+    required this.seaTop,
+    required this.seaBottom,
+    required this.shallow,
+    required this.foam,
+    required this.deck,
+    required this.deckEdge,
+    required this.deckLine,
+    required this.lane,
+    required this.laneEdge,
+    required this.platform,
+    required this.platform2,
+    required this.tile,
+    required this.tile2,
+    required this.legs,
+    required this.post,
+    required this.bulbs,
+    this.fog = 0,
+  });
+
+  static const _all = [
+    // Grimley Pier: warm boards on a bright sea
+    _Theme(
+        seaTop: Color(0xFF2FB7DD),
+        seaBottom: Color(0xFF1479B8),
+        shallow: Color(0x8870E6E9),
+        foam: Colors.white,
+        deck: Color(0xFFC98A52),
+        deckEdge: Color(0xFF7E4A26),
+        deckLine: Color(0xFF9C6236),
+        lane: Color(0xFFF2D49B),
+        laneEdge: Color(0xFFB98B55),
+        platform: Color(0xFF6E4A2E),
+        platform2: Color(0xFF4F5D73),
+        tile: Color(0xFFF6E6BF),
+        tile2: Color(0xFFDCE7F2),
+        legs: Color(0xFF5B3A22),
+        post: Color(0xFF2E7CE3),
+        bulbs: [Color(0xFFFFE07A), Color(0xFFFF8FB1), Color(0xFF8FE3FF), Color(0xFFFFB45A)]),
+    // Fogbank Arcade: grey-green sea, painted arcade boards
+    _Theme(
+        seaTop: Color(0xFF5FA9A8),
+        seaBottom: Color(0xFF2D6475),
+        shallow: Color(0x88A8E0D6),
+        foam: Colors.white,
+        deck: Color(0xFF9A6FA8),
+        deckEdge: Color(0xFF55356A),
+        deckLine: Color(0xFF7A5089),
+        lane: Color(0xFFF4D7E8),
+        laneEdge: Color(0xFFB98BAA),
+        platform: Color(0xFF4B2F5E),
+        platform2: Color(0xFF3F566E),
+        tile: Color(0xFFFBE7F2),
+        tile2: Color(0xFFDDE9F0),
+        legs: Color(0xFF3E2650),
+        post: Color(0xFFE5539A),
+        bulbs: [Color(0xFFFF8FD8), Color(0xFF8FFFE0), Color(0xFFFFE07A)],
+        fog: 0.08),
+    // Crab Cove: turquoise shallows and sandy boards
+    _Theme(
+        seaTop: Color(0xFF3FE0D8),
+        seaBottom: Color(0xFF169CB8),
+        shallow: Color(0xAAF6E2A8),
+        foam: Colors.white,
+        deck: Color(0xFFE0B072),
+        deckEdge: Color(0xFF9A6534),
+        deckLine: Color(0xFFBD8A4E),
+        lane: Color(0xFFFFF0C8),
+        laneEdge: Color(0xFFD1A867),
+        platform: Color(0xFF8A5A30),
+        platform2: Color(0xFF55708A),
+        tile: Color(0xFFFFF4D8),
+        tile2: Color(0xFFE2F0F6),
+        legs: Color(0xFF6B4423),
+        post: Color(0xFFE2443C),
+        bulbs: [Color(0xFFFFE07A), Color(0xFFFF7A6B), Color(0xFFFFFFFF)]),
+    // The Void Pier: purple-black water, cold lights
+    _Theme(
+        seaTop: Color(0xFF3A1F73),
+        seaBottom: Color(0xFF120A33),
+        shallow: Color(0x667E5CFF),
+        foam: Color(0xFFC9B8FF),
+        deck: Color(0xFF4A3D6B),
+        deckEdge: Color(0xFF241B3D),
+        deckLine: Color(0xFF382D57),
+        lane: Color(0xFFB9A8E6),
+        laneEdge: Color(0xFF6E5BA8),
+        platform: Color(0xFF241B3D),
+        platform2: Color(0xFF1E2C47),
+        tile: Color(0xFFDCD2F7),
+        tile2: Color(0xFFCFE0F2),
+        legs: Color(0xFF1A1330),
+        post: Color(0xFF8B52E3),
+        bulbs: [Color(0xFF8FE3FF), Color(0xFFC9A0FF), Color(0xFFFFFFFF)],
+        fog: 0.05),
+  ];
+
+  static _Theme of(int level) => _all[(level - 1) % _all.length];
 }

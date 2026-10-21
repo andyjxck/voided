@@ -7,6 +7,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 
 import '../game/data.dart';
+import 'sprites.dart';
 
 class Pal {
   static const sea = Color(0xFF0B1630);
@@ -26,13 +27,26 @@ class Pal {
 
 final Map<String, TextPainter> _tpCache = {};
 
-TextPainter tp(String s, double size, Color color, {FontWeight w = FontWeight.w800}) {
-  final key = '$s|${size.toStringAsFixed(1)}|${color.toARGB32()}|${w.value}';
+TextPainter tp(String s, double size, Color color, {FontWeight w = FontWeight.w800, bool shadow = false}) {
+  final key = '$s|${size.toStringAsFixed(1)}|${color.toARGB32()}|${w.value}|$shadow';
   final hit = _tpCache[key];
   if (hit != null) return hit;
   if (_tpCache.length > 600) _tpCache.clear();
   final p = TextPainter(
-    text: TextSpan(text: s, style: TextStyle(fontSize: size, color: color, fontWeight: w, height: 1.0)),
+    text: TextSpan(
+        text: s,
+        style: TextStyle(
+            fontFamily: 'Lilita',
+            fontSize: size,
+            color: color,
+            height: 1.0,
+            letterSpacing: 0.3,
+            shadows: color.a < 0.9
+                ? null
+                : [
+                    for (var i = 0; i < 8; i++)
+                      Shadow(color: const Color(0xFF10203F), offset: Offset(math.cos(i * math.pi / 4), math.sin(i * math.pi / 4)) * math.max(1.0, size * 0.09)),
+                  ])),
     textDirection: TextDirection.ltr,
   )..layout();
   _tpCache[key] = p;
@@ -40,10 +54,6 @@ TextPainter tp(String s, double size, Color color, {FontWeight w = FontWeight.w8
 }
 
 void drawText(Canvas c, String s, Offset center, double size, Color color, {FontWeight w = FontWeight.w800, bool shadow = false}) {
-  if (shadow) {
-    final sp = tp(s, size, Colors.black.withValues(alpha: 0.7), w: w);
-    sp.paint(c, center - Offset(sp.width / 2, sp.height / 2) + Offset(size * 0.08, size * 0.1));
-  }
   final p = tp(s, size, color, w: w);
   p.paint(c, center - Offset(p.width / 2, p.height / 2));
 }
@@ -121,6 +131,11 @@ void drawEyes(Canvas c, Offset center, double r, {double look = 0, bool angry = 
 
 /// A figurine token. [t] is wall-clock seconds for idle animation.
 void drawUnit(Canvas c, Offset center, double r, UnitDef d, double t, {bool disabled = false, double pop = 1, bool showMono = true}) {
+  final img = Sprites.unit(d.id);
+  if (img != null) {
+    _drawUnitSprite(c, center, r, d, t, img, disabled: disabled, pop: pop);
+    return;
+  }
   final tier = Color(d.tier.color);
   final col = Color(d.color);
   final bob = math.sin(t * 2.4 + d.id.hashCode % 7) * r * 0.05;
@@ -174,6 +189,11 @@ void drawUnit(Canvas c, Offset center, double r, UnitDef d, double t, {bool disa
 }
 
 void drawEnemy(Canvas c, Offset p, double r, EnemyDef d, double t, {double flash = 0, bool frozen = false}) {
+  final img = Sprites.enemy(d.id);
+  if (img != null) {
+    _drawCritter(c, p, r * 1.15, img, t, flash: flash, frozen: frozen, waddle: 1);
+    return;
+  }
   var col = Color(d.color);
   if (flash > 0) col = Color.lerp(col, Colors.white, 0.7)!;
   if (frozen) col = Color.lerp(col, const Color(0xFF9EE7FF), 0.6)!;
@@ -247,6 +267,37 @@ void drawEnemy(Canvas c, Offset p, double r, EnemyDef d, double t, {double flash
 }
 
 void drawBoss(Canvas c, Offset p, double r, BossDef b, double t, {double flash = 0, bool submerged = false, double shield = 0}) {
+  final img = Sprites.boss(b.id);
+  if (img != null) {
+    if (submerged) {
+      for (var i = 0; i < 3; i++) {
+        final rr = r * (0.6 + ((t * 0.8 + i / 3) % 1) * 1.2);
+        c.drawOval(
+            Rect.fromCenter(center: p + Offset(0, r * 0.6), width: rr * 2, height: rr * 0.8),
+            Paint()
+              ..style = PaintingStyle.stroke
+              ..strokeWidth = 2.5
+              ..color = const Color(0xFFBFF3FF).withValues(alpha: 0.7 * (1 - (rr / (r * 1.8)))));
+      }
+      _drawCritter(c, p + Offset(0, r * 0.35), r * 1.25, img, t, alpha: 0.28, waddle: 0.4);
+      return;
+    }
+    // A warning ring on the boards under the boss.
+    c.drawOval(Rect.fromCenter(center: p + Offset(0, r * 0.95), width: r * 2.6, height: r * 0.8),
+        Paint()..color = const Color(0xFFFF3B3B).withValues(alpha: 0.18 + 0.1 * math.sin(t * 5)));
+    _drawCritter(c, p, r * 1.3, img, t, flash: flash, waddle: 0.5);
+    if (shield > 0) {
+      c.drawCircle(
+          p,
+          r * 1.45,
+          Paint()
+            ..style = PaintingStyle.stroke
+            ..strokeWidth = r * 0.12
+            ..color = const Color(0xBB9EE7FF));
+      c.drawCircle(p, r * 1.45, Paint()..color = const Color(0x229EE7FF));
+    }
+    return;
+  }
   var col = Color(b.color);
   if (flash > 0) col = Color.lerp(col, Colors.white, 0.5)!;
   final alpha = submerged ? 0.25 : 1.0;
@@ -339,6 +390,82 @@ void drawBoss(Canvas c, Offset p, double r, BossDef b, double t, {double flash =
   }
 }
 
+Rect _fit(ui.Image img, Offset bottomCentre, double h, double maxW) {
+  var w = h * img.width / img.height;
+  var hh = h;
+  if (w > maxW) {
+    hh = h * maxW / w;
+    w = maxW;
+  }
+  return Rect.fromLTWH(bottomCentre.dx - w / 2, bottomCentre.dy - hh, w, hh);
+}
+
+
+/// A figurine standing on its tier-coloured game-piece base.
+void _drawUnitSprite(Canvas c, Offset center, double r, UnitDef d, double t, ui.Image img, {bool disabled = false, double pop = 1}) {
+  final tier = Color(d.tier.color);
+  final rr = r * pop;
+  final baseC = center + Offset(0, r * 0.62);
+  // Glow for the big tiers.
+  if (d.tier.index >= 3) {
+    c.drawOval(
+        Rect.fromCenter(center: center, width: rr * 2.6, height: rr * 2.6),
+        Paint()
+          ..color = tier.withValues(alpha: 0.35 + 0.15 * math.sin(t * 3))
+          ..maskFilter = MaskFilter.blur(BlurStyle.normal, rr * 0.5));
+  }
+  // Base: shadow, rim, top.
+  final bw = rr * 1.75, bh = rr * 0.62;
+  c.drawOval(Rect.fromCenter(center: baseC + Offset(0, bh * 0.28), width: bw * 1.04, height: bh * 1.05), Paint()..color = const Color(0x55000000));
+  c.drawOval(Rect.fromCenter(center: baseC + Offset(0, bh * 0.16), width: bw, height: bh), Paint()..color = Pal.ink);
+  c.drawOval(Rect.fromCenter(center: baseC + Offset(0, bh * 0.1), width: bw - 3, height: bh - 3), Paint()..color = _darker(tier, 0.35));
+  c.drawOval(Rect.fromCenter(center: baseC - Offset(0, bh * 0.04), width: bw - 3, height: bh - 6), Paint()..color = tier);
+  c.drawOval(Rect.fromCenter(center: baseC - Offset(bw * 0.12, bh * 0.14), width: bw * 0.4, height: bh * 0.22),
+      Paint()..color = Colors.white.withValues(alpha: 0.35));
+  // The figurine, with a little idle bounce.
+  final ph = t * 2.6 + (d.id.hashCode % 7);
+  final squash = 1 + math.sin(ph) * 0.035;
+  final h = rr * 2.05 * squash;
+  final dst = _fit(img, baseC, h, rr * 2.3 / squash);
+  final paint = Paint()..filterQuality = FilterQuality.medium;
+  if (disabled) {
+    paint.colorFilter = const ColorFilter.matrix(<double>[
+      0.25, 0.4, 0.1, 0, 10, //
+      0.25, 0.4, 0.1, 0, 10,
+      0.25, 0.4, 0.1, 0, 22,
+      0, 0, 0, 0.8, 0,
+    ]);
+  }
+  c.drawImageRect(img, Rect.fromLTWH(0, 0, img.width.toDouble(), img.height.toDouble()), dst, paint);
+}
+
+/// A sea thing or boss: waddles, flashes white when hit, goes icy when slowed.
+void _drawCritter(Canvas c, Offset p, double r, ui.Image img, double t,
+    {double flash = 0, bool frozen = false, double waddle = 1, double alpha = 1}) {
+  final ph = t * 9 + p.dx * 0.05;
+  final hop = math.sin(ph).abs() * r * 0.12 * waddle;
+  final tilt = math.sin(ph) * 0.09 * waddle;
+  final feet = p + Offset(0, r * 0.9);
+  c.drawOval(Rect.fromCenter(center: feet, width: r * 1.5, height: r * 0.42), Paint()..color = Colors.black.withValues(alpha: 0.3 * alpha));
+  c.save();
+  c.translate(feet.dx, feet.dy - hop);
+  c.rotate(tilt);
+  final dst = _fit(img, Offset.zero, r * 2.1, r * 2.4);
+  final paint = Paint()..filterQuality = FilterQuality.medium;
+  if (flash > 0) {
+    paint.colorFilter = ColorFilter.mode(Colors.white.withValues(alpha: 0.75 * alpha), BlendMode.srcATop);
+  } else if (frozen) {
+    paint.colorFilter = ColorFilter.mode(const Color(0xFF8FE3FF).withValues(alpha: 0.55 * alpha), BlendMode.srcATop);
+  } else if (alpha < 1) {
+    paint.color = Colors.white.withValues(alpha: alpha);
+  }
+  if (flash > 0 || frozen) {
+    if (alpha < 1) paint.color = Colors.white.withValues(alpha: alpha);
+  }
+  c.drawImageRect(img, Rect.fromLTWH(0, 0, img.width.toDouble(), img.height.toDouble()), dst, paint);
+  c.restore();
+}
+
 /// Paint a figurine onto a widget (album, info cards).
 class UnitIcon extends StatelessWidget {
   final UnitDef def;
@@ -349,7 +476,13 @@ class UnitIcon extends StatelessWidget {
   Widget build(BuildContext context) => SizedBox(
         width: size,
         height: size,
-        child: CustomPaint(painter: _UnitIconPainter(def, locked)),
+        child: locked
+            ? CustomPaint(painter: _UnitIconPainter(def, locked))
+            : Image.asset('assets/sprites/u_${def.id}.png',
+                fit: BoxFit.contain,
+                filterQuality: FilterQuality.medium,
+                excludeFromSemantics: true,
+                errorBuilder: (_, _, _) => CustomPaint(painter: _UnitIconPainter(def, locked))),
       );
 }
 
@@ -377,8 +510,18 @@ class EnemyIcon extends StatelessWidget {
   final double size;
   const EnemyIcon({super.key, this.enemy, this.boss, this.size = 48});
   @override
-  Widget build(BuildContext context) =>
-      SizedBox(width: size, height: size, child: CustomPaint(painter: _EnemyIconPainter(enemy, boss)));
+  Widget build(BuildContext context) {
+    final name = boss != null ? 'b_${boss!.id}' : 'e_${enemy!.id == 'wibble' ? 'wobbler' : enemy!.id}';
+    return SizedBox(
+      width: size,
+      height: size,
+      child: Image.asset('assets/sprites/$name.png',
+          fit: BoxFit.contain,
+          filterQuality: FilterQuality.medium,
+          excludeFromSemantics: true,
+          errorBuilder: (_, _, _) => CustomPaint(painter: _EnemyIconPainter(enemy, boss))),
+    );
+  }
 }
 
 class _EnemyIconPainter extends CustomPainter {
