@@ -10,7 +10,7 @@ void main() {
     jsonEncode({
       'units': [for (final u in kUnits) u.id],
       'enemies': [for (final e in kEnemies) e.id],
-      'bosses': [for (final b in kBosses) b.id],
+      'bosses': [for (final id in kBossById.keys) id],
     }),
   );
 }
