@@ -281,6 +281,15 @@ extension _Mech on Game {
   void _fireAbility(PlayerSide p, int ci, UnitDef d, V2 pos, Set<String> unions) {
     final m = dmgMult(p, d);
     switch (d.abil) {
+      case Abil.toll:
+        final n = enemies
+            .where((e) => !e.dead && field.at(e).dist(pos) <= d.range)
+            .length;
+        final take = math.min(d.abilPow.round(), n ~/ 3);
+        if (take <= 0) return;
+        p.pennies += take;
+        p.stats.pennyEarned += take;
+        fx.add(Fx(FxType.text, x: pos.x, y: pos.y, text: 'TOLL +$take', color: d.color));
       case Abil.band:
         for (var i = 0; i < p.cells.length; i++) {
           if (field.cellCenter(p.index, i).dist(pos) < 1.5) {
