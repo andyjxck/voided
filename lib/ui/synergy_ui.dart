@@ -35,7 +35,7 @@ class SynergyStrip extends StatelessWidget {
       final n = members[t]!.length;
       if (n < 2) continue;
       final on = n >= 3 && !p.redacted.containsKey(t);
-      items.add(('$t $n/${n >= 3 ? 5 : 3}', on ? Vx.text : Vx.textDim));
+      items.add(('${unionName(t)} $n/${n >= 3 ? 5 : 3}', on ? Vx.text : Vx.textDim));
     }
     final seen = <String>{};
     for (final b in p.bonds) {
@@ -164,7 +164,7 @@ class SynergySheet extends StatelessWidget {
                 TextSpan(
                   children: [
                     TextSpan(
-                      text: '$t $n/3  ',
+                      text: '${unionName(t)} $n/3  ',
                       style: body(12.5, color: on3 ? kBondGold : Vx.text),
                     ),
                     TextSpan(
