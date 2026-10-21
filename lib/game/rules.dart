@@ -129,6 +129,45 @@ extension HouseRulesOnGame on Game {
     say('The Rift', 'Quick kill. $kQuickKillPay pennies each.');
   }
 
+  /// Test hook: hit [e] for [amount] from the player, as a single hit or as
+  /// area damage. Returns false when the hit did not count (it missed, or a
+  /// Twice-Drowned got back up).
+  bool debugHit(Enemy e, double amount, {bool area = false}) => _damage(
+    e,
+    amount,
+    you,
+    canEvade: false,
+    ignoreArmor: true,
+    quiet: true,
+    kind: area ? kHitArea : kHitSingle,
+  );
+
+  /// Test hook: run one step of riftling traits and boss mechanics.
+  void debugMechTick(double dt) => _mechTick(dt);
+
+  /// Test hook: put riftling [id] on the field now, at [s] on [route].
+  Enemy debugSpawn(String id, {double s = 0, int route = 0}) {
+    final e = _spawn(id, s: s, route: route);
+    enemies.addAll(_pending);
+    _pending.clear();
+    return e;
+  }
+
+  /// Test hook: put boss [id] on the field now, as the lead.
+  Enemy debugSpawnBoss(String id, {double s = 0, int route = 0}) {
+    final e = _spawnBoss(kBossById[id]!, s: s, route: route);
+    e.twinLead = true;
+    enemies.addAll(_pending);
+    _pending.clear();
+    return e;
+  }
+
+  /// Test hook: one step of [e]'s own traits. Returns its speed multiplier.
+  double debugTraitSpeed(Enemy e, double dt) => _traitTick(e, dt);
+
+  /// Test hook: one step of boss [e]'s mechanic.
+  void debugBossTick(Enemy e, double dt) => _bossMech(e, dt);
+
   /// Attack-speed bonus for a full stack (three of a kind) in [c].
   double fullStackBonus(Cell c) =>
       c.units.length >= kStackMax ? kFullStackSpeed : 0;

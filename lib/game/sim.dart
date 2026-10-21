@@ -471,6 +471,9 @@ class Game {
   /// Seconds left on the Severer's cut: no bonds anywhere while above 0.
   double bondsCut = 0;
 
+  /// Rift Drummers alive this tick.
+  List<Enemy> drummers = const [];
+
   // ---- content-plan state (see mech.dart) ----
   final List<Tell> tells = [];
 
@@ -1478,6 +1481,9 @@ class Game {
       e.shield -= ab;
       a -= ab;
     }
+    // Glass Grub and the Glass Colossus: no hit takes more than a slice.
+    if (e.trait == Trait.cap) a = math.min(a, e.maxHp * e.def!.pow);
+    if (e.boss?.mech == BossMech.colossus) a = math.min(a, e.maxHp * 0.03);
     e.hp -= a;
     e.lastKind = kind;
     if (!quiet) {
@@ -1495,6 +1501,18 @@ class Game {
           ),
         );
       }
+    }
+    // Twice-Drowned: back up once, unless area damage finished it.
+    if (e.hp <= 0 &&
+        e.trait == Trait.revive &&
+        !e.shellUsed &&
+        kind != kHitArea) {
+      e.shellUsed = true;
+      e.hp = e.maxHp * e.def!.pow;
+      e.stunT = math.max(e.stunT, 0.8);
+      final at = field.at(e);
+      fx.add(Fx(FxType.text, x: at.x, y: at.y, text: 'BACK UP', color: e.def!.color));
+      return false;
     }
     if (e.hp <= 0) _kill(e, src, unit);
     return true;

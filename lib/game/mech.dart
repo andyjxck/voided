@@ -27,6 +27,12 @@ class Tell {
 /// Hit kinds, for the Shadow Keeper and the Mirrorling.
 const int kHitSingle = 0, kHitArea = 1, kHitStatus = 2;
 
+/// The Auditor takes at most this many pennies from a side per audit.
+const int kAuditCap = 25;
+
+/// How long the Severer's cut keeps every bond off.
+const double kSeverDur = 5;
+
 extension _Mech on Game {
   // ------------------------------------------------------------------
   // Visibility and targeting rules
@@ -129,7 +135,20 @@ extension _Mech on Game {
       tl.t += dt;
     }
     tells.removeWhere((tl) => tl.t > tl.dur + 0.4);
-    if (bondsCut > 0) bondsCut -= dt;
+    if (bondsCut > 0) {
+      bondsCut -= dt;
+      if (bondsCut <= 0) {
+        bondsCut = 0;
+        // The Severer's cut is over: the pairs find each other again.
+        for (final p in sides) {
+          refreshBonds(p);
+        }
+      }
+    }
+    drummers = [
+      for (final o in enemies)
+        if (!o.dead && o.trait == Trait.drum) o,
+    ];
     _lampAll = _lampLane;
     for (final p in sides) {
       for (final c in p.cells) {
@@ -531,8 +550,33 @@ extension _Mech on Game {
           e.shellHits = 3;
           e.shellUsed = true;
         }
+      case Trait.warden:
+        if (e.traitT >= e.def!.every) {
+          e.traitT = 0;
+          final at = field.at(e);
+          for (final o in enemies) {
+            if (o == e || o.dead || o.isBoss) continue;
+            if (field.at(o).dist(at) > 1.5) continue;
+            o.shield = math.max(o.shield, o.maxHp * e.def!.pow);
+          }
+          fx.add(Fx(FxType.pulse, x: at.x, y: at.y, size: 1.5, color: e.def!.color));
+        }
+      case Trait.burrow:
+        if (e.traitT >= e.def!.every) {
+          e.traitT = 0;
+          e.tunnelT = 1.5;
+        }
+        if (e.tunnelT > 0) sp *= 2;
       default:
         break;
+    }
+    // Rift Drummer: riftlings close to it on its route move faster.
+    for (final dr in drummers) {
+      if (dr == e || dr.route != e.route) continue;
+      if ((dr.s - e.s).abs() < 1.5) {
+        sp *= 1 + dr.def!.pow;
+        break;
+      }
     }
     if (tr == Trait.heal || (e.copied == Trait.heal)) {
       for (final o in enemies) {
@@ -1016,6 +1060,53 @@ extension _Mech on Game {
           laneLimit = 80;
           tell('The Rift widens: limit now 80', dur: 2.5, color: 0xFFFF5E7E);
           say(b.name, 'More Rift. Same amount of you.');
+        }
+      case BossMech.auditor:
+        // Hoard is off while he is out (see hoardBlocked). Every 9s: a tenth
+        // of each side's pennies, at most 25.
+        if (e.mechT <= 0) {
+          e.mechT = 9 * _mechRate(e);
+          var took = 0;
+          for (final p in sides) {
+            final take = math.min(kAuditCap, (p.pennies * 0.1).floor());
+            p.pennies -= take;
+            took += take;
+          }
+          if (took > 0) {
+            fx.add(Fx(FxType.text, x: pos.x, y: pos.y, text: 'AUDITED', color: b.color, size: 1.2));
+            say(b.name, 'One in ten. For the records.');
+          }
+        }
+      case BossMech.severer:
+        if (e.mechT <= 2 && e.pending < 0) {
+          e.pending = 1;
+          tell('The Severer is about to cut every bond', x: pos.x, y: pos.y, r: 1, dur: 2, color: b.color);
+        }
+        if (e.mechT <= 0) {
+          e.mechT = 12 * _mechRate(e);
+          e.pending = -1;
+          bondsCut = kSeverDur;
+          for (final p in sides) {
+            refreshBonds(p);
+          }
+          say(b.name, 'Snip.');
+        }
+      case BossMech.choir:
+        if (e.mechT <= 0) {
+          e.mechT = 10 * _mechRate(e);
+          for (var i = 0; i < 3; i++) {
+            _spawn(b.spawn, route: e.route, s: e.s - 0.3 * (i + 1), traveled: e.traveled);
+          }
+          say(b.name, 'Rise and sing.');
+        }
+      case BossMech.colossus:
+        // The 3% cap on each hit is in _damage.
+        if (e.mechT <= 0) {
+          e.mechT = 12 * _mechRate(e);
+          for (var i = 0; i < 2; i++) {
+            _spawn(b.spawn, route: e.route, s: e.s - 0.3 * (i + 1), traveled: e.traveled);
+          }
+          fx.add(Fx(FxType.text, x: pos.x, y: pos.y, text: 'CRACK', color: b.color));
         }
       default:
         break;
