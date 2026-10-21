@@ -533,7 +533,7 @@ class FieldPainter extends CustomPainter {
       ..sort((a, b) => (a.isBoss ? 1 : 0).compareTo(b.isBoss ? 1 : 0));
     for (final e in sorted) {
       if (e.dead) continue;
-      final p = geo.pv(g.field.posAt(e.s));
+      final p = geo.pv(g.field.at(e));
       final frozen = e.freezeT > 0;
       if (e.isBoss) {
         drawBoss(

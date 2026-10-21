@@ -304,7 +304,7 @@ extension _Mech on Game {
       case Abil.chime:
         final ts = _targets(pos, d.range, 1, by: d, side: p);
         if (ts.isEmpty) return;
-        final at = field.posAt(ts.first.s);
+        final at = field.at(ts.first);
         for (final e in enemies) {
           if (e.dead || field.at(e).dist(at) > 1.2) continue;
           if (_controlBlocked(e)) continue;
@@ -335,7 +335,7 @@ extension _Mech on Game {
       case Abil.ink:
         final ts = _targets(pos, d.range, 1, by: d, side: p);
         if (ts.isEmpty) return;
-        final at = field.posAt(ts.first.s);
+        final at = field.at(ts.first);
         for (final e in [...enemies]) {
           if (e.dead || field.at(e).dist(at) > 1.5) continue;
           e.inkT = math.max(e.inkT, d.abilDur);

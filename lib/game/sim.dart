@@ -22,8 +22,14 @@ class Field {
   late final double w;
   late final double h;
 
-  /// Length of one route (both routes are the same length).
+  /// Distance that counts as one trip round, on either route.
   late final double lap;
+
+  /// How far apart the two lanes run: they never come closer than this.
+  static const double laneGap = 0.44;
+
+  /// Length of the route loops, for [posAt].
+  double routeLength(int r) => _cums[r].last;
 
   /// Distance that counts as a "lap" for lap-end traits (rent, thieves,
   /// the Unmaker). Co-op routes are half the old figure-eight, so a lap
@@ -44,14 +50,18 @@ class Field {
     if (mode == GameMode.solo) {
       h = kBoardRows + 2.0;
       hatch = V2(cx, 0.5);
+      // Two lanes round the one board so the twins pass instead of walking
+      // through each other: left-first on the inside, right-first on the
+      // outside, laneGap apart (from the centre-gate spawning work).
+      const i = 0.5 + laneGap / 2, o = 0.5 - laneGap / 2;
       routes = [
-        [V2(cx, 0.5), const V2(0.5, 0.5), V2(0.5, h - 0.5), V2(a, h - 0.5), V2(a, 0.5)],
-        [V2(cx, 0.5), V2(a, 0.5), V2(a, h - 0.5), V2(0.5, h - 0.5), const V2(0.5, 0.5)],
+        [V2(cx, i), const V2(i, i), V2(i, h - i), V2(w - i, h - i), V2(w - i, i)],
+        [V2(cx, o), V2(w - o, o), V2(w - o, h - o), V2(o, h - o), const V2(o, o)],
       ];
     } else {
       h = kBoardRows * 2 + 3.0;
       final mid = kBoardRows + 1.5;
-      const o = 0.22;
+      const o = laneGap / 2;
       hatch = V2(cx, mid);
       routes = [
         // left, then round Brenda's board at the top
@@ -68,7 +78,10 @@ class Field {
       }
       _cums.add(cum);
     }
-    lap = _cums[0].last;
+    // Solo's outside lane is longer than the inside one; [posAt] stretches
+    // each route onto the shared lap, so twins stay level (the outside one
+    // simply walks a little faster) and s % lap keeps meaning progress.
+    lap = (_cums[0].last + _cums[1].last) / 2;
     cycle = mode == GameMode.solo ? lap : lap * 2;
   }
 
@@ -102,7 +115,7 @@ class Field {
     final cum = _cums[route];
     // Before the Hatch (s < 0) things wait in it.
     if (s < 0) return pts[0];
-    final t = s % lap;
+    final t = (s % lap) * cum.last / lap;
     var i = 0;
     while (i < pts.length - 1 && cum[i + 1] <= t) {
       i++;
@@ -445,6 +458,7 @@ class Game {
   /// Every boss out on this wave (twins included).
   final List<Enemy> bossList = [];
   int _starOpen = -1;
+  bool _broodFlip = false;
   int _ponyCount = 0, _ponyGroup = 0;
 
   /// The boss whose bar shows: the lead twin while it lives.
@@ -820,8 +834,18 @@ class Game {
       case BossMech.brood:
         if (e.mechT <= 0) {
           e.mechT = 6;
+          // Only the lead twin runs this, so batches take turns between the
+          // twins (centre-gate rule): each side faces its own helpers and the
+          // total stays the same.
+          Enemy from = e;
+          if (_broodFlip) {
+            for (final o in bossList) {
+              if (o != e && o.boss == e.boss && !o.dead) from = o;
+            }
+          }
+          _broodFlip = !_broodFlip;
           for (var i = 0; i < 3; i++) {
-            _spawn(b.spawn, route: e.route, s: e.s - 0.3 * i, traveled: e.traveled);
+            _spawn(b.spawn, route: from.route, s: from.s - 0.3 * i, traveled: from.traveled);
           }
           fx.add(
             Fx(FxType.text, x: pos.x, y: pos.y, text: 'BLOOP', color: b.color),
