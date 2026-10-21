@@ -152,81 +152,8 @@ class FieldPainter extends CustomPainter {
     final s = geo.scale;
     final th = _th;
     final f = g.field;
-    // Sea
-    c.drawRect(
-      Offset.zero & size,
-      Paint()
-        ..shader = LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [th.seaTop, th.seaBottom],
-        ).createShader(Offset.zero & size),
-    );
-    final deckRect = Rect.fromPoints(geo.px(0, 0), geo.px(f.w, f.h));
-    // Shallow-water halo round the pier
-    c.drawRRect(
-      RRect.fromRectAndRadius(
-        deckRect.inflate(s * 0.55),
-        Radius.circular(s * 0.8),
-      ),
-      Paint()
-        ..color = th.shallow
-        ..maskFilter = MaskFilter.blur(BlurStyle.normal, s * 0.35),
-    );
-    // Pier legs under the bottom edge
-    final legs = Paint()..color = th.legs;
-    for (var x = 0.5; x < f.w; x += 1.4) {
-      final lx = geo.px(x, 0).dx;
-      final r = Rect.fromLTWH(lx, deckRect.bottom, s * 0.22, s * 0.5);
-      c.drawRRect(RRect.fromRectAndRadius(r, Radius.circular(s * 0.05)), legs);
-      c.drawRect(
-        Rect.fromLTWH(lx, deckRect.bottom + s * 0.36, s * 0.22, s * 0.05),
-        Paint()..color = Colors.white.withValues(alpha: 0.35),
-      );
-    }
-    // Deck: outline, frame, then planks
-    final frame = RRect.fromRectAndRadius(
-      deckRect.inflate(s * 0.08),
-      Radius.circular(s * 0.22),
-    );
-    c.drawRRect(
-      frame.shift(Offset(0, s * 0.1)),
-      Paint()..color = const Color(0x55000000),
-    );
-    c.drawRRect(frame.inflate(2), Paint()..color = Pal.ink);
-    c.drawRRect(frame, Paint()..color = th.deckEdge);
-    final deck = RRect.fromRectAndRadius(
-      deckRect.deflate(s * 0.04),
-      Radius.circular(s * 0.16),
-    );
-    c.drawRRect(deck, Paint()..color = th.deck);
-    c.save();
-    c.clipRRect(deck);
-    final plankLine = Paint()
-      ..color = th.deckLine
-      ..strokeWidth = math.max(1, s * 0.025);
-    final rnd = math.Random(3);
-    for (var y = 0.0; y < f.h; y += 0.42) {
-      final py = geo.px(0, y).dy;
-      c.drawLine(
-        Offset(deckRect.left, py),
-        Offset(deckRect.right, py),
-        plankLine,
-      );
-      for (
-        var x = rnd.nextDouble() * 1.6;
-        x < f.w;
-        x += 1.4 + rnd.nextDouble()
-      ) {
-        final px = geo.px(x, 0).dx;
-        c.drawLine(Offset(px, py), Offset(px, py + s * 0.42), plankLine);
-      }
-      c.drawRect(
-        Rect.fromLTWH(deckRect.left, py + 1, deckRect.width, s * 0.06),
-        Paint()..color = Colors.white.withValues(alpha: 0.06),
-      );
-    }
-    c.restore();
+    // No sea or deck of its own: the fairground backdrop behind the game
+    // shows through, and only the walkway, the gate and the boards are drawn.
     // Lane: dark edge, boardwalk, seams, rope rails
     final path = Path();
     for (final loop in f.walks) {
@@ -285,8 +212,8 @@ class FieldPainter extends CustomPainter {
       }
     }
     c.drawCircle(st, s * 0.46, Paint()..color = Pal.ink);
-    c.drawCircle(st, s * 0.42, Paint()..color = th.seaBottom);
-    c.drawCircle(st, s * 0.3, Paint()..color = th.seaTop);
+    c.drawCircle(st, s * 0.42, Paint()..color = const Color(0xFF2A2119));
+    c.drawCircle(st, s * 0.3, Paint()..color = const Color(0xFF0E0B08));
     // Boards: raised platform with tiles
     for (var side = 0; side < g.sides.length; side++) {
       final o = f.boardOrigin(side);

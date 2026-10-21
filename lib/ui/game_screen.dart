@@ -505,7 +505,7 @@ class _GameScreenState extends State<GameScreen>
         focusNode: _keysFocus,
         autofocus: true,
         onKeyEvent: _keys,
-        child: SeaBackdrop(
+        child: FairgroundBackdrop(
           child: SafeArea(
             child: LayoutBuilder(
               builder: (context, c) {

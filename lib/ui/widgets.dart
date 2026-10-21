@@ -103,6 +103,33 @@ Tone toneForTier(int tier) => const [
 // ---------------------------------------------------------------------------
 
 /// The deep-sea gradient behind every menu screen, with soft light rays.
+/// The game's backdrop: an abandoned fairground yard at night, cropped to
+/// cover the whole screen. The middle is bare cobbles, so the board sits on
+/// plain ground and the stalls, crates and fence frame it.
+class FairgroundBackdrop extends StatelessWidget {
+  final Widget child;
+  const FairgroundBackdrop({super.key, required this.child});
+  static const asset = 'assets/backdrop_fairground.jpg';
+  @override
+  Widget build(BuildContext context) => Stack(
+    fit: StackFit.expand,
+    children: [
+      const ColoredBox(color: Vx.bgBottom),
+      Image.asset(
+        asset,
+        fit: BoxFit.cover,
+        // A touch right of centre on tall phones: keeps the torn stall canvas
+        // at the top left clear of the board's corner in co-op.
+        alignment: const Alignment(0.25, 0),
+        filterQuality: FilterQuality.medium,
+        excludeFromSemantics: true,
+        gaplessPlayback: true,
+      ),
+      child,
+    ],
+  );
+}
+
 class SeaBackdrop extends StatelessWidget {
   final Widget child;
   const SeaBackdrop({super.key, required this.child});
