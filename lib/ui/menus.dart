@@ -1404,7 +1404,7 @@ class _BestiaryState extends State<Bestiary> {
             child: ListView(
               padding: const EdgeInsets.fromLTRB(14, 4, 14, 16),
               children: bosses
-                  ? [for (final b in kBosses) _bossCard(b)]
+                  ? [for (final b in kBossById.values) _bossCard(b)]
                   : [for (final e in kEnemies) _enemyCard(e)],
             ),
           ),

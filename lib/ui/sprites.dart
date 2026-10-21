@@ -24,7 +24,7 @@ class Sprites {
     final names = <String>[
       for (final u in kUnits) 'u_${u.id}',
       for (final e in kEnemies) 'e_${e.id}',
-      for (final b in kBosses) 'b_${b.id}',
+      for (final id in kBossById.keys) 'b_$id',
     ];
     await Future.wait(
       names.map((n) async {
