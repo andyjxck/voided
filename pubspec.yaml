@@ -21,6 +21,7 @@ flutter:
   assets:
     - assets/sprites/
     - assets/title.jpg
+    - assets/backdrop.jpg
   fonts:
     - family: Lilita
       fonts:

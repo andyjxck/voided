@@ -510,7 +510,7 @@ class _GameScreenState extends State<GameScreen>
             child: LayoutBuilder(
               builder: (context, c) {
                 // One column everywhere. On a wide screen it sits in the middle
-                // like an arcade cabinet, with the pier lights either side.
+                // like a wooden arcade cabinet.
                 final colW = math.min(c.maxWidth, 620.0);
                 return Stack(
                   children: [
@@ -1868,39 +1868,52 @@ class _GameScreenState extends State<GameScreen>
   );
 }
 
-/// Pier lights down both sides of a wide screen, so the game column looks
-/// like it is standing in an arcade rather than floating in a void.
+/// On a wide screen the game column stands like a wooden arcade cabinet:
+/// the backdrop either side is dimmed and the column gets two weathered
+/// oak posts with a brass strip, instead of floating lights.
 class _CabinetSides extends CustomPainter {
   const _CabinetSides();
   @override
   void paint(Canvas canvas, Size size) {
     final colW = math.min(size.width, 620.0);
     final side = (size.width - colW) / 2;
-    final bulb = Paint();
     for (final x0 in [0.0, size.width - side]) {
       final rect = Rect.fromLTWH(x0, 0, side, size.height);
-      canvas.drawRect(rect, Paint()..color = const Color(0x22000000));
-      final cx = x0 == 0 ? side - 18 : x0 + 18;
-      for (var y = 24.0; y < size.height; y += 34) {
-        final on = ((y / 34).round() % 3) != 0;
-        bulb.color = on ? const Color(0xFFFFE9A8) : const Color(0x66FFE9A8);
-        canvas.drawCircle(Offset(cx, y), 5, bulb);
-        if (on) {
-          canvas.drawCircle(
-            Offset(cx, y),
-            11,
-            Paint()..color = const Color(0x22FFD84A),
-          );
-        }
+      canvas.drawRect(rect, Paint()..color = const Color(0x66000000));
+      // Oak post against the column, lit from the upper left.
+      final left = x0 == 0;
+      final post = Rect.fromLTWH(left ? side - 14 : x0, 0, 14, size.height);
+      canvas.drawRect(
+        post,
+        Paint()
+          ..shader = const LinearGradient(
+            colors: [Color(0xFF7A5B3E), Color(0xFF4A3421), Color(0xFF2E2014)],
+          ).createShader(post),
+      );
+      final grain = Paint()
+        ..color = const Color(0x332E2014)
+        ..strokeWidth = 1;
+      for (var y = 0.0; y < size.height; y += 23) {
+        canvas.drawLine(
+          Offset(post.left + 3, y),
+          Offset(post.left + 10, y + 9),
+          grain,
+        );
       }
-      // A rail between the bulbs and the column.
-      final rx = x0 == 0 ? side - 4 : x0 + 4;
+      final brass = left ? post.right - 2 : post.left;
       canvas.drawLine(
-        Offset(rx, 0),
-        Offset(rx, size.height),
+        Offset(brass + 1, 0),
+        Offset(brass + 1, size.height),
+        Paint()
+          ..color = const Color(0xAAE3B451)
+          ..strokeWidth = 2,
+      );
+      canvas.drawLine(
+        Offset(left ? post.left : post.right, 0),
+        Offset(left ? post.left : post.right, size.height),
         Paint()
           ..color = Vx.ink
-          ..strokeWidth = 4,
+          ..strokeWidth = 3,
       );
     }
   }

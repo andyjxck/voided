@@ -61,28 +61,28 @@ TextStyle body(
 // ---------------------------------------------------------------------------
 
 class Vx {
-  static const ink = Color(0xFF10203F); // every outline
-  static const text = Color(0xFFEAF3FF);
-  static const textDim = Color(0xFFA9C4EA);
-  static const panelTop = Color(0xFF3E7DD0);
-  static const panelBottom = Color(0xFF2B5CAE);
-  static const well = Color(0xFF1C4385);
-  static const wellDeep = Color(0xFF15326A);
-  static const bgTop = Color(0xFF1B4C8F);
-  static const bgBottom = Color(0xFF0D2552);
-  static const gold = Color(0xFFFFD84A);
-  static const glass = Color(0xFF6FE3E0);
+  static const ink = Color(0xFF1B130D); // every outline: tarred wood
+  static const text = Color(0xFFF4EAD3); // bone
+  static const textDim = Color(0xFFC9B795);
+  static const panelTop = Color(0xFF6B5139); // oiled oak
+  static const panelBottom = Color(0xFF47331F);
+  static const well = Color(0xFF2F2418);
+  static const wellDeep = Color(0xFF221A11);
+  static const bgTop = Color(0xFF26302B);
+  static const bgBottom = Color(0xFF12100C);
+  static const gold = Color(0xFFE3B451); // aged brass
+  static const glass = Color(0xFF93CDB9); // sea glass
 }
 
 /// Button colours: face top, face bottom, lip (the 3D edge) and text stroke.
 enum Tone {
-  yellow(Color(0xFFFFE15A), Color(0xFFF6A623), Color(0xFFB86A0C)),
-  green(Color(0xFF8BE85A), Color(0xFF3DB43A), Color(0xFF237523)),
-  blue(Color(0xFF63BDFF), Color(0xFF2E7CE3), Color(0xFF1B4C9C)),
-  red(Color(0xFFFF8473), Color(0xFFE2443C), Color(0xFF9A2323)),
-  purple(Color(0xFFCB93FF), Color(0xFF8B52E3), Color(0xFF5A2C9E)),
-  teal(Color(0xFF6FF0D8), Color(0xFF22B5A8), Color(0xFF14736E)),
-  grey(Color(0xFFB7C2D3), Color(0xFF7C889C), Color(0xFF4E586A));
+  yellow(Color(0xFFEBC66C), Color(0xFFC48F3A), Color(0xFF7A5221)),
+  green(Color(0xFFA6C27C), Color(0xFF668E4C), Color(0xFF39552B)),
+  blue(Color(0xFF86AEC0), Color(0xFF4F7890), Color(0xFF2C4657)),
+  red(Color(0xFFDC8A70), Color(0xFFA9503B), Color(0xFF66291E)),
+  purple(Color(0xFFB79DC6), Color(0xFF7C5E92), Color(0xFF4A3459)),
+  teal(Color(0xFF93C9B6), Color(0xFF4F9082), Color(0xFF2B564D)),
+  grey(Color(0xFFC2BAAA), Color(0xFF878072), Color(0xFF524B41));
 
   final Color top;
   final Color bottom;
@@ -102,56 +102,32 @@ Tone toneForTier(int tier) => const [
 // Backdrops and frames
 // ---------------------------------------------------------------------------
 
-/// The deep-sea gradient behind every menu screen, with soft light rays.
+/// The painted fairground backdrop behind every screen: the weathered
+/// promenade at dusk, darkened at the edges so panels and figurines read.
 class SeaBackdrop extends StatelessWidget {
   final Widget child;
   const SeaBackdrop({super.key, required this.child});
   @override
   Widget build(BuildContext context) => DecoratedBox(
     decoration: const BoxDecoration(
-      gradient: LinearGradient(
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-        colors: [Vx.bgTop, Vx.bgBottom],
+      color: Vx.bgBottom,
+      image: DecorationImage(
+        image: AssetImage('assets/backdrop.jpg'),
+        fit: BoxFit.cover,
+        alignment: Alignment.center,
       ),
     ),
-    child: CustomPaint(painter: _RaysPainter(), child: child),
+    child: DecoratedBox(
+      decoration: const BoxDecoration(
+        gradient: RadialGradient(
+          radius: 1.05,
+          colors: [Color(0x330B0907), Color(0xB30B0907)],
+          stops: [0.45, 1.0],
+        ),
+      ),
+      child: child,
+    ),
   );
-}
-
-class _RaysPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size s) {
-    final p = Paint()..color = Colors.white.withValues(alpha: 0.035);
-    for (var i = 0; i < 6; i++) {
-      final x = s.width * (0.08 + i * 0.18);
-      canvas.drawPath(
-        Path()
-          ..moveTo(x, 0)
-          ..lineTo(x + s.width * 0.07, 0)
-          ..lineTo(x - s.width * 0.12, s.height)
-          ..lineTo(x - s.width * 0.22, s.height)
-          ..close(),
-        p,
-      );
-    }
-    // Bubbles
-    final b = Paint()
-      ..color = Colors.white.withValues(alpha: 0.08)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.5;
-    final r = math.Random(7);
-    for (var i = 0; i < 18; i++) {
-      canvas.drawCircle(
-        Offset(r.nextDouble() * s.width, r.nextDouble() * s.height),
-        2 + r.nextDouble() * 5,
-        b,
-      );
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
 /// The framed blue panel used for every card and pop-up.
