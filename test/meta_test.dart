@@ -260,6 +260,8 @@ void main() {
         ..seaGlass = 321
         ..maxDifficulty = 2
         ..levelReached = 3
+        ..lastMode = GameMode.solo
+        ..lastDifficulty = 2
         ..runs = 9
         ..wins = 3
         ..tutorialDone = true
@@ -277,6 +279,8 @@ void main() {
       expect(back.tutorialDone, isTrue);
       expect(back.sound, isFalse);
       expect(back.levelReached, 3);
+      expect(back.lastMode, GameMode.solo);
+      expect(back.nextDifficulty, Difficulty.storm);
     });
 
     for (final raw in <String?>[

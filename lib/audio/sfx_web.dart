@@ -96,14 +96,23 @@ void unlock() {
   }
 }
 
-void _tone(double f, double dur,
-    {String type = 'square', double vol = 0.2, double at = 0, double? slide, _Node? out, double attack = 0.005}) {
+void _tone(
+  double f,
+  double dur, {
+  String type = 'square',
+  double vol = 0.2,
+  double at = 0,
+  double? slide,
+  _Node? out,
+  double attack = 0.005,
+}) {
   final c = _c();
   if (c == null) return;
   final t = c.currentTime + math.max(0, at);
   final o = c.createOscillator()..type = type;
   o.frequency.setValueAtTime(f, t);
-  if (slide != null) o.frequency.exponentialRampToValueAtTime(math.max(20, slide), t + dur);
+  if (slide != null)
+    o.frequency.exponentialRampToValueAtTime(math.max(20, slide), t + dur);
   final g = c.createGain();
   g.gain.setValueAtTime(0.0001, t);
   g.gain.linearRampToValueAtTime(vol, t + attack);
@@ -114,7 +123,13 @@ void _tone(double f, double dur,
   o.stop(t + dur + 0.05);
 }
 
-void _noiseBurst(double dur, {double vol = 0.2, double freq = 1200, double at = 0, String type = 'lowpass'}) {
+void _noiseBurst(
+  double dur, {
+  double vol = 0.2,
+  double freq = 1200,
+  double at = 0,
+  String type = 'lowpass',
+}) {
   final c = _c();
   if (c == null || _noise == null) return;
   final t = c.currentTime + math.max(0, at);
@@ -150,9 +165,16 @@ void _play(String name, double v) {
       const notes = [0, 4, 7, 12, 16];
       final n = 2 + v.round();
       for (var i = 0; i < n; i++) {
-        _tone(_n(notes[i % 5] + 3), 0.12 + v * 0.03, at: i * 0.05, vol: 0.12 + v * 0.03, type: v >= 3 ? 'sawtooth' : 'square');
+        _tone(
+          _n(notes[i % 5] + 3),
+          0.12 + v * 0.03,
+          at: i * 0.05,
+          vol: 0.12 + v * 0.03,
+          type: v >= 3 ? 'sawtooth' : 'square',
+        );
       }
-      if (v >= 3) _noiseBurst(0.4, vol: 0.15, freq: 4000, type: 'highpass', at: 0.15);
+      if (v >= 3)
+        _noiseBurst(0.4, vol: 0.15, freq: 4000, type: 'highpass', at: 0.15);
     case 'merge':
       for (final s in [0, 4, 7, 12]) {
         _tone(_n(s + 5 + v.round() * 2), 0.35, type: 'triangle', vol: 0.12);
@@ -173,7 +195,13 @@ void _play(String name, double v) {
     case 'hit':
       _noiseBurst(0.04, vol: 0.05, freq: 2500);
     case 'kill':
-      _tone(600 + _r.nextDouble() * 300, 0.07, slide: 200, type: 'square', vol: 0.05);
+      _tone(
+        600 + _r.nextDouble() * 300,
+        0.07,
+        slide: 200,
+        type: 'square',
+        vol: 0.05,
+      );
     case 'bigKill':
       _noiseBurst(0.9, vol: 0.35, freq: 600);
       _tone(110, 0.8, slide: 40, type: 'sawtooth', vol: 0.25);
@@ -188,7 +216,14 @@ void _play(String name, double v) {
       }
     case 'lose':
       for (var i = 0; i < 4; i++) {
-        _tone(_n(-5 - i * 2), 0.45, at: i * 0.3, type: 'triangle', vol: 0.18, slide: _n(-6 - i * 2));
+        _tone(
+          _n(-5 - i * 2),
+          0.45,
+          at: i * 0.3,
+          type: 'triangle',
+          vol: 0.18,
+          slide: _n(-6 - i * 2),
+        );
       }
     case 'gambleWin':
       for (var i = 0; i < 6; i++) {
@@ -230,8 +265,14 @@ const _chords = [
   [-28, -16, -12, -9],
 ];
 const _melody = [
-  [12, 11, 12], [16, 15, 12], [17, 14, 10], [11, 8, 4],
-  [12, 9, 12], [17, 16, 14], [14, 12, 10], [8, 11, 14],
+  [12, 11, 12],
+  [16, 15, 12],
+  [17, 14, 10],
+  [11, 8, 4],
+  [12, 9, 12],
+  [17, 16, 14],
+  [14, 12, 10],
+  [8, 11, 14],
 ];
 
 void music(bool on, bool tense) {
@@ -246,7 +287,10 @@ void music(bool on, bool tense) {
   } catch (_) {}
   if (on && _musicTimer == null) {
     _nextBar = c.currentTime + 0.2;
-    _musicTimer = Timer.periodic(const Duration(milliseconds: 200), (_) => _schedule());
+    _musicTimer = Timer.periodic(
+      const Duration(milliseconds: 200),
+      (_) => _schedule(),
+    );
   } else if (!on) {
     _musicTimer?.cancel();
     _musicTimer = null;
@@ -264,19 +308,48 @@ void _schedule() {
       final ch = _chords[i];
       final at = _nextBar - c.currentTime;
       final bus = _musicBus!;
-      _tone(_n(ch[0]), beat * 0.9, type: 'triangle', vol: 0.22, at: at, out: bus);
+      _tone(
+        _n(ch[0]),
+        beat * 0.9,
+        type: 'triangle',
+        vol: 0.22,
+        at: at,
+        out: bus,
+      );
       for (var b = 1; b < 3; b++) {
         for (final s in ch.sublist(1)) {
-          _tone(_n(s), beat * 0.5, type: 'square', vol: 0.025, at: at + b * beat, out: bus);
+          _tone(
+            _n(s),
+            beat * 0.5,
+            type: 'square',
+            vol: 0.025,
+            at: at + b * beat,
+            out: bus,
+          );
         }
       }
       final mel = _melody[i];
       for (var k = 0; k < 3; k++) {
         final wob = (_bar ~/ 8) % 2 == 1 && k == 2 ? 1 : 0;
-        _tone(_n(mel[k] - 12 + wob), beat * 0.85, type: 'sine', vol: 0.06, at: at + k * beat, out: bus);
-        _tone(_n(mel[k] + wob) * 1.003, beat * 0.85, type: 'triangle', vol: 0.035, at: at + k * beat, out: bus);
+        _tone(
+          _n(mel[k] - 12 + wob),
+          beat * 0.85,
+          type: 'sine',
+          vol: 0.06,
+          at: at + k * beat,
+          out: bus,
+        );
+        _tone(
+          _n(mel[k] + wob) * 1.003,
+          beat * 0.85,
+          type: 'triangle',
+          vol: 0.035,
+          at: at + k * beat,
+          out: bus,
+        );
       }
-      if (_tense) _noiseBurst(0.05, vol: 0.04, freq: 6000, type: 'highpass', at: at);
+      if (_tense)
+        _noiseBurst(0.05, vol: 0.04, freq: 6000, type: 'highpass', at: at);
       _nextBar += beat * 3;
       _bar++;
     }

@@ -20,9 +20,11 @@ String hudLabel(Game g) {
   if (g.wave == 0) {
     when = 'Get ready. Wave 1 in $secs seconds.';
   } else if (g.boss != null) {
-    when = 'Wave ${g.wave}${g.endless ? '' : ' of $kFinalWave'}, boss wave. $secs seconds to beat the boss.';
+    when =
+        'Wave ${g.wave}${g.endless ? '' : ' of $kFinalWave'}, boss wave. $secs seconds to beat the boss.';
   } else {
-    when = 'Wave ${g.wave}${g.endless ? ', Endless' : ' of $kFinalWave'}. Next wave in $secs seconds.';
+    when =
+        'Wave ${g.wave}${g.endless ? ', Endless' : ' of $kFinalWave'}. Next wave in $secs seconds.';
   }
   return '$when ${g.laneCount} of $kLaneLimit sea things on the pier. '
       '${p.pennies} ${p.pennies == 1 ? 'penny' : 'pennies'}, ${p.leaves} tea ${p.leaves == 1 ? 'leaf' : 'leaves'}.';
@@ -64,13 +66,20 @@ String boardSummary(Game g, PlayerSide p, {required String owner}) {
     if (c.isEmpty) continue;
     used++;
     if (g.canMerge(p, i)) mergeable++;
-    counts.update(c.def!.name, (v) => v + c.units.length, ifAbsent: () => c.units.length);
+    counts.update(
+      c.def!.name,
+      (v) => v + c.units.length,
+      ifAbsent: () => c.units.length,
+    );
     tiers[c.def!.name] = c.def!.tier;
   }
   if (used == 0) return '$owner board: empty, ${p.cells.length} spots free.';
-  final names = counts.keys.toList()..sort((a, b) => tiers[b]!.index.compareTo(tiers[a]!.index));
+  final names = counts.keys.toList()
+    ..sort((a, b) => tiers[b]!.index.compareTo(tiers[a]!.index));
   final what = names.map((n) => '${counts[n]} $n').join(', ');
-  final merge = mergeable > 0 ? ' $mergeable ${mergeable == 1 ? 'spot' : 'spots'} ready to merge.' : '';
+  final merge = mergeable > 0
+      ? ' $mergeable ${mergeable == 1 ? 'spot' : 'spots'} ready to merge.'
+      : '';
   return '$owner board: $used of ${p.cells.length} spots used. $what.$merge';
 }
 
@@ -117,7 +126,9 @@ class GameNarrator {
   }
 
   void _push(Spoken s) {
-    _queue.removeWhere((q) => q.text == s.text || (s.kind != null && q.kind == s.kind));
+    _queue.removeWhere(
+      (q) => q.text == s.text || (s.kind != null && q.kind == s.kind),
+    );
     _queue.add(s);
     while (_queue.length > maxQueue) {
       _queue.removeAt(0);
@@ -136,7 +147,9 @@ class GameNarrator {
       _status = g.status;
       _queue.clear();
       final head = g.status == GameStatus.won ? 'You won.' : 'Game over.';
-      out.add(Spoken('$head Reached wave ${g.wave}. ${g.endReason}', urgent: true));
+      out.add(
+        Spoken('$head Reached wave ${g.wave}. ${g.endReason}', urgent: true),
+      );
       _cool = gap;
       return out;
     }
@@ -166,7 +179,9 @@ class GameNarrator {
     }
     if (boss != null && !_bossWarned && g.bossTimer <= 15) {
       _bossWarned = true;
-      _push(Spoken('${g.bossTimer.ceil()} seconds left on the boss.', urgent: true));
+      _push(
+        Spoken('${g.bossTimer.ceil()} seconds left on the boss.', urgent: true),
+      );
     }
 
     // Lane warnings rise a band at a time and only re-arm once the pier has
@@ -180,7 +195,12 @@ class GameNarrator {
       band--;
     }
     if (band > _laneBand) {
-      _push(Spoken('Warning: ${g.laneCount} of $kLaneLimit sea things on the pier.', urgent: band == bands.length));
+      _push(
+        Spoken(
+          'Warning: ${g.laneCount} of $kLaneLimit sea things on the pier.',
+          urgent: band == bands.length,
+        ),
+      );
     }
     _laneBand = band;
 

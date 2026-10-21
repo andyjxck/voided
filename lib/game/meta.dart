@@ -316,6 +316,14 @@ class MetaSave {
 
   /// Highest unlocked Difficulty index.
   int maxDifficulty = 0;
+
+  /// The mode and sea state you last picked, so PLAY starts the same way.
+  GameMode lastMode = GameMode.coop;
+  int lastDifficulty = 0;
+
+  /// Sea state for the next run: the last one picked, if still unlocked.
+  Difficulty get nextDifficulty =>
+      Difficulty.values[lastDifficulty.clamp(0, maxDifficulty)];
   int runs = 0;
   int wins = 0;
   bool tutorialDone = false;
@@ -478,6 +486,8 @@ class MetaSave {
     'levelReached': levelReached,
     'best': best,
     'maxDifficulty': maxDifficulty,
+    'lastMode': lastMode.name,
+    'lastDifficulty': lastDifficulty,
     'runs': runs,
     'wins': wins,
     'tutorialDone': tutorialDone,
@@ -535,6 +545,14 @@ class MetaSave {
       }
       m.maxDifficulty = i(
         j['maxDifficulty'],
+        0,
+      ).clamp(0, Difficulty.values.length - 1);
+      m.lastMode = GameMode.values.firstWhere(
+        (x) => x.name == j['lastMode'],
+        orElse: () => GameMode.coop,
+      );
+      m.lastDifficulty = i(
+        j['lastDifficulty'],
         0,
       ).clamp(0, Difficulty.values.length - 1);
       m.runs = i(j['runs'], 0);

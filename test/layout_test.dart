@@ -65,7 +65,7 @@ void main() {
         await show(t, size, Album(meta: veteran()));
       });
       testWidgets('bestiary', (t) async {
-        await show(t, size, const Bestiary());
+        await show(t, size, Bestiary(meta: veteran()));
       });
       for (final mode in GameMode.values) {
         testWidgets('game, ${mode.name}, 40 seconds in', (t) async {

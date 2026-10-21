@@ -15,7 +15,8 @@ class Sprites {
   static final ValueNotifier<int> loaded = ValueNotifier(0);
 
   static ui.Image? unit(String id) => _img['u_$id'];
-  static ui.Image? enemy(String id) => _img['e_${id == 'wibble' ? 'wobbler' : id}'];
+  static ui.Image? enemy(String id) =>
+      _img['e_${id == 'wibble' ? 'wobbler' : id}'];
   static ui.Image? boss(String id) => _img['b_$id'];
   static ui.Image? named(String name) => _img[name];
 
@@ -26,16 +27,20 @@ class Sprites {
         if (e.id != 'wibble') 'e_${e.id}',
       for (final b in kBosses) 'b_${b.id}',
     ];
-    await Future.wait(names.map((n) async {
-      try {
-        final data = await rootBundle.load('assets/sprites/$n.png');
-        final codec = await ui.instantiateImageCodec(data.buffer.asUint8List());
-        final frame = await codec.getNextFrame();
-        _img[n] = frame.image;
-      } catch (_) {
-        // Missing sprite: the drawn fallback stays.
-      }
-    }));
+    await Future.wait(
+      names.map((n) async {
+        try {
+          final data = await rootBundle.load('assets/sprites/$n.png');
+          final codec = await ui.instantiateImageCodec(
+            data.buffer.asUint8List(),
+          );
+          final frame = await codec.getNextFrame();
+          _img[n] = frame.image;
+        } catch (_) {
+          // Missing sprite: the drawn fallback stays.
+        }
+      }),
+    );
     loaded.value++;
   }
 }

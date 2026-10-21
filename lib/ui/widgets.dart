@@ -17,22 +17,44 @@ const kBodyFont = 'Nunito';
 /// Hard outline made of eight offset shadows, so outlined game text is still
 /// one Text widget (one node for screen readers and for tests).
 List<Shadow> outline(Color c, [double w = 2]) => [
-      for (var i = 0; i < 8; i++)
-        Shadow(color: c, offset: Offset(math.cos(i * math.pi / 4) * w, math.sin(i * math.pi / 4) * w)),
-      Shadow(color: c, offset: Offset(0, w + 1.2)),
-    ];
+  for (var i = 0; i < 8; i++)
+    Shadow(
+      color: c,
+      offset: Offset(
+        math.cos(i * math.pi / 4) * w,
+        math.sin(i * math.pi / 4) * w,
+      ),
+    ),
+  Shadow(color: c, offset: Offset(0, w + 1.2)),
+];
 
-TextStyle display(double size, {Color color = Colors.white, Color stroke = Vx.ink, double w = 2, double spacing = 0.5}) => TextStyle(
-      fontFamily: kDisplayFont,
-      fontSize: size,
-      color: color,
-      height: 1.05,
-      letterSpacing: spacing,
-      shadows: w > 0 ? outline(stroke, w) : null,
-    );
+TextStyle display(
+  double size, {
+  Color color = Colors.white,
+  Color stroke = Vx.ink,
+  double w = 2,
+  double spacing = 0.5,
+}) => TextStyle(
+  fontFamily: kDisplayFont,
+  fontSize: size,
+  color: color,
+  height: 1.05,
+  letterSpacing: spacing,
+  shadows: w > 0 ? outline(stroke, w) : null,
+);
 
-TextStyle body(double size, {Color color = Vx.text, FontWeight weight = FontWeight.w800, double height = 1.25}) =>
-    TextStyle(fontFamily: kBodyFont, fontSize: size, color: color, fontWeight: weight, height: height);
+TextStyle body(
+  double size, {
+  Color color = Vx.text,
+  FontWeight weight = FontWeight.w800,
+  double height = 1.25,
+}) => TextStyle(
+  fontFamily: kBodyFont,
+  fontSize: size,
+  color: color,
+  fontWeight: weight,
+  height: height,
+);
 
 // ---------------------------------------------------------------------------
 // Palette for the menus and HUD
@@ -68,7 +90,13 @@ enum Tone {
   const Tone(this.top, this.bottom, this.lip);
 }
 
-Tone toneForTier(int tier) => const [Tone.grey, Tone.blue, Tone.purple, Tone.yellow, Tone.red][tier.clamp(0, 4)];
+Tone toneForTier(int tier) => const [
+  Tone.grey,
+  Tone.blue,
+  Tone.purple,
+  Tone.yellow,
+  Tone.red,
+][tier.clamp(0, 4)];
 
 // ---------------------------------------------------------------------------
 // Backdrops and frames
@@ -80,11 +108,15 @@ class SeaBackdrop extends StatelessWidget {
   const SeaBackdrop({super.key, required this.child});
   @override
   Widget build(BuildContext context) => DecoratedBox(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Vx.bgTop, Vx.bgBottom]),
-        ),
-        child: CustomPaint(painter: _RaysPainter(), child: child),
-      );
+    decoration: const BoxDecoration(
+      gradient: LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [Vx.bgTop, Vx.bgBottom],
+      ),
+    ),
+    child: CustomPaint(painter: _RaysPainter(), child: child),
+  );
 }
 
 class _RaysPainter extends CustomPainter {
@@ -94,13 +126,14 @@ class _RaysPainter extends CustomPainter {
     for (var i = 0; i < 6; i++) {
       final x = s.width * (0.08 + i * 0.18);
       canvas.drawPath(
-          Path()
-            ..moveTo(x, 0)
-            ..lineTo(x + s.width * 0.07, 0)
-            ..lineTo(x - s.width * 0.12, s.height)
-            ..lineTo(x - s.width * 0.22, s.height)
-            ..close(),
-          p);
+        Path()
+          ..moveTo(x, 0)
+          ..lineTo(x + s.width * 0.07, 0)
+          ..lineTo(x - s.width * 0.12, s.height)
+          ..lineTo(x - s.width * 0.22, s.height)
+          ..close(),
+        p,
+      );
     }
     // Bubbles
     final b = Paint()
@@ -109,7 +142,11 @@ class _RaysPainter extends CustomPainter {
       ..strokeWidth = 1.5;
     final r = math.Random(7);
     for (var i = 0; i < 18; i++) {
-      canvas.drawCircle(Offset(r.nextDouble() * s.width, r.nextDouble() * s.height), 2 + r.nextDouble() * 5, b);
+      canvas.drawCircle(
+        Offset(r.nextDouble() * s.width, r.nextDouble() * s.height),
+        2 + r.nextDouble() * 5,
+        b,
+      );
     }
   }
 
@@ -123,25 +160,45 @@ class GamePanel extends StatelessWidget {
   final EdgeInsets padding;
   final List<Color>? colors;
   final double radius;
-  const GamePanel({super.key, required this.child, this.padding = const EdgeInsets.all(12), this.colors, this.radius = 18});
+  const GamePanel({
+    super.key,
+    required this.child,
+    this.padding = const EdgeInsets.all(12),
+    this.colors,
+    this.radius = 18,
+  });
   @override
   Widget build(BuildContext context) => Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(radius),
-          border: Border.all(color: Vx.ink, width: 3),
-          gradient: LinearGradient(
-              begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: colors ?? const [Vx.panelTop, Vx.panelBottom]),
-          boxShadow: const [BoxShadow(color: Color(0x66000000), offset: Offset(0, 5), blurRadius: 0)],
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(radius),
+      border: Border.all(color: Vx.ink, width: 3),
+      gradient: LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: colors ?? const [Vx.panelTop, Vx.panelBottom],
+      ),
+      boxShadow: const [
+        BoxShadow(
+          color: Color(0x66000000),
+          offset: Offset(0, 5),
+          blurRadius: 0,
         ),
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(radius - 3),
-            border: Border(top: BorderSide(color: Colors.white.withValues(alpha: 0.28), width: 2)),
+      ],
+    ),
+    child: Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(radius - 3),
+        border: Border(
+          top: BorderSide(
+            color: Colors.white.withValues(alpha: 0.28),
+            width: 2,
           ),
-          padding: padding,
-          child: child,
         ),
-      );
+      ),
+      padding: padding,
+      child: child,
+    ),
+  );
 }
 
 /// A recessed area inside a panel.
@@ -150,17 +207,23 @@ class Well extends StatelessWidget {
   final EdgeInsets padding;
   final Color? color;
   final Color? border;
-  const Well({super.key, required this.child, this.padding = const EdgeInsets.all(10), this.color, this.border});
+  const Well({
+    super.key,
+    required this.child,
+    this.padding = const EdgeInsets.all(10),
+    this.color,
+    this.border,
+  });
   @override
   Widget build(BuildContext context) => Container(
-        padding: padding,
-        decoration: BoxDecoration(
-          color: color ?? Vx.well,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: border ?? const Color(0x5510203F), width: 2),
-        ),
-        child: child,
-      );
+    padding: padding,
+    decoration: BoxDecoration(
+      color: color ?? Vx.well,
+      borderRadius: BorderRadius.circular(12),
+      border: Border.all(color: border ?? const Color(0x5510203F), width: 2),
+    ),
+    child: child,
+  );
 }
 
 /// A title plate that sits on the top edge of a panel.
@@ -170,15 +233,23 @@ class Ribbon extends StatelessWidget {
   const Ribbon(this.text, {super.key, this.tone = Tone.yellow});
   @override
   Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.fromLTRB(18, 6, 18, 8),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: Vx.ink, width: 3),
-          gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [tone.top, tone.bottom]),
-          boxShadow: [BoxShadow(color: tone.lip, offset: const Offset(0, 4))],
-        ),
-        child: Text(text, textAlign: TextAlign.center, style: display(22, stroke: tone.lip, w: 2.2)),
-      );
+    padding: const EdgeInsets.fromLTRB(18, 6, 18, 8),
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(14),
+      border: Border.all(color: Vx.ink, width: 3),
+      gradient: LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [tone.top, tone.bottom],
+      ),
+      boxShadow: [BoxShadow(color: tone.lip, offset: const Offset(0, 4))],
+    ),
+    child: Text(
+      text,
+      textAlign: TextAlign.center,
+      style: display(22, stroke: tone.lip, w: 2.2),
+    ),
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -211,41 +282,67 @@ class Chunky extends StatefulWidget {
   });
 
   /// The common case: one outlined label and an optional small line under it.
-  factory Chunky.label(String label,
-          {Key? key,
-          Tone tone = Tone.blue,
-          VoidCallback? onTap,
-          String? sub,
-          double? width,
-          double height = 52,
-          double size = 20,
-          bool enabled = true,
-          Widget? leading,
-          String? semantics}) =>
-      Chunky(
-        key: key,
-        tone: tone,
-        onTap: onTap,
-        width: width,
-        height: height,
-        enabled: enabled,
-        semantics: semantics,
-        child: FittedBox(
-          fit: BoxFit.scaleDown,
-          child: Row(mainAxisSize: MainAxisSize.min, children: [
-            if (leading != null) ...[leading, const SizedBox(width: 6)],
-            Column(mainAxisSize: MainAxisSize.min, children: [
-              Text(label, style: display(size, stroke: (enabled ? tone : Tone.grey).lip, w: 2)),
+  factory Chunky.label(
+    String label, {
+    Key? key,
+    Tone tone = Tone.blue,
+    VoidCallback? onTap,
+    String? sub,
+    double? width,
+    double height = 52,
+    double size = 20,
+    bool enabled = true,
+    Widget? leading,
+    String? semantics,
+  }) => Chunky(
+    key: key,
+    tone: tone,
+    onTap: onTap,
+    width: width,
+    height: height,
+    enabled: enabled,
+    semantics: semantics,
+    child: FittedBox(
+      fit: BoxFit.scaleDown,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (leading != null) ...[leading, const SizedBox(width: 6)],
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                label,
+                style: display(
+                  size,
+                  stroke: (enabled ? tone : Tone.grey).lip,
+                  w: 2,
+                ),
+              ),
               if (sub != null && sub.isNotEmpty)
                 Padding(
                   padding: const EdgeInsets.only(top: 1),
-                  child: Text(sub, style: body(size * 0.55, color: Colors.white, weight: FontWeight.w900)
-                      .copyWith(shadows: outline((enabled ? tone : Tone.grey).lip, 1.2))),
+                  child: Text(
+                    sub,
+                    style:
+                        body(
+                          size * 0.55,
+                          color: Colors.white,
+                          weight: FontWeight.w900,
+                        ).copyWith(
+                          shadows: outline(
+                            (enabled ? tone : Tone.grey).lip,
+                            1.2,
+                          ),
+                        ),
+                  ),
                 ),
-            ]),
-          ]),
-        ),
-      );
+            ],
+          ),
+        ],
+      ),
+    ),
+  );
 
   @override
   State<Chunky> createState() => _ChunkyState();
@@ -264,42 +361,53 @@ class _ChunkyState extends State<Chunky> {
       decoration: BoxDecoration(
         borderRadius: r,
         border: Border.all(color: Vx.ink, width: 2.5),
-        gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [t.top, t.bottom]),
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [t.top, t.bottom],
+        ),
       ),
-      child: Stack(children: [
-        // Gloss across the top half.
-        Positioned(
-          left: 5,
-          right: 5,
-          top: 3,
-          height: (widget.height - 10) * 0.36,
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(widget.radius),
-              color: Colors.white.withValues(alpha: 0.26),
+      child: Stack(
+        children: [
+          // Gloss across the top half.
+          Positioned(
+            left: 5,
+            right: 5,
+            top: 3,
+            height: (widget.height - 10) * 0.36,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(widget.radius),
+                color: Colors.white.withValues(alpha: 0.26),
+              ),
             ),
           ),
-        ),
-        Padding(padding: widget.padding, child: Center(child: widget.child)),
-      ]),
+          Padding(
+            padding: widget.padding,
+            child: Center(child: widget.child),
+          ),
+        ],
+      ),
     );
     final box = SizedBox(
       width: widget.width,
       height: widget.height,
-      child: Stack(children: [
-        // The lip
-        Positioned.fill(
-          top: 5,
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              borderRadius: r,
-              color: t.lip,
-              border: Border.all(color: Vx.ink, width: 2.5),
+      child: Stack(
+        children: [
+          // The lip
+          Positioned.fill(
+            top: 5,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                borderRadius: r,
+                color: t.lip,
+                border: Border.all(color: Vx.ink, width: 2.5),
+              ),
             ),
           ),
-        ),
-        Positioned.fill(child: face),
-      ]),
+          Positioned.fill(child: face),
+        ],
+      ),
     );
     final tappable = widget.onTap != null;
     return Semantics(
@@ -328,15 +436,20 @@ class CloseX extends StatelessWidget {
   const CloseX({super.key, required this.onTap});
   @override
   Widget build(BuildContext context) => Chunky(
-        tone: Tone.red,
-        width: 44,
-        height: 44,
-        radius: 22,
-        padding: EdgeInsets.zero,
-        semantics: 'Close',
-        onTap: onTap,
-        child: const Icon(Icons.close_rounded, color: Colors.white, size: 24, shadows: [Shadow(color: Vx.ink, offset: Offset(0, 2))]),
-      );
+    tone: Tone.red,
+    width: 44,
+    height: 44,
+    radius: 22,
+    padding: EdgeInsets.zero,
+    semantics: 'Close',
+    onTap: onTap,
+    child: const Icon(
+      Icons.close_rounded,
+      color: Colors.white,
+      size: 24,
+      shadows: [Shadow(color: Vx.ink, offset: Offset(0, 2))],
+    ),
+  );
 }
 
 /// Square icon button with a caption, used on the home screen and in the bar
@@ -350,48 +463,80 @@ class IconTile extends StatelessWidget {
   final VoidCallback onTap;
   final double size;
   final String? semantics;
-  const IconTile(
-      {super.key, this.sprite, this.icon, required this.label, this.tone = Tone.blue, this.badge, required this.onTap, this.size = 64, this.semantics});
+  const IconTile({
+    super.key,
+    this.sprite,
+    this.icon,
+    required this.label,
+    this.tone = Tone.blue,
+    this.badge,
+    required this.onTap,
+    this.size = 64,
+    this.semantics,
+  });
   @override
-  Widget build(BuildContext context) => Stack(clipBehavior: Clip.none, children: [
-        Chunky(
-          tone: tone,
-          width: size,
-          height: size + 8,
-          padding: const EdgeInsets.fromLTRB(2, 2, 2, 0),
-          semantics: semantics ?? label,
-          onTap: onTap,
-          child: Column(mainAxisSize: MainAxisSize.min, children: [
+  Widget build(BuildContext context) => Stack(
+    clipBehavior: Clip.none,
+    children: [
+      Chunky(
+        tone: tone,
+        width: size,
+        height: size + 8,
+        padding: const EdgeInsets.fromLTRB(2, 2, 2, 0),
+        semantics: semantics ?? label,
+        onTap: onTap,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.only(top: 2),
                 child: sprite != null
                     ? SpriteImg(sprite!, size: size * 0.52)
-                    : Icon(icon, color: Colors.white, size: size * 0.42, shadows: const [Shadow(color: Vx.ink, offset: Offset(0, 2))]),
+                    : Icon(
+                        icon,
+                        color: Colors.white,
+                        size: size * 0.42,
+                        shadows: const [
+                          Shadow(color: Vx.ink, offset: Offset(0, 2)),
+                        ],
+                      ),
               ),
             ),
-            FittedBox(fit: BoxFit.scaleDown, child: Text(label, style: display(size * 0.2, stroke: tone.lip, w: 1.6))),
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                label,
+                style: display(size * 0.2, stroke: tone.lip, w: 1.6),
+              ),
+            ),
             SizedBox(height: size * 0.06),
-          ]),
+          ],
         ),
-        if (badge != null)
-          Positioned(
-            right: -4,
-            top: -6,
-            child: ExcludeSemantics(
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
-                constraints: const BoxConstraints(minWidth: 22),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFF4D4D),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Vx.ink, width: 2),
-                ),
-                child: Text(badge!, textAlign: TextAlign.center, style: display(13, w: 1.2)),
+      ),
+      if (badge != null)
+        Positioned(
+          right: -4,
+          top: -6,
+          child: ExcludeSemantics(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+              constraints: const BoxConstraints(minWidth: 22),
+              decoration: BoxDecoration(
+                color: const Color(0xFFFF4D4D),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Vx.ink, width: 2),
+              ),
+              child: Text(
+                badge!,
+                textAlign: TextAlign.center,
+                style: display(13, w: 1.2),
               ),
             ),
           ),
-      ]);
+        ),
+    ],
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -415,7 +560,13 @@ class SpriteImg extends StatelessWidget {
       errorBuilder: (_, _, _) => SizedBox(width: size, height: size),
     );
     if (dim) {
-      img = ColorFiltered(colorFilter: const ColorFilter.mode(Color(0xFF0E2348), BlendMode.srcATop), child: img);
+      img = ColorFiltered(
+        colorFilter: const ColorFilter.mode(
+          Color(0xFF0E2348),
+          BlendMode.srcATop,
+        ),
+        child: img,
+      );
     }
     return ExcludeSemantics(child: img);
   }
@@ -426,22 +577,34 @@ class CurrencyChip extends StatelessWidget {
   final Color color;
   final String value;
   final String? sprite;
-  const CurrencyChip({super.key, required this.icon, required this.color, required this.value, this.sprite});
+  const CurrencyChip({
+    super.key,
+    required this.icon,
+    required this.color,
+    required this.value,
+    this.sprite,
+  });
   @override
   Widget build(BuildContext context) => Container(
-        height: 30,
-        padding: const EdgeInsets.fromLTRB(2, 0, 10, 0),
-        decoration: BoxDecoration(
-          color: const Color(0xCC0A1A3A),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Vx.ink, width: 2),
-        ),
-        child: Row(mainAxisSize: MainAxisSize.min, children: [
-          if (sprite != null) SpriteImg(sprite!, size: 26) else Icon(icon, color: color, size: 20),
-          const SizedBox(width: 4),
-          Text(value, style: display(16, w: 1.5)),
-        ]),
-      );
+    height: 30,
+    padding: const EdgeInsets.fromLTRB(2, 0, 10, 0),
+    decoration: BoxDecoration(
+      color: const Color(0xCC0A1A3A),
+      borderRadius: BorderRadius.circular(16),
+      border: Border.all(color: Vx.ink, width: 2),
+    ),
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (sprite != null)
+          SpriteImg(sprite!, size: 26)
+        else
+          Icon(icon, color: color, size: 20),
+        const SizedBox(width: 4),
+        Text(value, style: display(16, w: 1.5)),
+      ],
+    ),
+  );
 }
 
 class LaneMeter extends StatelessWidget {
@@ -451,34 +614,48 @@ class LaneMeter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final f = (count / limit).clamp(0.0, 1.0);
-    final col = f < 0.5 ? const Color(0xFF63E05A) : (f < 0.8 ? const Color(0xFFFFC233) : const Color(0xFFFF4D4D));
-    return LayoutBuilder(builder: (context, c) {
-      return Container(
-        height: 20,
-        decoration: BoxDecoration(
-          color: const Color(0xFF0A1A3A),
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: Vx.ink, width: 2),
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(8),
-          child: Stack(children: [
-            FractionallySizedBox(
-              widthFactor: f,
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                      begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color.lerp(col, Colors.white, 0.35)!, col]),
+    final col = f < 0.5
+        ? const Color(0xFF63E05A)
+        : (f < 0.8 ? const Color(0xFFFFC233) : const Color(0xFFFF4D4D));
+    return LayoutBuilder(
+      builder: (context, c) {
+        return Container(
+          height: 20,
+          decoration: BoxDecoration(
+            color: const Color(0xFF0A1A3A),
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: Vx.ink, width: 2),
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: Stack(
+              children: [
+                FractionallySizedBox(
+                  widthFactor: f,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [Color.lerp(col, Colors.white, 0.35)!, col],
+                      ),
+                    ),
+                  ),
                 ),
-              ),
+                Center(
+                  child: Text(
+                    c.maxWidth >= 190
+                        ? '$count / $limit on the pier'
+                        : '$count / $limit',
+                    style: display(12, w: 1.4),
+                  ),
+                ),
+              ],
             ),
-            Center(
-              child: Text(c.maxWidth >= 190 ? '$count / $limit on the pier' : '$count / $limit', style: display(12, w: 1.4)),
-            ),
-          ]),
-        ),
-      );
-    });
+          ),
+        );
+      },
+    );
   }
 }
 
@@ -488,31 +665,50 @@ class SpeechBubble extends StatelessWidget {
   const SpeechBubble({super.key, required this.speaker, required this.text});
   @override
   Widget build(BuildContext context) => Center(
-        child: Container(
-          constraints: const BoxConstraints(maxWidth: 520),
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-          decoration: BoxDecoration(
-            color: const Color(0xFFFFFBEF),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Vx.ink, width: 2.5),
-            boxShadow: const [BoxShadow(color: Color(0x55000000), offset: Offset(0, 4))],
-          ),
-          child: RichText(
-            textAlign: TextAlign.center,
-            text: TextSpan(children: [
-              TextSpan(text: '$speaker  ', style: const TextStyle(fontFamily: kDisplayFont, color: Color(0xFFD9447A), fontSize: 14)),
-              TextSpan(text: text, style: body(13, color: Vx.ink)),
-            ]),
-          ),
+    child: Container(
+      constraints: const BoxConstraints(maxWidth: 520),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+      decoration: BoxDecoration(
+        color: const Color(0xFFFFFBEF),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Vx.ink, width: 2.5),
+        boxShadow: const [
+          BoxShadow(color: Color(0x55000000), offset: Offset(0, 4)),
+        ],
+      ),
+      child: RichText(
+        textAlign: TextAlign.center,
+        text: TextSpan(
+          children: [
+            TextSpan(
+              text: '$speaker  ',
+              style: const TextStyle(
+                fontFamily: kDisplayFont,
+                color: Color(0xFFD9447A),
+                fontSize: 14,
+              ),
+            ),
+            TextSpan(
+              text: text,
+              style: body(13, color: Vx.ink),
+            ),
+          ],
         ),
-      );
+      ),
+    ),
+  );
 }
 
 class BigBanner extends StatelessWidget {
   final String title;
   final String sub;
   final double k; // seconds left
-  const BigBanner({super.key, required this.title, required this.sub, required this.k});
+  const BigBanner({
+    super.key,
+    required this.title,
+    required this.sub,
+    required this.k,
+  });
   @override
   Widget build(BuildContext context) {
     final a = k.clamp(0.0, 0.4) / 0.4;
@@ -523,14 +719,31 @@ class BigBanner extends StatelessWidget {
         scale: scale.clamp(1.0, 1.3),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Column(mainAxisSize: MainAxisSize.min, children: [
-            Text(title, textAlign: TextAlign.center, style: display(34, color: Vx.gold, stroke: Vx.ink, w: 3, spacing: 1)),
-            if (sub.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.only(top: 4),
-                child: Text(sub, textAlign: TextAlign.center, style: display(18, w: 2)),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                title,
+                textAlign: TextAlign.center,
+                style: display(
+                  34,
+                  color: Vx.gold,
+                  stroke: Vx.ink,
+                  w: 3,
+                  spacing: 1,
+                ),
               ),
-          ]),
+              if (sub.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(top: 4),
+                  child: Text(
+                    sub,
+                    textAlign: TextAlign.center,
+                    style: display(18, w: 2),
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
     );
@@ -542,14 +755,14 @@ class ToastPill extends StatelessWidget {
   const ToastPill({super.key, required this.text});
   @override
   Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        decoration: BoxDecoration(
-          color: const Color(0xF20A1A3A),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Vx.ink, width: 2),
-        ),
-        child: Text(text, style: body(13, color: Colors.white)),
-      );
+    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+    decoration: BoxDecoration(
+      color: const Color(0xF20A1A3A),
+      borderRadius: BorderRadius.circular(20),
+      border: Border.all(color: Vx.ink, width: 2),
+    ),
+    child: Text(text, style: body(13, color: Colors.white)),
+  );
 }
 
 /// Small chunky action used in lists and on the board pop-up.
@@ -561,20 +774,29 @@ class ActionBtn extends StatelessWidget {
   final VoidCallback onTap;
   final Tone? tone;
   final double width;
-  const ActionBtn(
-      {super.key, required this.label, required this.sub, required this.color, this.enabled = true, required this.onTap, this.tone, this.width = 84});
+  const ActionBtn({
+    super.key,
+    required this.label,
+    required this.sub,
+    required this.color,
+    this.enabled = true,
+    required this.onTap,
+    this.tone,
+    this.width = 84,
+  });
   @override
   Widget build(BuildContext context) => Chunky.label(
-        label,
-        sub: sub,
-        tone: tone ?? Tone.blue,
-        width: width,
-        height: 50,
-        size: 16,
-        enabled: enabled,
-        semantics: '$label${sub.isEmpty ? '' : ', $sub'}${enabled ? '' : ', not available'}',
-        onTap: enabled ? onTap : null,
-      );
+    label,
+    sub: sub,
+    tone: tone ?? Tone.blue,
+    width: width,
+    height: 50,
+    size: 16,
+    enabled: enabled,
+    semantics:
+        '$label${sub.isEmpty ? '' : ', $sub'}${enabled ? '' : ', not available'}',
+    onTap: enabled ? onTap : null,
+  );
 }
 
 class SummonButton extends StatelessWidget {
@@ -582,38 +804,70 @@ class SummonButton extends StatelessWidget {
   final bool enabled;
   final bool glow;
   final VoidCallback onTap;
-  const SummonButton({super.key, required this.cost, required this.enabled, required this.onTap, this.glow = false});
+  const SummonButton({
+    super.key,
+    required this.cost,
+    required this.enabled,
+    required this.onTap,
+    this.glow = false,
+  });
   @override
   Widget build(BuildContext context) => DecoratedBox(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: glow ? const [BoxShadow(color: Color(0xCCFFE15A), blurRadius: 18, spreadRadius: 2)] : null,
-        ),
-        child: Chunky(
-          tone: enabled ? Tone.yellow : Tone.grey,
-          height: 74,
-          radius: 20,
-          padding: const EdgeInsets.symmetric(horizontal: 6),
-          semantics: 'Summon a figurine, $cost pennies${enabled ? '' : ', not available now'}',
-          onTap: onTap,
-          child: FittedBox(
-            fit: BoxFit.scaleDown,
-            child: Column(mainAxisSize: MainAxisSize.min, children: [
-              Text('SUMMON', style: display(24, stroke: (enabled ? Tone.yellow : Tone.grey).lip, w: 2.4, spacing: 1)),
-              const SizedBox(height: 2),
-              Container(
-                padding: const EdgeInsets.fromLTRB(2, 1, 9, 1),
-                decoration: BoxDecoration(color: const Color(0x55000000), borderRadius: BorderRadius.circular(12)),
-                child: Row(mainAxisSize: MainAxisSize.min, children: [
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(20),
+      boxShadow: glow
+          ? const [
+              BoxShadow(
+                color: Color(0xCCFFE15A),
+                blurRadius: 18,
+                spreadRadius: 2,
+              ),
+            ]
+          : null,
+    ),
+    child: Chunky(
+      tone: enabled ? Tone.yellow : Tone.grey,
+      height: 74,
+      radius: 20,
+      padding: const EdgeInsets.symmetric(horizontal: 6),
+      semantics:
+          'Summon a figurine, $cost pennies${enabled ? '' : ', not available now'}',
+      onTap: onTap,
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'SUMMON',
+              style: display(
+                24,
+                stroke: (enabled ? Tone.yellow : Tone.grey).lip,
+                w: 2.4,
+                spacing: 1,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Container(
+              padding: const EdgeInsets.fromLTRB(2, 1, 9, 1),
+              decoration: BoxDecoration(
+                color: const Color(0x55000000),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
                   const SpriteImg('i_penny', size: 18),
                   const SizedBox(width: 3),
                   Text('$cost', style: display(15, w: 1.4)),
-                ]),
+                ],
               ),
-            ]),
-          ),
+            ),
+          ],
         ),
-      );
+      ),
+    ),
+  );
 }
 
 /// Kept for the old call sites: a square tool button with an icon or sprite.
@@ -625,21 +879,29 @@ class SmallCtl extends StatelessWidget {
   final VoidCallback onTap;
   final String? sprite;
   final Tone tone;
-  const SmallCtl(
-      {super.key, required this.icon, required this.label, required this.color, this.badge, required this.onTap, this.sprite, this.tone = Tone.blue});
+  const SmallCtl({
+    super.key,
+    required this.icon,
+    required this.label,
+    required this.color,
+    this.badge,
+    required this.onTap,
+    this.sprite,
+    this.tone = Tone.blue,
+  });
   @override
   Widget build(BuildContext context) => LayoutBuilder(
-        builder: (context, c) => IconTile(
-          sprite: sprite,
-          icon: icon,
-          label: label,
-          tone: tone,
-          badge: badge,
-          onTap: onTap,
-          size: math.min(66, c.maxWidth.isFinite ? c.maxWidth : 66),
-          semantics: badge == null ? label : '$label, $badge',
-        ),
-      );
+    builder: (context, c) => IconTile(
+      sprite: sprite,
+      icon: icon,
+      label: label,
+      tone: tone,
+      badge: badge,
+      onTap: onTap,
+      size: math.min(66, c.maxWidth.isFinite ? c.maxWidth : 66),
+      semantics: badge == null ? label : '$label, $badge',
+    ),
+  );
 }
 
 /// A full-width row button for lists in pop-ups: an optional picture on the
@@ -653,45 +915,73 @@ class WideBtn extends StatelessWidget {
   final Widget? leading;
   final String? price;
   final Tone tone;
-  const WideBtn(
-      {super.key,
-      required this.title,
-      required this.sub,
-      required this.color,
-      this.enabled = true,
-      required this.onTap,
-      this.leading,
-      this.price,
-      this.tone = Tone.blue});
+  const WideBtn({
+    super.key,
+    required this.title,
+    required this.sub,
+    required this.color,
+    this.enabled = true,
+    required this.onTap,
+    this.leading,
+    this.price,
+    this.tone = Tone.blue,
+  });
   @override
   Widget build(BuildContext context) => Chunky(
-        tone: tone,
-        enabled: enabled,
-        height: 66,
-        padding: const EdgeInsets.fromLTRB(8, 0, 10, 0),
-        semantics: '$title. $sub${price != null ? '. $price' : ''}${enabled ? '' : '. Not available'}',
-        onTap: enabled ? onTap : null,
-        child: Row(children: [
-          if (leading != null) ...[SizedBox(width: 46, height: 46, child: leading), const SizedBox(width: 8)],
-          Expanded(
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.center, children: [
-              Text(title, maxLines: 1, overflow: TextOverflow.ellipsis, style: display(16, stroke: (enabled ? tone : Tone.grey).lip, w: 1.6)),
-              Text(sub,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: body(11.5, color: Colors.white, weight: FontWeight.w800).copyWith(shadows: outline((enabled ? tone : Tone.grey).lip, 1))),
-            ]),
+    tone: tone,
+    enabled: enabled,
+    height: 66,
+    padding: const EdgeInsets.fromLTRB(8, 0, 10, 0),
+    semantics:
+        '$title. $sub${price != null ? '. $price' : ''}${enabled ? '' : '. Not available'}',
+    onTap: enabled ? onTap : null,
+    child: Row(
+      children: [
+        if (leading != null) ...[
+          SizedBox(width: 46, height: 46, child: leading),
+          const SizedBox(width: 8),
+        ],
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                title,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: display(
+                  16,
+                  stroke: (enabled ? tone : Tone.grey).lip,
+                  w: 1.6,
+                ),
+              ),
+              Text(
+                sub,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: body(11.5, color: Colors.white, weight: FontWeight.w800)
+                    .copyWith(
+                      shadows: outline((enabled ? tone : Tone.grey).lip, 1),
+                    ),
+              ),
+            ],
           ),
-          if (price != null) ...[
-            const SizedBox(width: 6),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(color: const Color(0x44000000), borderRadius: BorderRadius.circular(10)),
-              child: Text(price!, style: display(14, w: 1.4)),
+        ),
+        if (price != null) ...[
+          const SizedBox(width: 6),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            decoration: BoxDecoration(
+              color: const Color(0x44000000),
+              borderRadius: BorderRadius.circular(10),
             ),
-          ],
-        ]),
-      );
+            child: Text(price!, style: display(14, w: 1.4)),
+          ),
+        ],
+      ],
+    ),
+  );
 }
 
 class MenuButton extends StatelessWidget {
@@ -701,19 +991,27 @@ class MenuButton extends StatelessWidget {
   final bool primary;
   final String? sub;
   final Tone? tone;
-  const MenuButton({super.key, required this.label, required this.onTap, this.danger = false, this.primary = false, this.sub, this.tone});
+  const MenuButton({
+    super.key,
+    required this.label,
+    required this.onTap,
+    this.danger = false,
+    this.primary = false,
+    this.sub,
+    this.tone,
+  });
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.symmetric(vertical: 5),
-        child: Chunky.label(
-          label,
-          sub: sub,
-          width: 280,
-          height: sub == null ? 54 : 62,
-          tone: tone ?? (primary ? Tone.yellow : (danger ? Tone.red : Tone.blue)),
-          onTap: onTap,
-        ),
-      );
+    padding: const EdgeInsets.symmetric(vertical: 5),
+    child: Chunky.label(
+      label,
+      sub: sub,
+      width: 280,
+      height: sub == null ? 54 : 62,
+      tone: tone ?? (primary ? Tone.yellow : (danger ? Tone.red : Tone.blue)),
+      onTap: onTap,
+    ),
+  );
 }
 
 class StatTile extends StatelessWidget {
@@ -722,16 +1020,21 @@ class StatTile extends StatelessWidget {
   const StatTile(this.label, this.value, {super.key});
   @override
   Widget build(BuildContext context) => SizedBox(
-        width: 104,
-        child: Well(
-          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 6),
-          child: Column(children: [
-            FittedBox(fit: BoxFit.scaleDown, child: Text(value, style: display(20, w: 1.6))),
-            const SizedBox(height: 2),
-            Text(label, style: body(11, color: Vx.textDim)),
-          ]),
-        ),
-      );
+    width: 104,
+    child: Well(
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 6),
+      child: Column(
+        children: [
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(value, style: display(20, w: 1.6)),
+          ),
+          const SizedBox(height: 2),
+          Text(label, style: body(11, color: Vx.textDim)),
+        ],
+      ),
+    ),
+  );
 }
 
 /// A determinate bar with a label on it, for album copies and the like.
@@ -740,23 +1043,34 @@ class ProgressPill extends StatelessWidget {
   final String label;
   final Color color;
   final double height;
-  const ProgressPill({super.key, required this.value, required this.label, this.color = const Color(0xFF63E05A), this.height = 16});
+  const ProgressPill({
+    super.key,
+    required this.value,
+    required this.label,
+    this.color = const Color(0xFF63E05A),
+    this.height = 16,
+  });
   @override
   Widget build(BuildContext context) => Container(
-        height: height,
-        decoration: BoxDecoration(
-          color: const Color(0xFF0A1A3A),
-          borderRadius: BorderRadius.circular(height / 2),
-          border: Border.all(color: Vx.ink, width: 1.5),
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(height / 2),
-          child: Stack(children: [
-            FractionallySizedBox(widthFactor: value.clamp(0.0, 1.0), child: Container(color: color)),
-            Center(child: Text(label, style: display(height * 0.68, w: 1.1))),
-          ]),
-        ),
-      );
+    height: height,
+    decoration: BoxDecoration(
+      color: const Color(0xFF0A1A3A),
+      borderRadius: BorderRadius.circular(height / 2),
+      border: Border.all(color: Vx.ink, width: 1.5),
+    ),
+    child: ClipRRect(
+      borderRadius: BorderRadius.circular(height / 2),
+      child: Stack(
+        children: [
+          FractionallySizedBox(
+            widthFactor: value.clamp(0.0, 1.0),
+            child: Container(color: color),
+          ),
+          Center(child: Text(label, style: display(height * 0.68, w: 1.1))),
+        ],
+      ),
+    ),
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -765,7 +1079,13 @@ class ProgressPill extends StatelessWidget {
 
 /// The game's pop-up: a framed panel with a title plate and a close button,
 /// centred over a dimmed screen.
-Future<T?> showGameDialog<T>(BuildContext context, {required String title, required WidgetBuilder builder, double maxWidth = 460, Tone tone = Tone.yellow}) {
+Future<T?> showGameDialog<T>(
+  BuildContext context, {
+  required String title,
+  required WidgetBuilder builder,
+  double maxWidth = 460,
+  Tone tone = Tone.yellow,
+}) {
   return showGeneralDialog<T>(
     context: context,
     barrierDismissible: true,
@@ -781,8 +1101,16 @@ Future<T?> showGameDialog<T>(BuildContext context, {required String title, requi
         child: Padding(
           padding: const EdgeInsets.fromLTRB(12, 24, 12, 12),
           child: ConstrainedBox(
-            constraints: BoxConstraints(maxWidth: maxWidth, maxHeight: MediaQuery.of(ctx).size.height * 0.86),
-            child: GameDialogFrame(title: title, tone: tone, onClose: () => Navigator.of(ctx).maybePop(), child: builder(ctx)),
+            constraints: BoxConstraints(
+              maxWidth: maxWidth,
+              maxHeight: MediaQuery.of(ctx).size.height * 0.86,
+            ),
+            child: GameDialogFrame(
+              title: title,
+              tone: tone,
+              onClose: () => Navigator.of(ctx).maybePop(),
+              child: builder(ctx),
+            ),
           ),
         ),
       ),
@@ -795,22 +1123,43 @@ class GameDialogFrame extends StatelessWidget {
   final Widget child;
   final VoidCallback? onClose;
   final Tone tone;
-  const GameDialogFrame({super.key, required this.title, required this.child, this.onClose, this.tone = Tone.yellow});
+  const GameDialogFrame({
+    super.key,
+    required this.title,
+    required this.child,
+    this.onClose,
+    this.tone = Tone.yellow,
+  });
   @override
   Widget build(BuildContext context) => Material(
-        type: MaterialType.transparency,
-        child: Stack(clipBehavior: Clip.none, children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 22),
-            child: GamePanel(
-              padding: const EdgeInsets.fromLTRB(12, 34, 12, 14),
-              child: Semantics(scopesRoute: true, namesRoute: true, label: title, explicitChildNodes: true, child: child),
+    type: MaterialType.transparency,
+    child: Stack(
+      clipBehavior: Clip.none,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(top: 22),
+          child: GamePanel(
+            padding: const EdgeInsets.fromLTRB(12, 34, 12, 14),
+            child: Semantics(
+              scopesRoute: true,
+              namesRoute: true,
+              label: title,
+              explicitChildNodes: true,
+              child: child,
             ),
           ),
-          Positioned(left: 50, right: 50, top: 0, child: Center(child: Ribbon(title, tone: tone))),
-          if (onClose != null) Positioned(right: -6, top: 10, child: CloseX(onTap: onClose!)),
-        ]),
-      );
+        ),
+        Positioned(
+          left: 50,
+          right: 50,
+          top: 0,
+          child: Center(child: Ribbon(title, tone: tone)),
+        ),
+        if (onClose != null)
+          Positioned(right: -6, top: 10, child: CloseX(onTap: onClose!)),
+      ],
+    ),
+  );
 }
 
 /// Screen header for the menu pages: back button, title plate, sea glass.
@@ -820,22 +1169,39 @@ class ScreenHeader extends StatelessWidget {
   const ScreenHeader({super.key, required this.title, this.trailing});
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.fromLTRB(10, 8, 10, 6),
-        child: Row(children: [
-          Chunky(
-            tone: Tone.blue,
-            width: 48,
-            height: 48,
-            padding: EdgeInsets.zero,
-            semantics: 'Back',
-            onTap: () => Navigator.of(context).maybePop(),
-            child: const Icon(Icons.arrow_back_rounded, color: Colors.white, size: 26, shadows: [Shadow(color: Vx.ink, offset: Offset(0, 2))]),
+    padding: const EdgeInsets.fromLTRB(10, 8, 10, 6),
+    child: Row(
+      children: [
+        Chunky(
+          tone: Tone.blue,
+          width: 48,
+          height: 48,
+          padding: EdgeInsets.zero,
+          semantics: 'Back',
+          onTap: () => Navigator.of(context).maybePop(),
+          child: const Icon(
+            Icons.arrow_back_rounded,
+            color: Colors.white,
+            size: 26,
+            shadows: [Shadow(color: Vx.ink, offset: Offset(0, 2))],
           ),
-          const SizedBox(width: 10),
-          Expanded(child: Semantics(header: true, child: Text(title, maxLines: 1, overflow: TextOverflow.ellipsis, style: display(26, w: 2.4)))),
-          ?trailing,
-        ]),
-      );
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Semantics(
+            header: true,
+            child: Text(
+              title,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: display(26, w: 2.4),
+            ),
+          ),
+        ),
+        ?trailing,
+      ],
+    ),
+  );
 }
 
 // Keep the old palette name reachable from the kit for screens that only

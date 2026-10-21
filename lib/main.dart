@@ -16,7 +16,12 @@ Future<void> main() async {
   final meta = MetaSave.decode(prefs?.getString(kSaveKey));
   Sfx.sound = meta.sound;
   Sfx.music = meta.music;
-  runApp(PierPressureApp(meta: meta, save: () => prefs?.setString(kSaveKey, meta.encode())));
+  runApp(
+    PierPressureApp(
+      meta: meta,
+      save: () => prefs?.setString(kSaveKey, meta.encode()),
+    ),
+  );
 }
 
 class PierPressureApp extends StatelessWidget {
@@ -27,11 +32,14 @@ class PierPressureApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Pier Pressure',
+      title: 'Voided',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         brightness: Brightness.dark,
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFFFFD34D), brightness: Brightness.dark),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFFFFD34D),
+          brightness: Brightness.dark,
+        ),
         scaffoldBackgroundColor: const Color(0xFF0B1630),
         useMaterial3: true,
       ),
