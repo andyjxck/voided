@@ -1,6 +1,8 @@
 // Voided — all static game data: figurines, sea things, bosses, odds,
 // economy constants. Everything tunable lives here.
 
+part 'content.dart';
+
 /// Enemy health in Solo, as a fraction of Co-op health. One constant, on
 /// purpose: tune it here and every enemy, mini-boss and boss follows.
 /// Started at 0.65 (the brief). The balance sims (tool/balance.dart,
@@ -10,7 +12,9 @@ const double kSoloHpMultiplier = 0.5;
 
 /// Bosses also take [kSoloHpMultiplier] in Solo, times this. 1.0 means bosses
 /// scale exactly like everything else (the sims showed they stay a fight).
-const double kSoloBossExtra = 1.0;
+final double kSoloBossExtra = double.parse(const String.fromEnvironment('SOLOB', defaultValue: '1.0'));
+final double kBossHpScale = double.parse(const String.fromEnvironment('BOSSHP', defaultValue: '1.0'));
+final double kSecondFormHp = double.parse(const String.fromEnvironment('F2HP', defaultValue: '1.0'));
 
 enum GameMode { coop, solo }
 
@@ -50,6 +54,12 @@ class UnitDef {
   final double range;
   final String desc;
   final String quip;
+
+  /// Special move (see [Abil]) and its numbers.
+  final Abil abil;
+  final double abilEvery;
+  final double abilPow;
+  final double abilDur;
   final double splash;
   final double slowPct;
   final double slowDur;
@@ -91,6 +101,10 @@ class UnitDef {
     required this.range,
     required this.desc,
     required this.quip,
+    this.abil = Abil.none,
+    this.abilEvery = 0,
+    this.abilPow = 0,
+    this.abilDur = 0,
     this.splash = 0,
     this.slowPct = 0,
     this.slowDur = 0,
@@ -132,9 +146,12 @@ const Map<String, String> kUnionRules = {
   'Sweets': 'Sweets slow 50% harder and longer',
   'Arcade': '+1 penny every 8 kills by Arcade',
   'Sea': 'Sea figurines get +0.6 range',
+  'Lamp': 'Lamp figurines show hidden things to everyone, and Lamp hits never miss',
 };
 
-const List<UnitDef> kUnits = [
+const List<UnitDef> kUnits = [..._kUnitsBase, ...kUnitsNew];
+
+const List<UnitDef> _kUnitsBase = [
   // ---------------- COMMON ----------------
   UnitDef(
     id: 'gull',
@@ -467,7 +484,9 @@ final Map<String, UnitDef> kUnitById = {for (final u in kUnits) u.id: u};
 List<UnitDef> unitsOfTier(Tier t) => kUnits.where((u) => u.tier == t).toList();
 
 /// Mythic recipes: one of each ingredient anywhere on your board.
-const Map<String, List<String>> kRecipes = {
+const Map<String, List<String>> kRecipes = {..._kRecipesBase, ...kRecipesNew};
+
+const Map<String, List<String>> _kRecipesBase = {
   'tide': ['keeper', 'morag', 'lou'],
   'jackpot': ['vex', 'claw', 'carl'],
   'velvet': ['bertie', 'sal', 'floss'],
@@ -558,6 +577,17 @@ class EnemyDef {
   final int body; // drawing style
   final double size;
   final String blurb;
+
+  /// Special behaviour (see [Trait]) and its numbers.
+  final Trait trait;
+  final double every;
+  final double pow;
+
+  /// How many places it takes toward the lane limit.
+  final int weight;
+
+  /// What it costs from a wave's threat budget.
+  final int threat;
   const EnemyDef(
     this.id,
     this.name, {
@@ -572,10 +602,17 @@ class EnemyDef {
     this.body = 0,
     this.size = 0.32,
     required this.blurb,
+    this.trait = Trait.none,
+    this.every = 0,
+    this.pow = 0,
+    this.weight = 1,
+    this.threat = 1,
   });
 }
 
-const List<EnemyDef> kEnemies = [
+const List<EnemyDef> kEnemies = [..._kEnemiesBase, ...kEnemiesNew];
+
+const List<EnemyDef> _kEnemiesBase = [
   EnemyDef(
     'drip',
     'Drip',
@@ -584,6 +621,8 @@ const List<EnemyDef> kEnemies = [
   ),
   EnemyDef(
     'pinchy',
+    trait: Trait.armor,
+    threat: 2,
     'Pinchy',
     hpMult: 1.4,
     speed: 0.75,
@@ -595,6 +634,7 @@ const List<EnemyDef> kEnemies = [
   ),
   EnemyDef(
     'eel',
+    threat: 1,
     'Slick Eel',
     hpMult: 0.6,
     speed: 1.9,
@@ -605,6 +645,8 @@ const List<EnemyDef> kEnemies = [
   ),
   EnemyDef(
     'wobbler',
+    trait: Trait.split,
+    threat: 2,
     'Wobbler',
     hpMult: 1.1,
     speed: 0.9,
@@ -617,6 +659,7 @@ const List<EnemyDef> kEnemies = [
   ),
   EnemyDef(
     'wibble',
+    threat: 1,
     'Wibble',
     hpMult: 0.3,
     speed: 1.3,
@@ -627,6 +670,8 @@ const List<EnemyDef> kEnemies = [
   ),
   EnemyDef(
     'nanny',
+    trait: Trait.heal,
+    threat: 2,
     'Kelp Nanny',
     hpMult: 1.6,
     speed: 0.8,
@@ -638,6 +683,8 @@ const List<EnemyDef> kEnemies = [
   ),
   EnemyDef(
     'mist',
+    trait: Trait.dodge,
+    threat: 2,
     'Sea Mist',
     hpMult: 0.8,
     speed: 1.2,
@@ -648,6 +695,8 @@ const List<EnemyDef> kEnemies = [
   ),
   EnemyDef(
     'pollock',
+    trait: Trait.bonus,
+    threat: 1,
     'Lucky Pollock',
     hpMult: 2.0,
     speed: 2.4,
@@ -658,6 +707,8 @@ const List<EnemyDef> kEnemies = [
   ),
   EnemyDef(
     'bigdrip',
+    trait: Trait.split,
+    threat: 8,
     'Big Drip',
     hpMult: 8,
     speed: 0.7,
@@ -668,6 +719,7 @@ const List<EnemyDef> kEnemies = [
   ),
   EnemyDef(
     'bailiff',
+    threat: 2,
     'Bailiff',
     hpMult: 1.5,
     speed: 0.9,
@@ -679,6 +731,8 @@ const List<EnemyDef> kEnemies = [
   ),
   EnemyDef(
     'flyer',
+    trait: Trait.flying,
+    threat: 2,
     'Chip Dart',
     hpMult: 0.5,
     speed: 2.3,
@@ -690,6 +744,8 @@ const List<EnemyDef> kEnemies = [
   ),
   EnemyDef(
     'barnacle',
+    trait: Trait.grow,
+    threat: 3,
     'Barnacle Bob',
     hpMult: 2.4,
     speed: 0.55,
@@ -701,6 +757,8 @@ const List<EnemyDef> kEnemies = [
   ),
   EnemyDef(
     'star',
+    trait: Trait.pair,
+    threat: 2,
     'Spinstar',
     hpMult: 0.75,
     speed: 2.0,
@@ -711,6 +769,8 @@ const List<EnemyDef> kEnemies = [
   ),
   EnemyDef(
     'hermit',
+    trait: Trait.tin,
+    threat: 2,
     'Tin Hermit',
     hpMult: 1.4,
     speed: 0.85,
@@ -722,6 +782,8 @@ const List<EnemyDef> kEnemies = [
   ),
   EnemyDef(
     'puffer',
+    trait: Trait.puff,
+    threat: 3,
     'Puffer',
     hpMult: 2.8,
     speed: 0.75,
@@ -732,6 +794,8 @@ const List<EnemyDef> kEnemies = [
   ),
   EnemyDef(
     'octo',
+    trait: Trait.ink,
+    threat: 2,
     'Octo-Tot',
     hpMult: 0.9,
     speed: 1.25,
@@ -745,6 +809,8 @@ const List<EnemyDef> kEnemies = [
   ),
   EnemyDef(
     'angler',
+    trait: Trait.lure,
+    threat: 3,
     'Lampjaw',
     hpMult: 1.7,
     speed: 0.9,
@@ -756,6 +822,8 @@ const List<EnemyDef> kEnemies = [
   ),
   EnemyDef(
     'voidling',
+    trait: Trait.blink,
+    threat: 2,
     'Voidling',
     hpMult: 1.5,
     speed: 1.1,
@@ -785,51 +853,58 @@ double baseHp(int wave) {
   return hp;
 }
 
-/// Ordinary enemies spawned in a wave.
+/// Ordinary enemies spawned in a wave (the old fixed count, kept as the
+/// yardstick the threat budget is measured against).
 int spawnCount(int wave) => 16 + (wave ~/ 3);
 
-/// Which enemy types can appear on [wave] of [level]. Every level brings its
-/// own regulars, and later levels bring them in sooner.
+/// The threat a wave can spend on enemies. A Drip costs 1; tougher or
+/// trickier things cost more, so later waves get harder through what turns up,
+/// not just through health.
+int threatBudget(int wave, [int level = 1]) =>
+    (spawnCount(wave) * (1.25 + 0.012 * wave) * (1 + 0.04 * (_lv(level) - 1)))
+        .round();
+
+int _lv(int level) => ((level - 1) % kLevels.length) + 1;
+
+/// Which enemy types can appear on [wave] of [level] (its roster up to now).
 List<String> enemyPool(int wave, [int level = 1]) {
-  final p = <String>['drip', 'drip'];
-  if (wave >= 3) p.add('eel');
-  if (wave >= 6) p.add('pinchy');
-  if (wave >= 8) p.add('wobbler');
-  if (wave >= 12) p.add('mist');
-  if (wave >= 14) p.add('nanny');
-  if (wave >= 18) p.add('flyer');
-  if (wave >= 22) p.addAll(['pinchy', 'mist']);
-  if (wave >= 26) p.add('barnacle');
-  if (wave >= 32) p.add('star');
-  if (wave >= 38) p.add('hermit');
-  final theme = (level - 1) % kLevels.length;
-  final early = level > 1 ? 4 : 0;
-  if (theme == 1) {
-    // Fogbank Arcade: things that puff, dodge and glow.
-    if (wave >= 10 - early) p.add('octo');
-    if (wave >= 16 - early) p.add('puffer');
-    if (wave >= 24 - early) p.addAll(['angler', 'mist']);
-  } else if (theme == 2) {
-    // Crab Cove: shells everywhere.
-    if (wave >= 8 - early) p.addAll(['hermit', 'pinchy']);
-    if (wave >= 16 - early) p.add('barnacle');
-    if (wave >= 28 - early) p.addAll(['hermit', 'star']);
-  } else if (theme == 3) {
-    // The Void Pier: things that should not be here.
-    if (wave >= 6 - early) p.add('voidling');
-    if (wave >= 18 - early) p.addAll(['voidling', 'angler']);
-    if (wave >= 30 - early) p.addAll(['octo', 'puffer', 'flyer']);
-  } else if (level > 1) {
-    if (wave >= 20) p.addAll(['puffer', 'voidling']);
+  final r = kLevelRoster[_lv(level)]!;
+  final p = <String>['drip'];
+  for (final e in r.entries) {
+    if (e.key != 'drip' && wave >= e.value) p.add(e.key);
   }
   return p;
+}
+
+/// The type that is brand new on [wave] of [level], if any. Its wave is a
+/// showcase: it arrives alone with Drips.
+String? showcaseFor(int wave, [int level = 1]) {
+  for (final e in kLevelRoster[_lv(level)]!.entries) {
+    if (e.value == wave && e.key != 'drip' && wave > 1) return e.key;
+  }
+  return null;
 }
 
 bool isBossWave(int wave) => wave % 10 == 0;
 bool isMiniBossWave(int wave) => wave % 10 == 5;
 
 // ---------------- Bosses ----------------
-enum BossMech { brood, inspector, undertow, landlord }
+enum BossMech {
+  brood,
+  inspector,
+  undertow,
+  landlord,
+  cuttle,
+  kingcrab,
+  prizeclaw,
+  limpet,
+  ringmaster,
+  wrecker,
+  redactor,
+  ghosttrain,
+  shadowkeeper,
+  voidboss,
+}
 
 class BossDef {
   final String id;
@@ -917,33 +992,33 @@ const List<BossDef> kBosses = [
     'cuttle',
     'Captain Cuttle',
     'Terror of the Arcade',
-    BossMech.undertow,
+    BossMech.cuttle,
     hpMult: 11,
     speed: 0.6,
     armor: 0.1,
     color: 0xFFD9822B,
     entrance: 'Arr. This pier be mine now. All of it. Even the toilets.',
     defeat: 'Abandon... pier...',
-    mechText: 'Every 9s vanishes in a cloud of ink for 2.5s: untargetable, heals 4%, then charges.',
+    mechText: 'Ink Column: every 10s inks one column of your board, halving its range for 4s. Plunder: at 66% and 33% four Token Thieves join him.',
   ),
   BossDef(
     'kingcrab',
     'King Crabbington',
     'Lord of the Cove',
-    BossMech.inspector,
+    BossMech.kingcrab,
     hpMult: 12,
     speed: 0.5,
     armor: 0.3,
     color: 0xFFC0392B,
     entrance: 'Kneel. Or at least shuffle sideways respectfully.',
     defeat: 'Long live... me...',
-    mechText: 'Every 7s pinches your strongest cell shut for 4s. Immune to stun and slow. Heavily armoured.',
+    mechText: 'Molting: at 66% and 33% he sheds his shell. The Shell Husk walks on with his armour (counts as 10) while he runs bare and 40% faster for 8s. Pinchies escort him.',
   ),
   BossDef(
     'void',
     'The Void',
     'What Was Under the Pier',
-    BossMech.brood,
+    BossMech.voidboss,
     hpMult: 13,
     speed: 0.5,
     armor: 0.15,
@@ -951,11 +1026,108 @@ const List<BossDef> kBosses = [
     spawn: 'voidling',
     entrance: '...',
     defeat: '...oh.',
-    mechText: 'Spawns three Voidlings every 6 seconds.',
+    mechText: 'Event Horizon pulls things close; inside its ring only area and Lamp hits land. At 66% it replays every earlier final. At 25% the lane limit drops to 80.',
   ),
 ];
 
-final Map<String, BossDef> kBossById = {for (final b in kBosses) b.id: b};
+const List<BossDef> kBossesNew = [
+  BossDef(
+    'prizeclaw',
+    'The Prize Claw',
+    'Everybody Wins (Nobody Wins)',
+    BossMech.prizeclaw,
+    hpMult: 9.5,
+    speed: 0.55,
+    armor: 0.1,
+    color: 0xFFB0BEC5,
+    entrance: 'Insert coin. Insert coin. INSERT COIN.',
+    defeat: 'Game... over...',
+    mechText: 'A crosshair sits on a cell for 2s, then the claw lifts its top figurine (never a Mythic). It comes back when the Claw loses 15% health or after 12s. Drag it away from the crosshair.',
+  ),
+  BossDef(
+    'limpet',
+    'Lady Limpet',
+    'She Will Not Be Moved',
+    BossMech.limpet,
+    hpMult: 9.5,
+    speed: 0.5,
+    armor: 0.15,
+    color: 0xFF6D597A,
+    spawn: 'barnacle',
+    entrance: 'I have clung to this pier since before your grandmother.',
+    defeat: 'Unclamping... with dignity...',
+    mechText: 'Every 10s she clamps on: stops with 70% armour for 5s while everything else moves 30% faster. Burst her while she moves.',
+  ),
+  BossDef(
+    'ringmaster',
+    'The Ringmaster',
+    'Roll Up, Roll Up',
+    BossMech.ringmaster,
+    hpMult: 9.5,
+    speed: 0.55,
+    armor: 0.1,
+    color: 0xFF9B2226,
+    entrance: 'Ladies and gentlemen, the main event: YOUR DOWNFALL.',
+    defeat: 'The show... must... stop...',
+    mechText: 'Every 12s calls an act, named 2s before: Clowns (six fast adds), Lion (an armoured brute) or Knife Thrower (his next 5 hits miss).',
+  ),
+  BossDef(
+    'wrecker',
+    'The Wrecker',
+    'False Light on the Rocks',
+    BossMech.wrecker,
+    hpMult: 9.5,
+    speed: 0.55,
+    armor: 0.1,
+    color: 0xFF495057,
+    entrance: 'Follow the light, little ships. Follow it right onto the rocks.',
+    defeat: 'The light... goes out...',
+    mechText: 'Every 9s lights a false lantern. For 3s single-target figurines shoot it until it breaks after 8 hits. Area and multi-target ignore it.',
+  ),
+  BossDef(
+    'redactor',
+    'The Redactor',
+    '[REDACTED]',
+    BossMech.redactor,
+    hpMult: 10,
+    speed: 0.55,
+    armor: 0.15,
+    color: 0xFF212529,
+    entrance: 'Your unions have been reviewed. Several are now ████████.',
+    defeat: 'This defeat... did not... happen...',
+    mechText: 'Every 12s crosses out one of your active union rules for 8s (struck through 2s before). Don\'t lean on one union.',
+  ),
+  BossDef(
+    'ghosttrain',
+    'The Ghost Train',
+    'Last Departure',
+    BossMech.ghosttrain,
+    hpMult: 12,
+    speed: 0.55,
+    armor: 0.1,
+    color: 0xFF1B4332,
+    entrance: 'WHOOOOO. All aboard. There is no getting off.',
+    defeat: 'Terminus...',
+    mechText: 'An engine and five carriages. Only the rear carriage can be hit; each one destroyed makes it 10% faster and drops a passenger. Every 15s it whistles and hides in a tunnel for 2s.',
+  ),
+  BossDef(
+    'shadowkeeper',
+    'The Shadow Keeper',
+    'What the Light Left Behind',
+    BossMech.shadowkeeper,
+    hpMult: 12.5,
+    speed: 0.5,
+    armor: 0.1,
+    color: 0xFF240046,
+    entrance: 'I kept the lamp for forty years. Now I keep the dark.',
+    defeat: 'Someone... light... the lamp...',
+    mechText: 'Every 10s adapts to what hurt him most (single-target, area or status) and takes 50% less from it. At 50% his shadow silences three cells for 5s.',
+  ),
+];
+
+final Map<String, BossDef> kBossById = {
+  for (final b in [...kBosses, ...kBossesNew]) b.id: b,
+};
 
 // ---------------- Levels ----------------
 class LevelDef {
@@ -963,39 +1135,83 @@ class LevelDef {
   final String blurb;
   final String finalBoss;
   final double hpMult;
-  const LevelDef(this.name, this.blurb, this.finalBoss, this.hpMult);
+  final LevelRule rule;
+
+  /// The level's own warden (waves 10 and 30) and the earlier warden that
+  /// comes back on wave 20 and shares the bill on wave 40.
+  final String warden;
+  final String guest;
+  const LevelDef(
+    this.name,
+    this.blurb,
+    this.finalBoss,
+    this.hpMult, {
+    this.rule = LevelRule.none,
+    this.warden = 'brine',
+    this.guest = 'inspector',
+  });
 }
 
-/// The first four levels. After that they come round again, harder each time.
+/// Six levels, 50 waves each. Health only climbs 1.0x to 1.5x across them:
+/// the rest of the difficulty is enemy mechanics and compositions.
 const List<LevelDef> kLevels = [
   LevelDef(
     'Grimley Pier',
     'Last night of the season. Something is climbing out of the sea.',
     'landlord',
     1.0,
+    warden: 'brine',
+    guest: 'inspector',
   ),
   LevelDef(
     'Fogbank Arcade',
     'The fog has come in, and so has a pirate.',
     'cuttle',
-    1.35,
+    1.1,
+    rule: LevelRule.fog,
+    warden: 'prizeclaw',
+    guest: 'undertow',
   ),
   LevelDef(
     'Crab Cove',
     'Shells, claws and a crab who thinks he is royalty.',
     'kingcrab',
-    1.75,
+    1.2,
+    rule: LevelRule.tide,
+    warden: 'limpet',
+    guest: 'inspector',
+  ),
+  LevelDef(
+    'The Night Fair',
+    'The rides are still running. Nobody is operating them.',
+    'ghosttrain',
+    1.3,
+    rule: LevelRule.rides,
+    warden: 'ringmaster',
+    guest: 'limpet',
+  ),
+  LevelDef(
+    'Lighthouse Point',
+    'The lamp still turns. The keeper does not.',
+    'shadowkeeper',
+    1.4,
+    rule: LevelRule.beam,
+    warden: 'wrecker',
+    guest: 'ringmaster',
   ),
   LevelDef(
     'The Void Pier',
     'The end of the pier is not where it used to be.',
     'void',
-    2.3,
+    1.5,
+    rule: LevelRule.statik,
+    warden: 'redactor',
+    guest: 'prizeclaw',
   ),
 ];
 
-/// Level [n], counting from 1. Past the last one the list repeats and every
-/// lap of it is 1.6 times tougher.
+/// Level [n], counting from 1. Past the last one the list repeats (Endless
+/// only) and every lap of it is 1.6 times tougher.
 LevelDef levelDef(int n) {
   final i = (n - 1) % kLevels.length;
   final lap = (n - 1) ~/ kLevels.length;
@@ -1006,6 +1222,9 @@ LevelDef levelDef(int n) {
     base.blurb,
     base.finalBoss,
     base.hpMult * _pow(1.6, lap) * 1.5,
+    rule: base.rule,
+    warden: base.warden,
+    guest: base.guest,
   );
 }
 
@@ -1030,33 +1249,31 @@ String _roman(int n) => const [
   'X',
 ][(n - 1).clamp(0, 9)];
 
-/// The boss on a boss wave of [level]. The level's own final boss waits for
-/// wave [kFinalWave] (and every 50th wave of Endless); the others take turns
-/// before it.
-BossDef bossForWave(int wave, [int level = 1]) {
+/// The bosses on a boss wave of [level]: the level's warden on 10, the
+/// earlier guest warden on 20 (under this level's rule), the warden's second
+/// form on 30, a double bill at 60% health each on 40, and the final on
+/// [kFinalWave].
+List<BossDef> bossesForWave(int wave, [int level = 1]) {
   final lv = levelDef(level);
-  if (wave % kFinalWave == 0) return kBossById[lv.finalBoss]!;
-  final mids = <String>[
-    'brine',
-    'inspector',
-    'undertow',
-    'landlord',
-    'cuttle',
-    'kingcrab',
-  ];
-  final idx = (level - 1) % kLevels.length;
-  final pool = mids
-      .where(
-        (id) =>
-            id != lv.finalBoss &&
-            (idx >= 1 || id != 'cuttle') &&
-            (idx >= 2 || id != 'kingcrab'),
-      )
-      .toList();
-  if (idx == 0) pool.remove('landlord');
-  final slot = ((wave % kFinalWave) ~/ 10) - 1;
-  return kBossById[pool[(slot + (level - 1)) % pool.length]]!;
+  final w = wave % kFinalWave;
+  if (w == 0) return [kBossById[lv.finalBoss]!];
+  final slot = w ~/ 10;
+  return switch (slot) {
+    2 => [kBossById[lv.guest]!],
+    4 => [kBossById[lv.warden]!, kBossById[lv.guest]!],
+    _ => [kBossById[lv.warden]!],
+  };
 }
+
+/// The first (or only) boss of a boss wave.
+BossDef bossForWave(int wave, [int level = 1]) =>
+    bossesForWave(wave, level).first;
+
+/// Whether the boss on [wave] comes in its second form.
+bool isSecondForm(int wave) => wave % kFinalWave == 30;
+
+/// Whether [wave] is a double bill.
+bool isDoubleBill(int wave) => wave % kFinalWave == 40;
 
 // ---------------- Partner ----------------
 const String kPartnerName = 'Brenda';

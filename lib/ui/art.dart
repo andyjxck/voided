@@ -687,6 +687,11 @@ void drawBoss(
           p.dy + r * 0.3,
         );
       c.drawPath(m, hat);
+    default:
+      // Plan bosses without a drawn fallback: a plain weathered body.
+      c.drawCircle(p, r * pulse, paint);
+      c.drawCircle(p, r * pulse, ink);
+      drawEyes(c, p, r * 0.8, look: 0, angry: true);
   }
   if (shield > 0) {
     c.drawCircle(

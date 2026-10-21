@@ -1,14 +1,20 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'audio/sfx.dart';
 import 'game/meta.dart';
 import 'ui/menus.dart';
+import 'ui/sprites.dart';
 
 const kSaveKey = 'pier_pressure_save_v1';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // The board, boss bar and pickers paint figurines, sea things and bosses
+  // from these images; until they arrive the painters use drawn shapes.
+  unawaited(Sprites.load());
   SharedPreferences? prefs;
   try {
     prefs = await SharedPreferences.getInstance();
