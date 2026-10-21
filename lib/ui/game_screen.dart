@@ -2,8 +2,10 @@
 
 import 'dart:math' as math;
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
 
 import '../audio/sfx.dart';
@@ -11,6 +13,7 @@ import '../game/ai.dart';
 import '../game/data.dart';
 import '../game/meta.dart';
 import '../game/sim.dart';
+import 'a11y.dart';
 import 'art.dart';
 import 'field.dart';
 import 'widgets.dart';
@@ -76,6 +79,11 @@ class _GameScreenState extends State<GameScreen> with SingleTickerProviderStateM
   FieldGeom? _geo;
   int _lastChat = 0;
   bool _wasBoss = false;
+  GameNarrator _narr = GameNarrator();
+  static const _swapHere = CustomSemanticsAction(label: 'Swap with the selected spot');
+
+  /// True while a screen reader (or the browser's accessibility tree) is on.
+  bool get _a11y => SemanticsBinding.instance.semanticsEnabled;
 
   @override
   void initState() {
@@ -93,6 +101,7 @@ class _GameScreenState extends State<GameScreen> with SingleTickerProviderStateM
     summary = null;
     selected = null;
     vfx.clear();
+    _narr = GameNarrator();
     _lastChat = g.chat.length;
     Sfx.musicMood(false);
   }
@@ -137,6 +146,16 @@ class _GameScreenState extends State<GameScreen> with SingleTickerProviderStateM
       Sfx.musicMood(isBoss);
     }
     if (g.status != GameStatus.playing && !_ended) _end();
+    // Spoken updates: at most one line every two seconds, and only with a
+    // screen reader on. The narrator tracks state either way, so turning one
+    // on mid-run doesn't replay old events.
+    final said = _narr.update(g, dt);
+    if (_a11y && mounted) {
+      for (final s in said) {
+        SemanticsService.sendAnnouncement(View.of(context), s.text, TextDirection.ltr,
+            assertiveness: s.urgent ? Assertiveness.assertive : Assertiveness.polite);
+      }
+    }
     frame.value++;
     setState(() {});
   }
@@ -177,7 +196,10 @@ class _GameScreenState extends State<GameScreen> with SingleTickerProviderStateM
             }
             if (f.type == FxType.mythic) {
               final d = kUnitById[f.text];
-              if (d != null) _showBanner('MYTHIC', d.name);
+              if (d != null) {
+                _showBanner('MYTHIC', d.name);
+                _narr.note('Mythic built: ${d.name}.');
+              }
             }
           }
         case FxType.boss:
@@ -219,6 +241,7 @@ class _GameScreenState extends State<GameScreen> with SingleTickerProviderStateM
     if (s.isEmpty) return;
     toast = s;
     toastT = 2.2;
+    _narr.note(s);
     Sfx.error();
   }
 
@@ -238,6 +261,7 @@ class _GameScreenState extends State<GameScreen> with SingleTickerProviderStateM
     Sfx.unlock();
     final r = g.summon(g.you);
     if (!r.ok) return _toast(r.msg);
+    _narr.note('Summoned ${r.unit!.name}, ${r.unit!.tier.label}.', kind: 'summon');
     if (tut == 1) {
       _tutSummons++;
       if (_tutSummons >= 3) tut++;
@@ -269,11 +293,27 @@ class _GameScreenState extends State<GameScreen> with SingleTickerProviderStateM
       if (hit != null && hit.$1 == 0 && hit.$2 != dragFrom) {
         g.swap(g.you, dragFrom!, hit.$2);
         Sfx.click();
+        _narr.note('Moved to ${spotName(hit.$2)}.');
         if (selected == dragFrom) selected = hit.$2;
       }
     }
     dragFrom = null;
     dragPos = null;
+  }
+
+  void _merge(int i) {
+    final r = g.merge(g.you, i);
+    if (!r.ok) return _toast(r.msg);
+    _narr.note('Merged into ${r.unit!.name}, ${r.unit!.tier.label}.');
+    if (tut == 2) tut++;
+    setState(() => selected = null);
+  }
+
+  /// A double-tap on one of the screen reader's spot buttons: same as a tap.
+  void _tapCell(int i) {
+    Sfx.click();
+    setState(() => selected = (selected == i || g.you.cells[i].isEmpty) ? null : i);
+    if (selected == i) _narr.note('Selected. ${cellLabel(g, i)} Merge, sell, shake and give are below the board.');
   }
 
   bool get _tutCanNext =>
@@ -295,7 +335,7 @@ class _GameScreenState extends State<GameScreen> with SingleTickerProviderStateM
     if ((k == LogicalKeyboardKey.enter || k == LogicalKeyboardKey.numpadEnter) && _tutCanNext) return _tutNext();
     if (k == LogicalKeyboardKey.space || k == LogicalKeyboardKey.keyS) _summon();
     if (k == LogicalKeyboardKey.keyP || k == LogicalKeyboardKey.escape) setState(() => paused = !paused);
-    if (k == LogicalKeyboardKey.keyM && selected != null && g.canMerge(g.you, selected!)) g.merge(g.you, selected!);
+    if (k == LogicalKeyboardKey.keyM && selected != null && g.canMerge(g.you, selected!)) _merge(selected!);
     if (k == LogicalKeyboardKey.keyF) setState(() => speed = speed == 1 ? 2 : 1);
   }
 
@@ -345,7 +385,13 @@ class _GameScreenState extends State<GameScreen> with SingleTickerProviderStateM
       color: Pal.panel,
       child: Row(children: [
         Expanded(
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          // One readable line for the whole bar, built from whole seconds and
+          // counts, so it changes about once a second, not every frame.
+          child: Semantics(
+            container: true,
+            label: hudLabel(g),
+            excludeSemantics: true,
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             FittedBox(
               fit: BoxFit.scaleDown,
               alignment: Alignment.centerLeft,
@@ -359,11 +405,17 @@ class _GameScreenState extends State<GameScreen> with SingleTickerProviderStateM
             const SizedBox(height: 4),
             LaneMeter(count: lc, limit: kLaneLimit),
           ]),
+          ),
         ),
         const SizedBox(width: 8),
-        CurrencyChip(icon: Icons.circle, color: Pal.penny, value: '${p.pennies}'),
-        const SizedBox(width: 4),
-        CurrencyChip(icon: Icons.eco, color: Pal.leaf, value: '${p.leaves}'),
+        // Pennies and leaves are already in the bar's label.
+        ExcludeSemantics(
+          child: Row(mainAxisSize: MainAxisSize.min, children: [
+            CurrencyChip(icon: Icons.circle, color: Pal.penny, value: '${p.pennies}'),
+            const SizedBox(width: 4),
+            CurrencyChip(icon: Icons.eco, color: Pal.leaf, value: '${p.leaves}'),
+          ]),
+        ),
         IconButton(
           visualDensity: VisualDensity.compact,
           tooltip: speed == 1 ? 'Speed up (F)' : 'Normal speed (F)',
@@ -383,7 +435,11 @@ class _GameScreenState extends State<GameScreen> with SingleTickerProviderStateM
   Widget _bossBar() {
     final b = g.boss!;
     final frac = (b.hp / b.maxHp).clamp(0.0, 1.0);
-    return Container(
+    return Semantics(
+      container: true,
+      label: bossLabel(g),
+      excludeSemantics: true,
+      child: Container(
       color: const Color(0xFF2A0F22),
       padding: const EdgeInsets.fromLTRB(10, 4, 10, 6),
       child: Column(children: [
@@ -406,6 +462,7 @@ class _GameScreenState extends State<GameScreen> with SingleTickerProviderStateM
           ]),
         ),
       ]),
+      ),
     );
   }
 
@@ -415,9 +472,22 @@ class _GameScreenState extends State<GameScreen> with SingleTickerProviderStateM
       _geo = FieldGeom(g.field, size);
       final chat = g.chat.isNotEmpty && g.time - g.chat.last.at < 4.5 ? g.chat.last : null;
       if (g.chat.length != _lastChat) _lastChat = g.chat.length;
+      final geo = _geo!;
+      final boards = [
+        boardSummary(g, g.you, owner: 'Your'),
+        if (g.partner != null) boardSummary(g, g.partner!, owner: "$kPartnerName's"),
+      ].join(' ');
       return Stack(children: [
-        GestureDetector(
+        Semantics(
+          container: true,
+          label: 'The pier. $boards',
+          excludeSemantics: true,
+          child: GestureDetector(
           behavior: HitTestBehavior.opaque,
+          // Pick up the figurine under the finger where it went down. The
+          // default reports where the drag was recognised, after the touch
+          // slop, which on a phone is often the next spot along.
+          dragStartBehavior: DragStartBehavior.down,
           onTapUp: (d) => _tapField(d.localPosition),
           onPanStart: (d) => _panStart(d.localPosition),
           onPanUpdate: (d) => dragFrom != null ? dragPos = d.localPosition : null,
@@ -434,17 +504,50 @@ class _GameScreenState extends State<GameScreen> with SingleTickerProviderStateM
                 tutorialHighlight: tut == 2 ? _firstMergeable() : -1),
           ),
         ),
+        ),
+        // With a screen reader on, every spot on your board is its own button:
+        // double-tap selects it (Merge, Sell and the rest then appear), and a
+        // custom action swaps it with the selected spot. They paint nothing,
+        // let pointer events through, and are only built when needed.
+        if (_a11y)
+          for (var i = 0; i < g.you.cells.length; i++)
+            Positioned.fromRect(
+              rect: _cellRect(geo, i),
+              child: Semantics(
+                button: true,
+                label: cellLabel(g, i, selected: selected == i),
+                onTap: () => _tapCell(i),
+                customSemanticsActions: selected != null && selected != i
+                    ? {
+                        _swapHere: () {
+                          final from = selected!;
+                          g.swap(g.you, from, i);
+                          _narr.note('Swapped ${spotName(from)} and ${spotName(i)}.');
+                          setState(() => selected = i);
+                        },
+                      }
+                    : null,
+                child: const SizedBox.expand(),
+              ),
+            ),
         if (chat != null)
           Positioned(
             left: 8,
             right: 8,
             top: 6,
-            child: IgnorePointer(child: SpeechBubble(speaker: chat.speaker, text: chat.text)),
+            child: IgnorePointer(
+                child: Semantics(
+                    container: true,
+                    label: '${chat.speaker} says: ${chat.text}',
+                    excludeSemantics: true,
+                    child: SpeechBubble(speaker: chat.speaker, text: chat.text))),
           ),
+        // The banner and toast are spoken as announcements, so the tree skips
+        // them rather than growing and shrinking a node under the reader.
         if (bannerT > 0 && banner != null)
           Positioned.fill(
             child: IgnorePointer(
-              child: Center(child: BigBanner(title: banner!, sub: bannerSub ?? '', k: bannerT)),
+              child: ExcludeSemantics(child: Center(child: BigBanner(title: banner!, sub: bannerSub ?? '', k: bannerT))),
             ),
           ),
         if (toastT > 0 && toast != null)
@@ -452,10 +555,17 @@ class _GameScreenState extends State<GameScreen> with SingleTickerProviderStateM
             bottom: 10,
             left: 0,
             right: 0,
-            child: IgnorePointer(child: Center(child: ToastPill(text: toast!))),
+            child: IgnorePointer(child: ExcludeSemantics(child: Center(child: ToastPill(text: toast!)))),
           ),
       ]);
     });
+  }
+
+  Rect _cellRect(FieldGeom geo, int i) {
+    final o = g.field.boardOrigin(0);
+    final x = o.x + i % kBoardCols;
+    final y = o.y + i ~/ kBoardCols;
+    return Rect.fromPoints(geo.px(x, y), geo.px(x + 1, y + 1));
   }
 
   int _firstMergeable() {
@@ -499,12 +609,7 @@ class _GameScreenState extends State<GameScreen> with SingleTickerProviderStateM
             sub: d.tier.index < 3 ? '3 → 1 ${Tier.values[d.tier.index + 1].label}' : 'can\'t',
             color: Pal.neon,
             enabled: g.canMerge(g.you, i),
-            onTap: () {
-              final r = g.merge(g.you, i);
-              if (!r.ok) return _toast(r.msg);
-              if (tut == 2) tut++;
-              setState(() => selected = null);
-            },
+            onTap: () => _merge(i),
           ),
           ActionBtn(
             label: 'SELL',
@@ -515,6 +620,7 @@ class _GameScreenState extends State<GameScreen> with SingleTickerProviderStateM
               final r = g.sell(g.you, i);
               if (!r.ok) return _toast(r.msg);
               Sfx.sell();
+              _narr.note('Sold one ${d.name}.');
               if (g.you.cells[i].isEmpty) setState(() => selected = null);
             },
           ),
@@ -526,6 +632,7 @@ class _GameScreenState extends State<GameScreen> with SingleTickerProviderStateM
             onTap: () {
               final r = g.reroll(g.you, i);
               if (!r.ok) return _toast(r.msg);
+              if (r.unit != null) _narr.note('Shaken into ${r.unit!.name}, ${r.unit!.tier.label}.');
               if (g.you.cells[i].isEmpty) setState(() => selected = null);
             },
           ),
@@ -538,6 +645,7 @@ class _GameScreenState extends State<GameScreen> with SingleTickerProviderStateM
                 final r = g.gift(i);
                 if (!r.ok) return _toast(r.msg);
                 Sfx.click();
+                _narr.note('Gave one ${d.name} to $kPartnerName.');
                 if (g.you.cells[i].isEmpty) setState(() => selected = null);
               },
             ),
@@ -676,9 +784,11 @@ class _GameScreenState extends State<GameScreen> with SingleTickerProviderStateM
               Sfx.gamble(r.ok);
               if (r.ok) {
                 _showBanner('THE LEAVES SAY YES', r.unit!.name);
+                _narr.note('The leaves say yes: ${r.unit!.name}, ${r.unit!.tier.label}.');
               } else {
                 toast = r.msg;
                 toastT = 1.6;
+                _narr.note(r.msg);
               }
             },
           ),
@@ -701,6 +811,7 @@ class _GameScreenState extends State<GameScreen> with SingleTickerProviderStateM
             onTap: () {
               final r = g.upgrade(p, gi);
               r.ok ? Sfx.upgrade() : _toast(r.msg);
+              if (r.ok) _narr.note('${kUpgradeGroupNames[gi]} now level ${p.upg[gi]}.');
             },
           ),
         ),
@@ -714,6 +825,7 @@ class _GameScreenState extends State<GameScreen> with SingleTickerProviderStateM
         onTap: () {
           final r = g.upgradeLuck(p);
           r.ok ? Sfx.upgrade() : _toast(r.msg);
+          if (r.ok) _narr.note('Lucky Penny now level ${p.luck}.');
         },
       ),
       const SizedBox(height: 6),

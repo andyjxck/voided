@@ -180,7 +180,10 @@ class SummonButton extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
               child: Center(
-                child: FittedBox(
+                child: Semantics(
+                  label: 'Summon a figurine, $cost pennies${enabled ? '' : ', not available now'}',
+                  excludeSemantics: true,
+                  child: FittedBox(
                   fit: BoxFit.scaleDown,
                   child: Column(mainAxisSize: MainAxisSize.min, children: [
               Text('SUMMON', style: TextStyle(color: enabled ? Pal.ink : Colors.white54, fontWeight: FontWeight.w900, fontSize: 18, letterSpacing: 2)),
@@ -190,6 +193,7 @@ class SummonButton extends StatelessWidget {
                 Text('$cost', style: TextStyle(color: enabled ? const Color(0xFF5A3000) : Colors.white54, fontWeight: FontWeight.w900, fontSize: 13)),
               ]),
             ]),
+                ),
                 ),
               ),
             ),
