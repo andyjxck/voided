@@ -1574,7 +1574,7 @@ class _GameScreenState extends State<GameScreen>
               n: math.min(3, members[t]!.length),
               active: on.contains(t),
               onTap: () => _toast(
-                '$t ${math.min(3, members[t]!.length)}/3: ${kUnionRules[t]}',
+                '${unionName(t)} ${math.min(3, members[t]!.length)}/3: ${kUnionRules[t]}',
               ),
             ),
         ],
@@ -2183,7 +2183,7 @@ class _UnionBadge extends StatelessWidget {
     final t = _tone[tag] ?? Tone.grey;
     return Semantics(
       button: true,
-      label: '$tag union, $n of 3${active ? ', on' : ''}',
+      label: '${unionName(tag)} union, $n of 3${active ? ', on' : ''}',
       excludeSemantics: true,
       child: GestureDetector(
         onTap: onTap,
@@ -2228,7 +2228,7 @@ class _UnionBadge extends StatelessWidget {
               ),
               const SizedBox(width: 5),
               Text(
-                active ? tag.toUpperCase() : '$tag $n/3',
+                active ? unionName(tag).toUpperCase() : '${unionName(tag)} $n/3',
                 style: active
                     ? display(11.5, stroke: t.lip, w: 1.2)
                     : body(10.5, color: Vx.textDim),
